@@ -179,6 +179,24 @@
             color: #eaecef;
         }
 
+        .xp-bar-bg, .energy-bar-bg {
+            background: #2b2f36;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .xp-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s; }
+        .energy-bar-fill { background: #0ecb81; height: 100%; width: 100%; transition: width 0.3s; }
+
+        .timer-text {
+            font-size: 11px;
+            color: #f0b90b;
+            margin-top: 2px;
+        }
+
         .btn-card {
             width: 100%;
             background: #2b2f36;
@@ -188,12 +206,20 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
+            margin-top: 6px;
         }
 
-        .btn-card:hover {
-            background: var(--primary);
-            color: #000;
+        .btn-card:hover { background: var(--primary); color: #000; }
+        .btn-potion { background: #6554c0; color: #fff; }
+
+        .empty-msg {
+            text-align: center;
+            padding: 40px;
+            color: #848e9c;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px dashed var(--border-color);
         }
 
         /* COMBATE UI */
@@ -216,6 +242,8 @@
             align-items: center;
         }
 
+        .enemy-card.locked { opacity: 0.5; }
+
         .btn-fight {
             background: #da3633;
             color: #fff;
@@ -226,6 +254,8 @@
             cursor: pointer;
         }
 
+        .btn-fight:disabled { background: #444; cursor: not-allowed; }
+
         .log-box {
             background: #000;
             border: 1px solid var(--border-color);
@@ -234,7 +264,7 @@
             font-family: monospace;
             font-size: 12px;
             color: #0ecb81;
-            height: 100px;
+            height: 120px;
             overflow-y: auto;
             margin-top: 15px;
         }
@@ -246,7 +276,7 @@
     <header>
         <div class="logo">MANGUABLADES ⚔️</div>
         <div class="wallet-info">
-            <div class="balance">💰 <span id="manguaBalance">2,500</span> $MANGUA</div>
+            <div class="balance">💰 <span id="manguaBalance">3,000,000</span> $MANGUA</div>
             <button class="btn-connect" id="connectWallet" onclick="connectWallet()">Conectar Web3</button>
         </div>
     </header>
@@ -264,8 +294,8 @@
         <!-- TAB PLAZA -->
         <div id="tab-plaza" class="tab-content active">
             <div class="actions-bar">
-                <h2>Tus Personajes NFT (<span id="charCount">2</span>/4)</h2>
-                <button class="btn-action" onclick="mintCharacter()">Reclutar Personaje (1,000 $MANGUA)</button>
+                <h2>Tus Personajes Mangua (<span id="charCount">0</span>/4)</h2>
+                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua ($5 USD / 1.5M$MANGUA)</button>
             </div>
             <div class="grid" id="charactersContainer"></div>
         </div>
@@ -273,59 +303,84 @@
         <!-- TAB HERRERÍA -->
         <div id="tab-herreria" class="tab-content">
             <div class="actions-bar">
-                <h2>Herrería / Armas NFT</h2>
-                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma (500 $MANGUA)</button>
+                <h2>Herrería / ManguaBlade Armas</h2>
+                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma ($2.50 USD / 750K$MANGUA)</button>
             </div>
             <div class="grid" id="weaponsContainer"></div>
         </div>
 
         <!-- TAB COMBATE -->
         <div id="tab-combate" class="tab-content">
-            <h2>⚔️ Arena de Combate PVE</h2>
+            <h2>⚔️ Arena de Batalla Mangua (Niveles 1 a 30)</h2>
             <div class="battle-panel">
-                <h3>1. Personaje Seleccionado</h3>
-                <p id="selectedHeroText">Ningún personaje seleccionado en la Plaza.</p>
+                <h3>1. Mangua Seleccionado</h3>
+                <p id="selectedHeroText">Ningún Mangua seleccionado. Recluta uno en la Plaza.</p>
                 <h3>2. Arma Equipada</h3>
                 <p id="selectedWeaponText">Ninguna arma equipada.</p>
             </div>
 
-            <h3>3. Selecciona un Oponente</h3>
+            <h3>3. Monstruos y Jefes de la Arena</h3>
             <div id="enemiesContainer"></div>
 
             <h3>📜 Registro de Batalla</h3>
-            <div class="log-box" id="combatLog">Bienvenido a la Arena de ManguaBlades. Selecciona un guerrero para luchar.</div>
+            <div class="log-box" id="combatLog">Bienvenido a ManguaBlades. Recluta tu primer Mangua para empezar a luchar.</div>
         </div>
 
         <!-- TAB MERCADO -->
         <div id="tab-mercado" class="tab-content">
-            <h2>🛒 Bazaar NFT</h2>
-            <p>Mercado P2P en construcción. Pronto podrás comprar y vender tus Personajes y Armas por $MANGUA.</p>
+            <h2>🛒 Mercado Mangua NFT</h2>
+            <p>Comercio P2P en desarrollo. Próximamente podrás comprar y vender tus Manguas por $MANGUA.</p>
         </div>
 
     </div>
 
     <script>
-        // ESTADO DEL JUEGO
-        let balance = 2500;
+        // ESTADO INICIAL
+        let balance = 3000000;
         let selectedCharacterId = null;
         let selectedWeaponId = null;
 
-        let characters = [
-            { id: 1, name: "Caminante #001", element: "fire", power: 1280, level: 1, energy: 200, emoji: "🧑‍🚀" },
-            { id: 2, name: "Guardián #002", element: "water", power: 1050, level: 1, energy: 200, emoji: "🛡️" }
-        ];
+        let characters = [];
 
         let weapons = [
-            { id: 1, name: "Espada de Fuego", element: "fire", powerBonus: 250, stars: 2, emoji: "🗡️" }
+            { id: 1, name: "Hoja Manguera", element: "fire", powerBonus: 200, stars: 1, emoji: "🗡️" }
         ];
 
         let enemies = [
-            { id: 1, name: "Espectro Salvaje", element: "earth", power: 1100, reward: 150 },
-            { id: 2, name: "Gólem Volcánico", element: "water", power: 1350, reward: 220 },
-            { id: 3, name: "Bestia de Rayo", element: "fire", power: 1500, reward: 300 }
+            { id: 1, name: "Plaga de Manguas Podridas", minLevel: 1, element: "earth", power: 900, reward: 40000 },
+            { id: 2, name: "Duende Cosechador", minLevel: 5, element: "water", power: 1300, reward: 90000 },
+            { id: 3, name: "Gólem Volcánico", minLevel: 12, element: "fire", power: 1850, reward: 180000 },
+            { id: 4, name: "Mangua Dragón Legendario 👑", minLevel: 22, element: "lightning", power: 2600, reward: 450000 }
         ];
 
-        // CAMBIO DE PESTAÑAS
+        const manguaTemplates = [
+            { name: "Manguito Guerrero", element: "fire", emoji: "🥭⚔️" },
+            { name: "Mangua Centinela", element: "water", emoji: "🥭🛡️" },
+            { name: "Mangua Místico", element: "earth", emoji: "🥭🔮" },
+            { name: "Mangua Vengador", element: "lightning", emoji: "🥭⚡" }
+        ];
+
+        // RECARGA DE ENERGÍA PASIVA (1 Energía cada 432s / 7.2min)
+        setInterval(() => {
+            let updated = false;
+            const now = Date.now();
+            characters.forEach(c => {
+                if (c.energy < 200) {
+                    const elapsedSecs = Math.floor((now - c.lastEnergyUpdate) / 1000);
+                    if (elapsedSecs >= 432) {
+                        const energyToAdd = Math.floor(elapsedSecs / 432);
+                        c.energy = Math.min(200, c.energy + energyToAdd);
+                        c.lastEnergyUpdate = now;
+                        updated = true;
+                    }
+                }
+            });
+            if (updated) {
+                renderCharacters();
+                updateCombatView();
+            }
+        }, 1000);
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -336,33 +391,73 @@
             if(tabName === 'combate') updateCombatView();
         }
 
-        // RENDERIZAR PERSONAJES
         function renderCharacters() {
             const container = document.getElementById('charactersContainer');
             container.innerHTML = '';
             document.getElementById('charCount').innerText = characters.length;
 
+            if(characters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-msg" style="grid-column: 1 / -1;">
+                        <h3>🥭 ¡Aún no tienes ningún Mangua!</h3>
+                        <p>Presiona el botón superior <strong>"Reclutar Mangua"</strong> para obtener tu primer guerrero Nivel 1.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const now = Date.now();
+
             characters.forEach(c => {
                 const isSelected = selectedCharacterId === c.id;
+                const xpPercent = Math.floor((c.xp / c.maxXp) * 100);
+                const energyPercent = Math.floor((c.energy / 200) * 100);
+
+                let timerDisplay = "🔋 Energía Llena";
+                if(c.energy < 200) {
+                    const nextTickSecs = 432 - Math.floor(((now - c.lastEnergyUpdate) / 1000) % 432);
+                    const mins = Math.floor(nextTickSecs / 60);
+                    const secs = nextTickSecs % 60;
+                    timerDisplay = `⏳ +1⚡ en ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+
                 container.innerHTML += `
                     <div class="card ${c.element} ${isSelected ? 'selected' : ''}">
                         <span class="element-badge badge-${c.element}">${c.element}</span>
                         <div class="avatar-placeholder">${c.emoji}</div>
                         <h3>${c.name}</h3>
                         <div class="stats-list">
+                            <p>⭐ <strong>Nivel:</strong> ${c.level}/30</p>
                             <p>⚡ <strong>Poder Base:</strong> ${c.power} PWR</p>
-                            <p>⭐ <strong>Nivel:</strong> Nivel ${c.level}</p>
+                            <p>📈 <strong>XP:</strong> ${c.xp}/${c.maxXp}</p>
+                            <div class="xp-bar-bg"><div class="xp-bar-fill" style="width: ${xpPercent}%"></div></div>
                             <p>🔋 <strong>Energía:</strong> ${c.energy}/200</p>
+                            <div class="energy-bar-bg"><div class="energy-bar-fill" style="width: ${energyPercent}%"></div></div>
+                            <div class="timer-text">${timerDisplay}</div>
                         </div>
                         <button class="btn-card" onclick="selectHero(${c.id})">
                             ${isSelected ? '✅ Seleccionado' : 'Seleccionar para Batalla'}
                         </button>
+                        ${c.energy < 200 ? `<button class="btn-card btn-potion" onclick="refillEnergy(${c.id})">🧪 Poción⚡ (300K $MANGUA / $1 USD)</button>` : ''}
                     </div>
                 `;
             });
         }
 
-        // RENDERIZAR ARMAS
+        function refillEnergy(heroId) {
+            if(balance < 300000) { alert("Saldo insuficiente de $MANGUA"); return; }
+            const hero = characters.find(c => c.id === heroId);
+            if(hero) {
+                balance -= 300000;
+                hero.energy = 200;
+                hero.lastEnergyUpdate = Date.now();
+                updateBalance();
+                renderCharacters();
+                updateCombatView();
+                logCombat(`🧪 ¡Usaste una Poción de Energía en ${hero.name}! Energía 200/200.`);
+            }
+        }
+
         function renderWeapons() {
             const container = document.getElementById('weaponsContainer');
             container.innerHTML = '';
@@ -386,39 +481,38 @@
             });
         }
 
-        // RECLUTAR PERSONAJE
         function mintCharacter() {
-            if(balance < 1000) { alert("Saldo insuficiente de $MANGUA"); return; }
-            if(characters.length >= 4) { alert("Límite de 4 personajes alcanzado."); return; }
+            if(balance < 1500000) { alert("Saldo insuficiente de $MANGUA ($5 USD = 1,500,000$MANGUA)"); return; }
+            if(characters.length >= 4) { alert("¡Límite alcanzado! Máximo 4 Mangua NFTs."); return; }
 
-            balance -= 1000;
-            const elements = ['fire', 'water', 'earth', 'lightning'];
-            const emojis = ['🥷', '🧙‍♂️', '🧝‍♀️', '🧛‍♂️'];
-            const randElem = elements[Math.floor(Math.random() * elements.length)];
-            const randEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-            const newPower = 1000 + Math.floor(Math.random() * 500);
+            balance -= 1500000;
+            const template = manguaTemplates[Math.floor(Math.random() * manguaTemplates.length)];
 
             const newChar = {
                 id: Date.now(),
-                name: `Guerrero #${characters.length + 1}`,
-                element: randElem,
-                power: newPower,
+                name: `${template.name} #${characters.length + 1}`,
+                element: template.element,
+                power: 800 + Math.floor(Math.random() * 150),
                 level: 1,
+                xp: 0,
+                maxXp: 100,
                 energy: 200,
-                emoji: randEmoji
+                lastEnergyUpdate: Date.now(),
+                emoji: template.emoji
             };
 
             characters.push(newChar);
+            if(!selectedCharacterId) selectedCharacterId = newChar.id;
+
             updateBalance();
             renderCharacters();
-            logCombat(`¡Has reclutado un nuevo NFT (${newChar.name}) con ${newPower} PWR!`);
+            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) con ${newChar.power} PWR por 1,500,000 $MANGUA!`);
         }
 
-        // FORJAR ARMA
         function forgeWeapon() {
-            if(balance < 500) { alert("Saldo insuficiente de $MANGUA"); return; }
+            if(balance < 750000) { alert("Saldo insuficiente de $MANGUA ($2.50 USD = 750,000$MANGUA)"); return; }
 
-            balance -= 500;
+            balance -= 750000;
             const elements = ['fire', 'water', 'earth', 'lightning'];
             const randElem = elements[Math.floor(Math.random() * elements.length)];
             const stars = Math.floor(Math.random() * 3) + 1;
@@ -426,7 +520,7 @@
 
             const newWeapon = {
                 id: Date.now(),
-                name: `Arma de ${randElem}`,
+                name: `ManguaBlade ${stars}★`,
                 element: randElem,
                 powerBonus: bonus,
                 stars: stars,
@@ -436,10 +530,9 @@
             weapons.push(newWeapon);
             updateBalance();
             renderWeapons();
-            logCombat(`¡Has forjado una nueva Arma ${stars}★ (+${bonus} PWR)!`);
+            logCombat(`🗡️ ¡Has forjado una ${newWeapon.name} (+${bonus} PWR) por 750,000 $MANGUA!`);
         }
 
-        // SELECCIONES
         function selectHero(id) {
             selectedCharacterId = id;
             renderCharacters();
@@ -457,7 +550,8 @@
             const weapon = weapons.find(w => w.id === selectedWeaponId);
 
             document.getElementById('selectedHeroText').innerHTML = hero ? 
-                `<strong>${hero.name}</strong> (${hero.element.toUpperCase()}) - ${hero.power} PWR` : "Ninguno";
+                `<strong>${hero.emoji} ${hero.name}</strong> (Nivel ${hero.level}) - ${hero.power} PWR | 🔋 ${hero.energy}/200` : 
+                "<em>Ningún Mangua seleccionado. Ve a la Plaza y recluta uno.</em>";
             
             document.getElementById('selectedWeaponText').innerHTML = weapon ? 
                 `<strong>${weapon.name}</strong> - +${weapon.powerBonus} PWR` : "Ninguna";
@@ -465,83 +559,5 @@
             renderEnemies();
         }
 
-        // RENDERIZAR ENEMIGOS
         function renderEnemies() {
-            const container = document.getElementById('enemiesContainer');
-            container.innerHTML = '';
-
-            enemies.forEach(e => {
-                container.innerHTML += `
-                    <div class="enemy-card">
-                        <div>
-                            <strong>😈 ${e.name}</strong> (${e.element.toUpperCase()})<br>
-                            ⚡ Poder: ${e.power} PWR | 🏆 Recompensa: +${e.reward} $MANGUA
-                        </div>
-                        <button class="btn-fight" onclick="fight(${e.id})">⚔️ Luchar</button>
-                    </div>
-                `;
-            });
-        }
-
-        // LÓGICA DE COMBATE
-        function fight(enemyId) {
-            const hero = characters.find(c => c.id === selectedCharacterId);
-            if(!hero) { alert("¡Selecciona un personaje en la Plaza primero!"); return; }
-            if(hero.energy < 40) { alert("Energía insuficiente."); return; }
-
-            const weapon = weapons.find(w => w.id === selectedWeaponId);
-            const enemy = enemies.find(e => e.id === enemyId);
-
-            hero.energy -= 40;
-            let totalPower = hero.power + (weapon ? weapon.powerBonus : 0);
-
-            // Probabilidad de victoria
-            let winChance = Math.min(80, Math.floor((totalPower / enemy.power) * 50));
-            let roll = Math.floor(Math.random() * 100);
-
-            if(roll < winChance) {
-                balance += enemy.reward;
-                hero.power += 25; // Sube poder por victoria
-                updateBalance();
-                logCombat(`🎉 ¡VICTORIA! ${hero.name} derrotó a ${enemy.name}. Ganaste +${enemy.reward} $MANGUA y +25 PWR.`);
-            } else {
-                logCombat(`💥 DERROTA... ${enemy.name} superó a tu guerrero. ¡Sube de nivel o forja un arma más fuerte!`);
-            }
-
-            renderCharacters();
-            updateCombatView();
-        }
-
-        function updateBalance() {
-            document.getElementById('manguaBalance').innerText = balance.toLocaleString();
-        }
-
-        function logCombat(msg) {
-            const logBox = document.getElementById('combatLog');
-            logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
-        }
-
-        // CONEXIÓN WEB3
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    const signer = provider.getSigner();
-                    const addr = await signer.getAddress();
-                    document.getElementById('connectWallet').innerText = addr.substring(0, 6) + "..." + addr.substring(38);
-                    logCombat(`Billetera conectada: ${addr}`);
-                } catch(e) {
-                    alert("Error conectando billetera");
-                }
-            } else {
-                alert("Por favor abre la web desde Binance Web3 Wallet o MetaMask Mobile");
-            }
-        }
-
-        // INICIALIZAR
-        renderCharacters();
-        renderWeapons();
-    </script>
-</body>
-</html>
+            const container = document.getElementById(
