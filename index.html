@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ManguaBlades - Web3 RPG ⚔️</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         :root {
             --bg-color: #0b0e11;
@@ -22,19 +23,20 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
+            user-select: none;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
+            padding: 12px 20px;
             background-color: #12161c;
             border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--primary);
         }
@@ -42,32 +44,32 @@
         .wallet-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .balance {
             background: #2b2f36;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .btn-connect {
             background-color: var(--primary);
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 14px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 12px;
         }
 
         nav {
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            justify-content: space-around;
             background-color: #181a20;
-            padding: 10px;
+            padding: 8px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -75,9 +77,9 @@
             background: none;
             border: none;
             color: #848e9c;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            padding: 10px 20px;
+            padding: 8px 12px;
             cursor: pointer;
         }
 
@@ -88,23 +90,33 @@
 
         .container {
             max-width: 1100px;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .actions-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .btn-action {
             background: var(--primary);
             color: #000;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 18px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
@@ -112,56 +124,58 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
         }
 
         .card {
             background: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             position: relative;
-            transition: transform 0.2s;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .card.selected {
+            box-shadow: 0 0 15px var(--primary);
         }
 
         .card.fire { border-color: var(--fire); }
         .card.water { border-color: var(--water); }
+        .card.earth { border-color: var(--earth); }
+        .card.lightning { border-color: var(--lightning); }
 
         .element-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: bold;
-            margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .badge-fire { background: var(--fire); color: #fff; }
         .badge-water { background: var(--water); color: #fff; }
+        .badge-earth { background: var(--earth); color: #000; }
+        .badge-lightning { background: var(--lightning); color: #fff; }
 
         .avatar-placeholder {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background: #2b2f36;
-            margin: 15px auto;
+            margin: 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 35px;
         }
 
         .stats-list {
             text-align: left;
-            margin: 15px 0;
-            font-size: 14px;
+            margin: 10px 0;
+            font-size: 13px;
             color: #eaecef;
         }
 
@@ -170,73 +184,364 @@
             background: #2b2f36;
             color: #fff;
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 13px;
         }
 
         .btn-card:hover {
             background: var(--primary);
             color: #000;
         }
+
+        /* COMBATE UI */
+        .battle-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .enemy-card {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-fight {
+            background: #da3633;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .log-box {
+            background: #000;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #0ecb81;
+            height: 100px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- HEADER -->
     <header>
         <div class="logo">MANGUABLADES ⚔️</div>
         <div class="wallet-info">
-            <div class="balance">💰 Saldo: <strong>1,250 $MANGUA</strong></div>
-            <button class="btn-connect" id="connectWallet">Conectar Web3</button>
+            <div class="balance">💰 <span id="manguaBalance">2,500</span> $MANGUA</div>
+            <button class="btn-connect" id="connectWallet" onclick="connectWallet()">Conectar Web3</button>
         </div>
     </header>
 
+    <!-- NAVEGACIÓN -->
     <nav>
-        <button class="nav-btn active" onclick="switchTab('plaza')">🏛️ Plaza</button>
-        <button class="nav-btn" onclick="switchTab('herreria')">🔨 Herrería</button>
-        <button class="nav-btn" onclick="switchTab('combate')">⚔️ Combate</button>
-        <button class="nav-btn" onclick="switchTab('mercado')">🛒 Mercado</button>
+        <button class="nav-btn active" id="btn-plaza" onclick="switchTab('plaza')">🏛️ Plaza</button>
+        <button class="nav-btn" id="btn-herreria" onclick="switchTab('herreria')">🔨 Herrería</button>
+        <button class="nav-btn" id="btn-combate" onclick="switchTab('combate')">⚔️ Combate</button>
+        <button class="nav-btn" id="btn-mercado" onclick="switchTab('mercado')">🛒 Mercado</button>
     </nav>
 
     <div class="container">
-        <div class="actions-bar">
-            <h2>Tus Personajes NFT (2/4)</h2>
-            <button class="btn-action">Reclutar Personaje (1,000 $MANGUA)</button>
+
+        <!-- TAB PLAZA -->
+        <div id="tab-plaza" class="tab-content active">
+            <div class="actions-bar">
+                <h2>Tus Personajes NFT (<span id="charCount">2</span>/4)</h2>
+                <button class="btn-action" onclick="mintCharacter()">Reclutar Personaje (1,000 $MANGUA)</button>
+            </div>
+            <div class="grid" id="charactersContainer"></div>
         </div>
 
-        <div class="grid">
-            <div class="card fire">
-                <span class="element-badge badge-fire">🔥 Fuego</span>
-                <div class="avatar-placeholder">🧑‍🚀</div>
-                <h3>Caminante #001</h3>
-                <div class="stats-list">
-                    <p>⚡ <strong>Poder Base:</strong> 1,280 PWR</p>
-                    <p>⭐ <strong>Nivel:</strong> Nivel 2</p>
-                    <p>🔋 <strong>Energía:</strong> 200/200</p>
-                </div>
-                <button class="btn-card">Seleccionar para Batalla</button>
+        <!-- TAB HERRERÍA -->
+        <div id="tab-herreria" class="tab-content">
+            <div class="actions-bar">
+                <h2>Herrería / Armas NFT</h2>
+                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma (500 $MANGUA)</button>
+            </div>
+            <div class="grid" id="weaponsContainer"></div>
+        </div>
+
+        <!-- TAB COMBATE -->
+        <div id="tab-combate" class="tab-content">
+            <h2>⚔️ Arena de Combate PVE</h2>
+            <div class="battle-panel">
+                <h3>1. Personaje Seleccionado</h3>
+                <p id="selectedHeroText">Ningún personaje seleccionado en la Plaza.</p>
+                <h3>2. Arma Equipada</h3>
+                <p id="selectedWeaponText">Ninguna arma equipada.</p>
             </div>
 
-            <div class="card water">
-                <span class="element-badge badge-water">💧 Agua</span>
-                <div class="avatar-placeholder">🛡️</div>
-                <h3>Guardian #002</h3>
-                <div class="stats-list">
-                    <p>⚡ <strong>Poder Base:</strong> 1,050 PWR</p>
-                    <p>⭐ <strong>Nivel:</strong> Nivel 1</p>
-                    <p>🔋 <strong>Energía:</strong> 160/200</p>
-                </div>
-                <button class="btn-card">Seleccionar para Batalla</button>
-            </div>
+            <h3>3. Selecciona un Oponente</h3>
+            <div id="enemiesContainer"></div>
+
+            <h3>📜 Registro de Batalla</h3>
+            <div class="log-box" id="combatLog">Bienvenido a la Arena de ManguaBlades. Selecciona un guerrero para luchar.</div>
         </div>
+
+        <!-- TAB MERCADO -->
+        <div id="tab-mercado" class="tab-content">
+            <h2>🛒 Bazaar NFT</h2>
+            <p>Mercado P2P en construcción. Pronto podrás comprar y vender tus Personajes y Armas por $MANGUA.</p>
+        </div>
+
     </div>
 
     <script>
+        // ESTADO DEL JUEGO
+        let balance = 2500;
+        let selectedCharacterId = null;
+        let selectedWeaponId = null;
+
+        let characters = [
+            { id: 1, name: "Caminante #001", element: "fire", power: 1280, level: 1, energy: 200, emoji: "🧑‍🚀" },
+            { id: 2, name: "Guardián #002", element: "water", power: 1050, level: 1, energy: 200, emoji: "🛡️" }
+        ];
+
+        let weapons = [
+            { id: 1, name: "Espada de Fuego", element: "fire", powerBonus: 250, stars: 2, emoji: "🗡️" }
+        ];
+
+        let enemies = [
+            { id: 1, name: "Espectro Salvaje", element: "earth", power: 1100, reward: 150 },
+            { id: 2, name: "Gólem Volcánico", element: "water", power: 1350, reward: 220 },
+            { id: 3, name: "Bestia de Rayo", element: "fire", power: 1500, reward: 300 }
+        ];
+
+        // CAMBIO DE PESTAÑAS
         function switchTab(tabName) {
-            alert("Navegando a la sección: " + tabName.toUpperCase());
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('btn-' + tabName).classList.add('active');
+
+            if(tabName === 'combate') updateCombatView();
         }
+
+        // RENDERIZAR PERSONAJES
+        function renderCharacters() {
+            const container = document.getElementById('charactersContainer');
+            container.innerHTML = '';
+            document.getElementById('charCount').innerText = characters.length;
+
+            characters.forEach(c => {
+                const isSelected = selectedCharacterId === c.id;
+                container.innerHTML += `
+                    <div class="card ${c.element} ${isSelected ? 'selected' : ''}">
+                        <span class="element-badge badge-${c.element}">${c.element}</span>
+                        <div class="avatar-placeholder">${c.emoji}</div>
+                        <h3>${c.name}</h3>
+                        <div class="stats-list">
+                            <p>⚡ <strong>Poder Base:</strong> ${c.power} PWR</p>
+                            <p>⭐ <strong>Nivel:</strong> Nivel ${c.level}</p>
+                            <p>🔋 <strong>Energía:</strong> ${c.energy}/200</p>
+                        </div>
+                        <button class="btn-card" onclick="selectHero(${c.id})">
+                            ${isSelected ? '✅ Seleccionado' : 'Seleccionar para Batalla'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // RENDERIZAR ARMAS
+        function renderWeapons() {
+            const container = document.getElementById('weaponsContainer');
+            container.innerHTML = '';
+
+            weapons.forEach(w => {
+                const isSelected = selectedWeaponId === w.id;
+                container.innerHTML += `
+                    <div class="card ${w.element} ${isSelected ? 'selected' : ''}">
+                        <span class="element-badge badge-${w.element}">${'⭐'.repeat(w.stars)}</span>
+                        <div class="avatar-placeholder">${w.emoji}</div>
+                        <h3>${w.name}</h3>
+                        <div class="stats-list">
+                            <p>⚔️ <strong>Bono Poder:</strong> +${w.powerBonus} PWR</p>
+                            <p>🔥 <strong>Elemento:</strong> ${w.element}</p>
+                        </div>
+                        <button class="btn-card" onclick="selectWeapon(${w.id})">
+                            ${isSelected ? '✅ Equipada' : 'Equipar Arma'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // RECLUTAR PERSONAJE
+        function mintCharacter() {
+            if(balance < 1000) { alert("Saldo insuficiente de $MANGUA"); return; }
+            if(characters.length >= 4) { alert("Límite de 4 personajes alcanzado."); return; }
+
+            balance -= 1000;
+            const elements = ['fire', 'water', 'earth', 'lightning'];
+            const emojis = ['🥷', '🧙‍♂️', '🧝‍♀️', '🧛‍♂️'];
+            const randElem = elements[Math.floor(Math.random() * elements.length)];
+            const randEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const newPower = 1000 + Math.floor(Math.random() * 500);
+
+            const newChar = {
+                id: Date.now(),
+                name: `Guerrero #${characters.length + 1}`,
+                element: randElem,
+                power: newPower,
+                level: 1,
+                energy: 200,
+                emoji: randEmoji
+            };
+
+            characters.push(newChar);
+            updateBalance();
+            renderCharacters();
+            logCombat(`¡Has reclutado un nuevo NFT (${newChar.name}) con ${newPower} PWR!`);
+        }
+
+        // FORJAR ARMA
+        function forgeWeapon() {
+            if(balance < 500) { alert("Saldo insuficiente de $MANGUA"); return; }
+
+            balance -= 500;
+            const elements = ['fire', 'water', 'earth', 'lightning'];
+            const randElem = elements[Math.floor(Math.random() * elements.length)];
+            const stars = Math.floor(Math.random() * 3) + 1;
+            const bonus = stars * 150 + Math.floor(Math.random() * 100);
+
+            const newWeapon = {
+                id: Date.now(),
+                name: `Arma de ${randElem}`,
+                element: randElem,
+                powerBonus: bonus,
+                stars: stars,
+                emoji: "⚔️"
+            };
+
+            weapons.push(newWeapon);
+            updateBalance();
+            renderWeapons();
+            logCombat(`¡Has forjado una nueva Arma ${stars}★ (+${bonus} PWR)!`);
+        }
+
+        // SELECCIONES
+        function selectHero(id) {
+            selectedCharacterId = id;
+            renderCharacters();
+            updateCombatView();
+        }
+
+        function selectWeapon(id) {
+            selectedWeaponId = id;
+            renderWeapons();
+            updateCombatView();
+        }
+
+        function updateCombatView() {
+            const hero = characters.find(c => c.id === selectedCharacterId);
+            const weapon = weapons.find(w => w.id === selectedWeaponId);
+
+            document.getElementById('selectedHeroText').innerHTML = hero ? 
+                `<strong>${hero.name}</strong> (${hero.element.toUpperCase()}) - ${hero.power} PWR` : "Ninguno";
+            
+            document.getElementById('selectedWeaponText').innerHTML = weapon ? 
+                `<strong>${weapon.name}</strong> - +${weapon.powerBonus} PWR` : "Ninguna";
+
+            renderEnemies();
+        }
+
+        // RENDERIZAR ENEMIGOS
+        function renderEnemies() {
+            const container = document.getElementById('enemiesContainer');
+            container.innerHTML = '';
+
+            enemies.forEach(e => {
+                container.innerHTML += `
+                    <div class="enemy-card">
+                        <div>
+                            <strong>😈 ${e.name}</strong> (${e.element.toUpperCase()})<br>
+                            ⚡ Poder: ${e.power} PWR | 🏆 Recompensa: +${e.reward} $MANGUA
+                        </div>
+                        <button class="btn-fight" onclick="fight(${e.id})">⚔️ Luchar</button>
+                    </div>
+                `;
+            });
+        }
+
+        // LÓGICA DE COMBATE
+        function fight(enemyId) {
+            const hero = characters.find(c => c.id === selectedCharacterId);
+            if(!hero) { alert("¡Selecciona un personaje en la Plaza primero!"); return; }
+            if(hero.energy < 40) { alert("Energía insuficiente."); return; }
+
+            const weapon = weapons.find(w => w.id === selectedWeaponId);
+            const enemy = enemies.find(e => e.id === enemyId);
+
+            hero.energy -= 40;
+            let totalPower = hero.power + (weapon ? weapon.powerBonus : 0);
+
+            // Probabilidad de victoria
+            let winChance = Math.min(80, Math.floor((totalPower / enemy.power) * 50));
+            let roll = Math.floor(Math.random() * 100);
+
+            if(roll < winChance) {
+                balance += enemy.reward;
+                hero.power += 25; // Sube poder por victoria
+                updateBalance();
+                logCombat(`🎉 ¡VICTORIA! ${hero.name} derrotó a ${enemy.name}. Ganaste +${enemy.reward} $MANGUA y +25 PWR.`);
+            } else {
+                logCombat(`💥 DERROTA... ${enemy.name} superó a tu guerrero. ¡Sube de nivel o forja un arma más fuerte!`);
+            }
+
+            renderCharacters();
+            updateCombatView();
+        }
+
+        function updateBalance() {
+            document.getElementById('manguaBalance').innerText = balance.toLocaleString();
+        }
+
+        function logCombat(msg) {
+            const logBox = document.getElementById('combatLog');
+            logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
+        }
+
+        // CONEXIÓN WEB3
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    const signer = provider.getSigner();
+                    const addr = await signer.getAddress();
+                    document.getElementById('connectWallet').innerText = addr.substring(0, 6) + "..." + addr.substring(38);
+                    logCombat(`Billetera conectada: ${addr}`);
+                } catch(e) {
+                    alert("Error conectando billetera");
+                }
+            } else {
+                alert("Por favor abre la web desde Binance Web3 Wallet o MetaMask Mobile");
+            }
+        }
+
+        // INICIALIZAR
+        renderCharacters();
+        renderWeapons();
     </script>
 </body>
-  </html>
-  
+</html>
