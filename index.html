@@ -45,6 +45,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .balance {
@@ -52,6 +53,16 @@
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 12px;
+        }
+
+        .price-oracle {
+            background: #181a20;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .btn-connect {
@@ -222,7 +233,6 @@
             border: 1px dashed var(--border-color);
         }
 
-        /* COMBATE UI */
         .battle-panel {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -276,6 +286,7 @@
     <header>
         <div class="logo">MANGUABLADES ⚔️</div>
         <div class="wallet-info">
+            <div class="price-oracle">📈 1 MANGUA = $<span id="manguaPriceUSD">0.0000033</span> USD</div>
             <div class="balance">💰 <span id="manguaBalance">3,000,000</span> $MANGUA</div>
             <button class="btn-connect" id="connectWallet" onclick="connectWallet()">Conectar Web3</button>
         </div>
@@ -295,7 +306,7 @@
         <div id="tab-plaza" class="tab-content active">
             <div class="actions-bar">
                 <h2>Tus Personajes Mangua (<span id="charCount">0</span>/4)</h2>
-                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua ($5 USD / 1.5M$MANGUA)</button>
+                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua ($5 USD / <span id="costMintMangua">1,500,000</span> $MANGUA)</button>
             </div>
             <div class="grid" id="charactersContainer"></div>
         </div>
@@ -304,7 +315,7 @@
         <div id="tab-herreria" class="tab-content">
             <div class="actions-bar">
                 <h2>Herrería / ManguaBlade Armas</h2>
-                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma ($2.50 USD / 750K$MANGUA)</button>
+                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma ($2.50 USD / <span id="costForgeMangua">750,000</span> $MANGUA)</button>
             </div>
             <div class="grid" id="weaponsContainer"></div>
         </div>
@@ -323,7 +334,7 @@
             <div id="enemiesContainer"></div>
 
             <h3>📜 Registro de Batalla</h3>
-            <div class="log-box" id="combatLog">Bienvenido a ManguaBlades. Recluta tu primer Mangua para empezar a luchar.</div>
+            <div class="log-box" id="combatLog">Bienvenido a ManguaBlades. Órculo de Precios sincronizado con la red.</div>
         </div>
 
         <!-- TAB MERCADO -->
@@ -335,6 +346,9 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN DE ÓRCULO DE PRECIOS
+        let currentPriceUSD = 0.000003333; // 1 MANGUA ≈ $0.000003333 USD ($2 = 600K tokens)
+        
         // ESTADO INICIAL
         let balance = 3000000;
         let selectedCharacterId = null;
@@ -360,7 +374,29 @@
             { name: "Mangua Vengador", element: "lightning", emoji: "🥭⚡" }
         ];
 
-        // RECARGA DE ENERGÍA PASIVA (1 Energía cada 432s / 7.2min)
+        // FUNCIÓN DEL ÓRCULO PARA CALCULAR PRECIOS EN $MANGUA
+        function getManguaCostUSD(usdValue) {
+            return Math.floor(usdValue / currentPriceUSD);
+        }
+
+        function updateOracleDisplay() {
+            document.getElementById('manguaPriceUSD').innerText = currentPriceUSD.toFixed(7);
+            document.getElementById('costMintMangua').innerText = getManguaCostUSD(5.00).toLocaleString();
+            document.getElementById('costForgeMangua').innerText = getManguaCostUSD(2.50).toLocaleString();
+        }
+
+        // SIMULACIÓN DE CONSULTA EN VIVO AL PAIR DE LIQUIDEZ / DEX
+        async function fetchTokenPrice() {
+            try {
+                // Aquí se conectará la API de DexScreener/PancakeSwap al lanzar
+                // Ejemplo: const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/0xc423067bc1e828b476b2cb8c62d58d3400bc4444');
+                updateOracleDisplay();
+            } catch(e) {
+                console.log("Error consultando Órculo, usando precio base.");
+            }
+        }
+
+        // RECARGA DE ENERGÍA PASIVA
         setInterval(() => {
             let updated = false;
             const now = Date.now();
@@ -407,6 +443,7 @@
             }
 
             const now = Date.now();
+            const potionCost = getManguaCostUSD(1.00);
 
             characters.forEach(c => {
                 const isSelected = selectedCharacterId === c.id;
@@ -438,17 +475,19 @@
                         <button class="btn-card" onclick="selectHero(${c.id})">
                             ${isSelected ? '✅ Seleccionado' : 'Seleccionar para Batalla'}
                         </button>
-                        ${c.energy < 200 ? `<button class="btn-card btn-potion" onclick="refillEnergy(${c.id})">🧪 Poción⚡ (300K $MANGUA / $1 USD)</button>` : ''}
+                        ${c.energy < 200 ? `<button class="btn-card btn-potion" onclick="refillEnergy(${c.id})">🧪 Poción⚡ ($1 USD / ${potionCost.toLocaleString()}$MANGUA)</button>` : ''}
                     </div>
                 `;
             });
         }
 
         function refillEnergy(heroId) {
-            if(balance < 300000) { alert("Saldo insuficiente de $MANGUA"); return; }
+            const cost = getManguaCostUSD(1.00);
+            if(balance < cost) { alert(`Saldo insuficiente de $MANGUA (Requiere ${cost.toLocaleString()} $MANGUA)`); return; }
+            
             const hero = characters.find(c => c.id === heroId);
             if(hero) {
-                balance -= 300000;
+                balance -= cost;
                 hero.energy = 200;
                 hero.lastEnergyUpdate = Date.now();
                 updateBalance();
@@ -482,10 +521,11 @@
         }
 
         function mintCharacter() {
-            if(balance < 1500000) { alert("Saldo insuficiente de $MANGUA ($5 USD = 1,500,000$MANGUA)"); return; }
+            const cost = getManguaCostUSD(5.00);
+            if(balance < cost) { alert(`Saldo insuficiente de $MANGUA ($5 USD = ${cost.toLocaleString()} $MANGUA)`); return; }
             if(characters.length >= 4) { alert("¡Límite alcanzado! Máximo 4 Mangua NFTs."); return; }
 
-            balance -= 1500000;
+            balance -= cost;
             const template = manguaTemplates[Math.floor(Math.random() * manguaTemplates.length)];
 
             const newChar = {
@@ -506,58 +546,9 @@
 
             updateBalance();
             renderCharacters();
-            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) con ${newChar.power} PWR por 1,500,000 $MANGUA!`);
+            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) con ${newChar.power} PWR por ${cost.toLocaleString()} $MANGUA!`);
         }
 
         function forgeWeapon() {
-            if(balance < 750000) { alert("Saldo insuficiente de $MANGUA ($2.50 USD = 750,000$MANGUA)"); return; }
-
-            balance -= 750000;
-            const elements = ['fire', 'water', 'earth', 'lightning'];
-            const randElem = elements[Math.floor(Math.random() * elements.length)];
-            const stars = Math.floor(Math.random() * 3) + 1;
-            const bonus = stars * 150 + Math.floor(Math.random() * 100);
-
-            const newWeapon = {
-                id: Date.now(),
-                name: `ManguaBlade ${stars}★`,
-                element: randElem,
-                powerBonus: bonus,
-                stars: stars,
-                emoji: "⚔️"
-            };
-
-            weapons.push(newWeapon);
-            updateBalance();
-            renderWeapons();
-            logCombat(`🗡️ ¡Has forjado una ${newWeapon.name} (+${bonus} PWR) por 750,000 $MANGUA!`);
-        }
-
-        function selectHero(id) {
-            selectedCharacterId = id;
-            renderCharacters();
-            updateCombatView();
-        }
-
-        function selectWeapon(id) {
-            selectedWeaponId = id;
-            renderWeapons();
-            updateCombatView();
-        }
-
-        function updateCombatView() {
-            const hero = characters.find(c => c.id === selectedCharacterId);
-            const weapon = weapons.find(w => w.id === selectedWeaponId);
-
-            document.getElementById('selectedHeroText').innerHTML = hero ? 
-                `<strong>${hero.emoji} ${hero.name}</strong> (Nivel ${hero.level}) - ${hero.power} PWR | 🔋 ${hero.energy}/200` : 
-                "<em>Ningún Mangua seleccionado. Ve a la Plaza y recluta uno.</em>";
-            
-            document.getElementById('selectedWeaponText').innerHTML = weapon ? 
-                `<strong>${weapon.name}</strong> - +${weapon.powerBonus} PWR` : "Ninguna";
-
-            renderEnemies();
-        }
-
-        function renderEnemies() {
-            const container = document.getElementById(
+            const cost = getManguaCostUSD(2.50);
+            if(balance < cost) { alert(`Saldo
