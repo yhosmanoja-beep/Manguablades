@@ -14,7 +14,7 @@
             --fire: #ff4d4d;
             --water: #00b8d9;
             --earth: #ffab00;
-            --lightning: #6554c0;
+            --lightning: #9b51e0;
         }
 
         body {
@@ -39,6 +39,7 @@
             font-size: 18px;
             font-weight: bold;
             color: var(--primary);
+            text-shadow: 0 0 8px rgba(240, 185, 11, 0.4);
         }
 
         .wallet-info {
@@ -74,7 +75,10 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
+            transition: transform 0.2s;
         }
+
+        .btn-connect:active { transform: scale(0.95); }
 
         nav {
             display: flex;
@@ -105,13 +109,8 @@
             padding: 0 15px;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .actions-bar {
             display: flex;
@@ -131,6 +130,7 @@
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
+            box-shadow: 0 0 10px rgba(240, 185, 11, 0.2);
         }
 
         .grid {
@@ -146,16 +146,44 @@
             padding: 15px;
             text-align: center;
             position: relative;
+            transition: all 0.3s ease;
         }
 
         .card.selected {
             box-shadow: 0 0 15px var(--primary);
+            border-color: var(--primary);
         }
 
-        .card.fire { border-color: var(--fire); }
-        .card.water { border-color: var(--water); }
-        .card.earth { border-color: var(--earth); }
-        .card.lightning { border-color: var(--lightning); }
+        /* EFECTOS DE RARIDAD DE ARMAS */
+        .stars-1 { border-color: #a0a0a0; }
+        .stars-2 { 
+            border-color: #00b8d9; 
+            box-shadow: 0 0 10px rgba(0, 184, 217, 0.3);
+        }
+        .stars-3 { 
+            border-color: #f0b90b; 
+            box-shadow: 0 0 18px rgba(240, 185, 11, 0.5);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(240, 185, 11, 0.4); }
+            100% { box-shadow: 0 0 22px rgba(240, 185, 11, 0.8); }
+        }
+
+        /* ANIMACIÓN DE IMPACTO DE COMBATE */
+        .shake {
+            animation: shakeAnim 0.4s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-8px) rotate(-2deg); }
+            40% { transform: translateX(8px) rotate(2deg); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
 
         .element-badge {
             display: inline-block;
@@ -181,6 +209,7 @@
             align-items: center;
             justify-content: center;
             font-size: 35px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
 
         .stats-list {
@@ -199,8 +228,8 @@
             margin-top: 4px;
         }
 
-        .xp-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.3s; }
-        .energy-bar-fill { background: #0ecb81; height: 100%; width: 100%; transition: width 0.3s; }
+        .xp-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.4s ease; }
+        .energy-bar-fill { background: #0ecb81; height: 100%; width: 100%; transition: width 0.4s ease; }
 
         .timer-text {
             font-size: 11px;
@@ -251,6 +280,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: transform 0.2s;
         }
 
         .enemy-card.locked { opacity: 0.5; }
@@ -263,9 +293,10 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
+            box-shadow: 0 0 8px rgba(218, 54, 51, 0.4);
         }
 
-        .btn-fight:disabled { background: #444; cursor: not-allowed; }
+        .btn-fight:disabled { background: #444; cursor: not-allowed; box-shadow: none; }
 
         .log-box {
             background: #000;
@@ -283,7 +314,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header>
         <div class="logo">MANGUABLADES ⚔️</div>
         <div class="wallet-info">
@@ -293,7 +323,6 @@
         </div>
     </header>
 
-    <!-- NAVEGACIÓN -->
     <nav>
         <button class="nav-btn active" id="btn-plaza" onclick="switchTab('plaza')">🏛️ Plaza</button>
         <button class="nav-btn" id="btn-herreria" onclick="switchTab('herreria')">🔨 Herrería</button>
@@ -303,7 +332,6 @@
 
     <div class="container">
 
-        <!-- TAB PLAZA -->
         <div id="tab-plaza" class="tab-content active">
             <div class="actions-bar">
                 <h2>Tus Personajes Mangua (<span id="charCount">0</span>/4)</h2>
@@ -312,7 +340,6 @@
             <div class="grid" id="charactersContainer"></div>
         </div>
 
-        <!-- TAB HERRERÍA -->
         <div id="tab-herreria" class="tab-content">
             <div class="actions-bar">
                 <h2>Herrería / ManguaBlade Armas</h2>
@@ -321,7 +348,6 @@
             <div class="grid" id="weaponsContainer"></div>
         </div>
 
-        <!-- TAB COMBATE -->
         <div id="tab-combate" class="tab-content">
             <h2>⚔️ Arena de Batalla Mangua (Niveles 1 a 30)</h2>
             <div class="battle-panel">
@@ -335,10 +361,9 @@
             <div id="enemiesContainer"></div>
 
             <h3>📜 Registro de Batalla</h3>
-            <div class="log-box" id="combatLog">Bienvenido a ManguaBlades. Órculo de Precios sincronizado con la red.</div>
+            <div class="log-box" id="combatLog">Bienvenido a ManguaBlades. Órculo de Precios sincronizado.</div>
         </div>
 
-        <!-- TAB MERCADO -->
         <div id="tab-mercado" class="tab-content">
             <h2>🛒 Mercado Mangua NFT</h2>
             <p>Comercio P2P en desarrollo. Próximamente podrás comprar y vender tus Manguas por $MANGUA.</p>
@@ -488,7 +513,7 @@
             weapons.forEach(w => {
                 const isSelected = selectedWeaponId === w.id;
                 container.innerHTML += `
-                    <div class="card ${w.element} ${isSelected ? 'selected' : ''}">
+                    <div class="card stars-${w.stars} ${isSelected ? 'selected' : ''}">
                         <span class="element-badge badge-${w.element}">${'⭐'.repeat(w.stars)}</span>
                         <div class="avatar-placeholder">${w.emoji}</div>
                         <h3>${w.name}</h3>
@@ -549,7 +574,7 @@
                 element: randElem,
                 powerBonus: bonus,
                 stars: stars,
-                emoji: "⚔️"
+                emoji: stars === 3 ? "🗡️✨" : "⚔️"
             };
 
             weapons.push(newWeapon);
@@ -595,7 +620,7 @@
             enemies.forEach(e => {
                 const canFight = currentLevel >= e.minLevel && currentEnergy >= 40;
                 container.innerHTML += `
-                    <div class="enemy-card ${!canFight ? 'locked' : ''}">
+                    <div class="enemy-card ${!canFight ? 'locked' : ''}" id="enemy-card-${e.id}">
                         <div>
                             <strong>😈 ${e.name}</strong> (${e.element.toUpperCase()})<br>
                             🔒 Req: Nivel ${e.minLevel}+ | ⚡ Poder: ${e.power} PWR<br>
@@ -613,6 +638,13 @@
             const hero = characters.find(c => c.id === selectedCharacterId);
             if(!hero) { alert("¡Debes reclutar y seleccionar un Mangua en la Plaza!"); return; }
             if(hero.energy < 40) { alert("Energía insuficiente. Necesitas 40 de Energía."); return; }
+
+            // Animación de impacto en la tarjeta del monstruo
+            const cardEl = document.getElementById(`enemy-card-${enemyId}`);
+            if(cardEl) {
+                cardEl.classList.add('shake');
+                setTimeout(() => cardEl.classList.remove('shake'), 400);
+            }
 
             const weapon = weapons.find(w => w.id === selectedWeaponId);
             const enemy = enemies.find(e => e.id === enemyId);
