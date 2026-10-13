@@ -436,11 +436,12 @@
             <button class="modal-btn" onclick="closeModal()">¡Excelente!</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentPriceUSD = 0.000003333;
         let balance = 3000000;
         let selectedCharacterId = null;
         let selectedWeaponId = null;
+        let winStreak = 0; // Contador de racha de victorias
 
         let characters = [];
 
@@ -448,12 +449,29 @@
             { id: 1, name: "Hoja Manguera", element: "fire", powerBonus: 200, stars: 1, emoji: "🗡️" }
         ];
 
-        let enemies = [
-            { id: 1, name: "Plaga de Manguas Podridas", minLevel: 1, element: "earth", power: 900, reward: 40000 },
-            { id: 2, name: "Duende Cosechador", minLevel: 5, element: "water", power: 1300, reward: 90000 },
-            { id: 3, name: "Gólem Volcánico", minLevel: 12, element: "fire", power: 1850, reward: 180000 },
-            { id: 4, name: "Mangua Dragón Legendario 👑", minLevel: 22, element: "lightning", power: 2600, reward: 450000 }
-        ];
+        // 👹 MONSTRUOS NIVEL POR NIVEL (1 AL 30)
+        const monsterNames = ["Plaga Podrida", "Espectro", "Duende Sombrío", "Bestia Rabiosa", "Guardián Pantano", "Nigromante", "Gólem Rock", "Dragón Menor", "Titan Mangua"];
+        const elementsList = ["earth", "fire", "water", "lightning"];
+
+        let enemies = [];
+        for (let lvl = 1; lvl <= 30; lvl++) {
+            let elem = elementsList[(lvl - 1) % elementsList.length];
+            let nameIdx = (lvl - 1) % monsterNames.length;
+            let basePower = 850 + (lvl * 65);
+            
+            // Recompensa en USD calibrada para ROI de 18-25 días ($0.033 a $0.15)
+            let rewardUSD = 0.033 + (lvl * 0.004); 
+            let rewardMangua = Math.floor(rewardUSD / currentPriceUSD);
+
+            enemies.push({
+                id: lvl,
+                name: `${monsterNames[nameIdx]} Stalker`,
+                minLevel: lvl,
+                element: elem,
+                power: basePower,
+                reward: rewardMangua
+            });
+        }
 
         const manguaTemplates = [
             { name: "Manguito Guerrero", element: "fire", emoji: "🥭⚔️" },
@@ -510,12 +528,7 @@
         }
 
         function checkElementAdvantage(heroElem, enemyElem) {
-            const chart = {
-                fire: 'earth',
-                earth: 'lightning',
-                lightning: 'water',
-                water: 'fire'
-            };
+            const chart = { fire: 'earth', earth: 'lightning', lightning: 'water', water: 'fire' };
             return chart[heroElem] === enemyElem;
         }
 
@@ -542,13 +555,10 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById('tab-' + tabName).classList.add('active');
             document.getElementById('btn-' + tabName).classList.add('active');
-
             if(tabName === 'combate') updateCombatView();
         }
-
         function renderCharacters() {
             const container = document.getElementById('charactersContainer');
             container.innerHTML = '';
@@ -580,6 +590,13 @@
                     timerDisplay = `⏳ +1⚡ en ${mins}:${secs < 10 ? '0' : ''}${secs}`;
                 }
 
+                // Indicador de tarifa de evolución cada 5 niveles
+                let evolutionNotice = "";
+                if (c.level % 5 === 0 && c.xp >= c.maxXp && c.level < 30) {
+                    const evoCost = getManguaCostUSD(0.50);
+                    evolutionNotice = `<p style="color:#f0b90b; font-weight:bold;">⚠️ Requiere Ascensión: ${evoCost.toLocaleString()} $MANGUA ($0.50 USD)</p>`;
+                }
+
                 container.innerHTML += `
                     <div class="card ${c.element} ${isSelected ? 'selected' : ''}">
                         <span class="element-badge badge-${c.element}">${c.element}</span>
@@ -593,6 +610,7 @@
                             <p>🔋 <strong>Energía:</strong> ${c.energy}/200</p>
                             <div class="energy-bar-bg"><div class="energy-bar-fill" style="width: ${energyPercent}%"></div></div>
                             <div class="timer-text">${timerDisplay}</div>
+                            ${evolutionNotice}
                         </div>
                         <button class="btn-card" onclick="selectHero(${c.id})">
                             ${isSelected ? '✅ Seleccionado' : 'Seleccionar para Batalla'}
@@ -654,10 +672,10 @@
                 id: Date.now(),
                 name: `${template.name} #${characters.length + 1}`,
                 element: template.element,
-                power: 800 + Math.floor(Math.random() * 150),
+                power: 800 + Math.floor(Math.random() * 100),
                 level: 1,
                 xp: 0,
-                                maxXp: 100,
+                maxXp: 100,
                 energy: 200,
                 lastEnergyUpdate: Date.now(),
                 emoji: template.emoji
@@ -668,7 +686,7 @@
 
             updateBalance();
             renderCharacters();
-            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) con ${newChar.power} PWR por ${cost.toLocaleString()} $MANGUA!`);
+            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) por ${cost.toLocaleString()} $MANGUA!`);
         }
 
         function forgeWeapon() {
@@ -679,7 +697,7 @@
             const elements = ['fire', 'water', 'earth', 'lightning'];
             const randElem = elements[Math.floor(Math.random() * elements.length)];
             const stars = Math.floor(Math.random() * 3) + 1;
-            const bonus = stars * 150 + Math.floor(Math.random() * 100);
+            const bonus = stars * 120 + Math.floor(Math.random() * 80);
 
             const newWeapon = {
                 id: Date.now(),
@@ -696,17 +714,8 @@
             logCombat(`🗡️ ¡Has forjado una ${newWeapon.name} (+${bonus} PWR) por ${cost.toLocaleString()} $MANGUA!`);
         }
 
-        function selectHero(id) {
-            selectedCharacterId = id;
-            renderCharacters();
-            updateCombatView();
-        }
-
-        function selectWeapon(id) {
-            selectedWeaponId = id;
-            renderWeapons();
-            updateCombatView();
-        }
+        function selectHero(id) { selectedCharacterId = id; renderCharacters(); updateCombatView(); }
+        function selectWeapon(id) { selectedWeaponId = id; renderWeapons(); updateCombatView(); }
 
         function updateCombatView() {
             const hero = characters.find(c => c.id === selectedCharacterId);
@@ -744,16 +753,14 @@
                 const hasEnergyUltimate = currentEnergy >= 60;
 
                 let advantageText = "";
-                if (hero) {
-                    if (checkElementAdvantage(hero.element, e.element)) {
-                        advantageText = `<br><span style="color: #0ecb81; font-weight: bold;">⚡ ¡Superventaja Elemental (+25%)!</span>`;
-                    }
+                if (hero && checkElementAdvantage(hero.element, e.element)) {
+                    advantageText = `<br><span style="color: #0ecb81; font-weight: bold;">⚡ ¡Superventaja Elemental (+25%)!</span>`;
                 }
 
                 container.innerHTML += `
                     <div class="enemy-card ${!canFight ? 'locked' : ''}" id="enemy-card-${e.id}">
                         <div>
-                            <strong>😈 ${e.name}</strong> (${e.element.toUpperCase()})<br>
+                            <strong>😈 ${e.name} (Nivel ${e.minLevel})</strong> [${e.element.toUpperCase()}]<br>
                             🔒 Req: Nivel ${e.minLevel}+ | ⚔️ Poder: ${e.power} PWR<br>
                             🏆 Recompensa: +${e.reward.toLocaleString()} $MANGUA${advantageText}
                         </div>
@@ -777,14 +784,7 @@
             const energyCost = isUltimate ? 60 : 40;
             if(hero.energy < energyCost) { alert(`Energía insuficiente. Necesitas ${energyCost} de energía.`); return; }
 
-            if(isUltimate) playSound('ultimate');
-            else playSound('hit');
-
-            const cardEl = document.getElementById(`enemy-card-${enemyId}`);
-            if(cardEl) {
-                cardEl.classList.add('shake');
-                setTimeout(() => cardEl.classList.remove('shake'), 400);
-            }
+            if(isUltimate) playSound('ultimate'); else playSound('hit');
 
             const weapon = weapons.find(w => w.id === selectedWeaponId);
             const enemy = enemies.find(e => e.id === enemyId);
@@ -793,44 +793,64 @@
             hero.lastEnergyUpdate = Date.now();
 
             let totalPower = hero.power + (weapon ? weapon.powerBonus : 0);
-
             let hasAdvantage = checkElementAdvantage(hero.element, enemy.element);
-            if(hasAdvantage) {
-                totalPower = Math.floor(totalPower * 1.25);
-            }
+            if(hasAdvantage) totalPower = Math.floor(totalPower * 1.25);
 
-            let winChance = Math.min(95, Math.floor((totalPower / enemy.power) * (isUltimate ? 75 : 55)));
-            if(isUltimate) winChance = Math.max(winChance, 85);
+            let powerRatio = totalPower / enemy.power;
+            let winChance = Math.min(88, Math.floor(powerRatio * (isUltimate ? 70 : 55)));
+            if(hasAdvantage) winChance = Math.min(92, winChance + 15);
 
             let roll = Math.floor(Math.random() * 100);
 
             if(roll < winChance) {
                 playSound('victory');
+                winStreak += 1;
+
                 balance += enemy.reward;
-                let gainedXp = (isUltimate ? 60 : 40) + (enemy.minLevel * 12);
-                hero.xp += gainedXp;
+                let baseClassXp = (isUltimate ? 50 : 35) + (enemy.minLevel * 8);
+                
+                let streakBonusXp = 0;
+                if (winStreak >= 3) {
+                    streakBonusXp = Math.floor(baseClassXp * 0.10);
+                }
+                let totalGainedXp = baseClassXp + streakBonusXp;
+                hero.xp += totalGainedXp;
 
                 let levelUpText = "";
-                if(hero.xp >= hero.maxXp && hero.level < 30) {
-                    hero.level += 1;
-                    hero.xp -= hero.maxXp;
-                    hero.maxXp = Math.floor(hero.maxXp * 1.25);
-                    hero.power += 60;
-                    levelUpText = `<br><span style="color: var(--primary);">🌟 ¡SUBISTE AL NIVEL ${hero.level}! (+60 PWR)</span>`;
+
+                if (hero.xp >= hero.maxXp && hero.level < 30) {
+                    if (hero.level % 5 === 0) {
+                        const evoFee = getManguaCostUSD(0.50);
+                        if (balance >= evoFee) {
+                            balance -= evoFee;
+                            hero.level += 1;
+                            hero.xp -= hero.maxXp;
+                            hero.maxXp = Math.floor(hero.maxXp * 1.25);
+                            hero.power += 45;
+                            levelUpText = `<br><span style="color: #f0b90b;">🌟 ¡ASCENSIÓN COMPLETADA AL NIVEL ${hero.level}! (-${evoFee.toLocaleString()} $MANGUA / +45 PWR)</span>`;
+                        } else {
+                            hero.xp = hero.maxXp;
+                            levelUpText = `<br><span style="color: #f6465d;">⚠️ Requiere ${evoFee.toLocaleString()} $MANGUA para Ascender al Nivel ${hero.level + 1}.</span>`;
+                        }
+                    } else {
+                        hero.level += 1;
+                        hero.xp -= hero.maxXp;
+                        hero.maxXp = Math.floor(hero.maxXp * 1.25);
+                        hero.power += 45;
+                        levelUpText = `<br><span style="color: var(--primary);">🌟 ¡SUBISTE AL NIVEL ${hero.level}! (+45 PWR)</span>`;
+                    }
                 }
 
+                let streakMsg = streakBonusXp > 0 ? `<br><span style="color: #f0b90b;">🔥 ¡Racha de ${winStreak} Victorias! (+10% XP Extra: +${streakBonusXp} XP)</span>` : '';
+
                 updateBalance();
-                logCombat(`🎉 ¡VICTORIA (${isUltimate ? 'DEFINITIVA' : 'NORMAL'})! Derrotaste a ${enemy.name}. +${enemy.reward.toLocaleString()} $MANGUA`);
-
-                showModal("🎉 ¡VICTORIA ÉPICA!", `Has vencido a ${enemy.name} ${hasAdvantage ? '(Con ventaja elemental)' : ''}`, `
-                    💰 +${enemy.reward.toLocaleString()} $MANGUA<br>
-                    📈 +${gainedXp} XP ${levelUpText}
-                `);
-
+                logCombat(`🎉 ¡VICTORIA! Derrotaste a ${enemy.name}. +${enemy.reward.toLocaleString()} $MANGUA`);
+                showModal("🎉 ¡VICTORIA ÉPICA!", `Has vencido a ${enemy.name} (Niv. ${enemy.minLevel})`, `💰 +${enemy.reward.toLocaleString()} $MANGUA<br>📈 +${totalGainedXp} XP ${streakMsg} ${levelUpText}`);
             } else {
                 playSound('hit');
-                logCombat(`💥 DERROTA... ${enemy.name} resistió tu ataque. ¡Mejora tu arma o sube de nivel!`);
-                showModal("💥 ¡DERROTA!", `El monstruo ${enemy.name} era demasiado fuerte en esta ocasión.`, "Intenta forjar un arma de mayor nivel o reclutar más Manguas.");
+                winStreak = 0;
+                logCombat(`💥 DERROTA... ${enemy.name} resistió tu ataque. ¡Racha reiniciada!`);
+                showModal("💥 ¡DERROTA!", `El monstruo ${enemy.name} superó tu ataque.`, "Racha reiniciada. Intenta forjar un arma más potente o usar ventaja elemental.");
             }
 
             renderCharacters();
@@ -844,19 +864,11 @@
             document.getElementById('rewardModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('rewardModal').style.display = 'none';
-        }
-
-        function updateBalance() {
-            document.getElementById('manguaBalance').innerText = balance.toLocaleString();
-        }
-
+        function closeModal() { document.getElementById('rewardModal').style.display = 'none'; }
+        function updateBalance() { document.getElementById('manguaBalance').innerText = balance.toLocaleString(); }
         function logCombat(msg) {
             let logBox = document.getElementById('combatLog');
-            if(logBox) {
-                logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
-            }
+            if(logBox) logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
         }
 
         async function connectWallet() {
@@ -868,12 +880,8 @@
                     const addr = await signer.getAddress();
                     document.getElementById('connectWallet').innerText = addr.substring(0, 6) + "..." + addr.substring(38);
                     logCombat(`Billetera conectada: ${addr}`);
-                } catch(e) {
-                    alert("Error conectando billetera");
-                }
-            } else {
-                alert("Por favor abre la web desde Binance Web3 Wallet o MetaMask Mobile");
-            }
+                } catch(e) { alert("Error conectando billetera"); }
+            } else { alert("Por favor abre la web desde Binance Web3 Wallet o MetaMask Mobile"); }
         }
 
         updateOracleDisplay();
@@ -882,5 +890,3 @@
     </script>
 </body>
 </html>
-
-            
