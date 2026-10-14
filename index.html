@@ -160,16 +160,6 @@
             100% { box-shadow: 0 0 22px rgba(240, 185, 11, 0.8); }
         }
 
-        .shake { animation: shakeAnim 0.4s ease-in-out; }
-        @keyframes shakeAnim {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-8px) rotate(-2deg); }
-            40% { transform: translateX(8px) rotate(2deg); }
-            60% { transform: translateX(-5px); }
-            80% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-
         .element-badge {
             display: inline-block;
             padding: 3px 8px;
@@ -216,8 +206,6 @@
         .xp-bar-fill { background: var(--primary); height: 100%; width: 0%; transition: width 0.4s ease; }
         .energy-bar-fill { background: #0ecb81; height: 100%; width: 100%; transition: width 0.4s ease; }
 
-        .timer-text { font-size: 11px; color: #f0b90b; margin-top: 2px; }
-
         .btn-card {
             width: 100%;
             background: #2b2f36;
@@ -233,16 +221,6 @@
 
         .btn-card:hover { background: var(--primary); color: #000; }
         .btn-potion { background: #6554c0; color: #fff; }
-
-        .empty-msg {
-            text-align: center;
-            padding: 40px;
-            color: #848e9c;
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px dashed var(--border-color);
-            grid-column: 1 / -1;
-        }
 
         .battle-arena {
             display: grid;
@@ -284,8 +262,6 @@
             gap: 10px;
         }
 
-        .enemy-card.locked { opacity: 0.5; }
-
         .fight-buttons { display: flex; gap: 6px; }
 
         .btn-fight {
@@ -300,19 +276,7 @@
             box-shadow: 0 0 8px rgba(218, 54, 51, 0.4);
         }
 
-        .btn-ultimate {
-            background: linear-gradient(135deg, #f0b90b, #ff4d4d);
-            color: #000;
-            border: none;
-            padding: 8px 12px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            box-shadow: 0 0 10px rgba(240, 185, 11, 0.6);
-        }
-
-        .btn-fight:disabled, .btn-ultimate:disabled { background: #444; color: #888; cursor: not-allowed; box-shadow: none; }
+        .btn-fight:disabled { background: #444; color: #888; cursor: not-allowed; box-shadow: none; }
 
         .modal-overlay {
             position: fixed;
@@ -333,12 +297,6 @@
             width: 90%;
             max-width: 400px;
             box-shadow: 0 0 30px rgba(240, 185, 11, 0.4);
-            animation: popIn 0.3s ease;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
         .modal-btn {
@@ -371,8 +329,8 @@
     <header>
         <div class="logo">MANGUABLADES ⚔️</div>
         <div class="wallet-info">
-            <div class="price-oracle">📈 1 MANGUA = $<span id="manguaPriceUSD">0.0000033</span> USD</div>
-            <div class="balance">💰 <span id="manguaBalance">3,000,000</span> $MANGUA</div>
+            <div class="price-oracle">📈 1 MANGUA = \$<span id="manguaPriceUSD">0.0000033</span> USD</div>
+            <div class="balance">💰 <span id="manguaBalance">3,000,000</span> \$MANGUA</div>
             <button class="btn-connect" id="connectWallet" onclick="connectWallet()">Conectar Web3</button>
         </div>
     </header>
@@ -383,10 +341,13 @@
         <button class="nav-btn" id="btn-mercado" onclick="switchTab('mercado')">🛒 Mercado</button>
     </nav>
     <div class="container">
-                <div id="tab-plaza" class="tab-content active">
+        <div id="tab-plaza" class="tab-content active">
             <div class="actions-bar">
                 <h2>Tus Personajes Mangua (<span id="charCount">0</span>/4)</h2>
-                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua ($5 USD / <span id="costMintMangua">1,500,000</span> $MANGUA)</button>
+                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua (\$5 USD / <span id="costMintMangua">1,500,000</span> \$MANGUA)</button>
+            </div>
+            <div style="margin-bottom: 15px; font-size: 13px; color: #f0b90b;">
+                🧪 Pociones usadas en la cuenta hoy: <span id="accountPotionsCount">0</span>/3
             </div>
             <div class="grid" id="charactersContainer"></div>
         </div>
@@ -394,18 +355,18 @@
         <div id="tab-herreria" class="tab-content">
             <div class="actions-bar">
                 <h2>Herrería / ManguaBlade Armas</h2>
-                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma ($2.50 USD / <span id="costForgeMangua">750,000</span> $MANGUA)</button>
+                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma (\$2.50 USD / <span id="costForgeMangua">750,000</span> \$MANGUA)</button>
             </div>
             <div class="grid" id="weaponsContainer"></div>
         </div>
 
         <div id="tab-combate" class="tab-content">
-            <h2>⚔️ Arena de Batalla Mangua (Ventaja Elemental & Ultimates)</h2>
+            <h2>⚔️ Arena de Batalla Mangua (Dificultad PWR & Ventaja Elemental)</h2>
             
             <div class="battle-arena">
                 <div class="combatant-box" id="arenaHeroBox">
                     <h3>Tu Mangua</h3>
-                    <div id="arenaHeroContent">Selecciona un Mangua</div>
+                    <div id="arenaHeroContent">Selecciona un Mangua en la Plaza</div>
                 </div>
                 <div class="vs-badge">VS</div>
                 <div class="combatant-box" id="arenaWeaponBox">
@@ -414,18 +375,17 @@
                 </div>
             </div>
 
-            <h3>Monstruos de la Arena</h3>
+            <h3>Monstruos de la Arena (5 Peleas por Energía Completa)</h3>
             <div id="enemiesContainer"></div>
 
             <h3>📜 Registro de Batalla</h3>
-            <div class="log-box" id="combatLog">Bienvenido a la Arena Avanzada de ManguaBlades.</div>
+            <div class="log-box" id="combatLog">Bienvenido a la Arena de ManguaBlades.</div>
         </div>
 
         <div id="tab-mercado" class="tab-content">
             <h2>🛒 Mercado Mangua NFT</h2>
-            <p>Comercio P2P en desarrollo. Próximamente podrás comprar y vender tus Manguas por $MANGUA.</p>
+            <p>Comercio P2P en desarrollo. Próximamente podrás comprar y vender tus Manguas por \$MANGUA.</p>
         </div>
-
     </div>
 
     <div class="modal-overlay" id="rewardModal">
@@ -436,49 +396,43 @@
             <button class="modal-btn" onclick="closeModal()">¡Excelente!</button>
         </div>
     </div>
+
     <script>
         let currentPriceUSD = 0.000003333;
         let balance = 3000000;
         let selectedCharacterId = null;
         let selectedWeaponId = null;
-        let winStreak = 0; // Contador de racha de victorias
+        let accountDailyPotionsUsed = 0;
 
-        let characters = [];
-
-        let weapons = [
-            { id: 1, name: "Hoja Manguera", element: "fire", powerBonus: 200, stars: 1, emoji: "🗡️" }
+        let characters = [
+            { id: 1, name: "Manguito Guerrero", element: "fire", level: 1, xp: 0, power: 800, energy: 200, emoji: "🥭⚔️", potionUsedToday: false, equippedWeaponId: null }
         ];
 
-        // 👹 MONSTRUOS NIVEL POR NIVEL (1 AL 30)
-        const monsterNames = ["Plaga Podrida", "Espectro", "Duende Sombrío", "Bestia Rabiosa", "Guardián Pantano", "Nigromante", "Gólem Rock", "Dragón Menor", "Titan Mangua"];
+        let weapons = [
+            { id: 1, name: "Hoja Manguera", element: "fire", powerBonus: 200, stars: 1, emoji: "🗡️", energy: 200, boundToCharId: null }
+        ];
+
         const elementsList = ["earth", "fire", "water", "lightning"];
+        const monsterNames = ["Plaga Podrida", "Espectro", "Duende Sombrío", "Bestia Rabiosa", "Guardián Pantano", "Nigromante", "Gólem Rock", "Dragón Menor", "Titan Mangua"];
 
         let enemies = [];
         for (let lvl = 1; lvl <= 30; lvl++) {
             let elem = elementsList[(lvl - 1) % elementsList.length];
             let nameIdx = (lvl - 1) % monsterNames.length;
-            let basePower = 850 + (lvl * 65);
-            
-            // Recompensa en USD calibrada para ROI de 18-25 días ($0.033 a $0.15)
-            let rewardUSD = 0.033 + (lvl * 0.004); 
+            let reqPWR = 750 + (lvl * 150);
+            let rewardUSD = 0.10 + ((lvl - 1) * 0.01586);
             let rewardMangua = Math.floor(rewardUSD / currentPriceUSD);
 
             enemies.push({
                 id: lvl,
-                name: `${monsterNames[nameIdx]} Stalker`,
+                name: `${monsterNames[nameIdx]} Stalker Lvl ${lvl}`,
                 minLevel: lvl,
                 element: elem,
-                power: basePower,
+                reqPower: reqPWR,
+                rewardUSD: rewardUSD,
                 reward: rewardMangua
             });
         }
-
-        const manguaTemplates = [
-            { name: "Manguito Guerrero", element: "fire", emoji: "🥭⚔️" },
-            { name: "Mangua Centinela", element: "water", emoji: "🥭🛡️" },
-            { name: "Mangua Místico", element: "earth", emoji: "🥭🔮" },
-            { name: "Mangua Vengador", element: "lightning", emoji: "🥭⚡" }
-        ];
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -497,14 +451,6 @@
                 gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.15);
-            } else if (type === 'ultimate') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
             } else if (type === 'victory') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(440, audioCtx.currentTime);
@@ -525,32 +471,9 @@
             document.getElementById('manguaPriceUSD').innerText = currentPriceUSD.toFixed(7);
             document.getElementById('costMintMangua').innerText = getManguaCostUSD(5.00).toLocaleString();
             document.getElementById('costForgeMangua').innerText = getManguaCostUSD(2.50).toLocaleString();
+            document.getElementById('manguaBalance').innerText = balance.toLocaleString();
+            document.getElementById('accountPotionsCount').innerText = accountDailyPotionsUsed;
         }
-
-        function checkElementAdvantage(heroElem, enemyElem) {
-            const chart = { fire: 'earth', earth: 'lightning', lightning: 'water', water: 'fire' };
-            return chart[heroElem] === enemyElem;
-        }
-
-        setInterval(() => {
-            let updated = false;
-            const now = Date.now();
-            characters.forEach(c => {
-                if (c.energy < 200) {
-                    const elapsedSecs = Math.floor((now - c.lastEnergyUpdate) / 1000);
-                    if (elapsedSecs >= 432) {
-                        const energyToAdd = Math.floor(elapsedSecs / 432);
-                        c.energy = Math.min(200, c.energy + energyToAdd);
-                        c.lastEnergyUpdate = now;
-                        updated = true;
-                    }
-                }
-            });
-            if (updated) {
-                renderCharacters();
-                updateCombatView();
-            }
-        }, 1000);
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -559,82 +482,41 @@
             document.getElementById('btn-' + tabName).classList.add('active');
             if(tabName === 'combate') updateCombatView();
         }
+
         function renderCharacters() {
             const container = document.getElementById('charactersContainer');
             container.innerHTML = '';
             document.getElementById('charCount').innerText = characters.length;
 
-            if(characters.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-msg">
-                        <h3>🥭 ¡Aún no tienes ningún Mangua!</h3>
-                        <p>Presiona el botón superior <strong>"Reclutar Mangua"</strong> para obtener tu primer guerrero Nivel 1.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const now = Date.now();
-            const potionCost = getManguaCostUSD(1.00);
-
             characters.forEach(c => {
                 const isSelected = selectedCharacterId === c.id;
-                const xpPercent = Math.floor((c.xp / c.maxXp) * 100);
-                const energyPercent = Math.floor((c.energy / 200) * 100);
-
-                let timerDisplay = "🔋 Energía Llena";
-                if(c.energy < 200) {
-                    const nextTickSecs = 432 - Math.floor(((now - c.lastEnergyUpdate) / 1000) % 432);
-                    const mins = Math.floor(nextTickSecs / 60);
-                    const secs = nextTickSecs % 60;
-                    timerDisplay = `⏳ +1⚡ en ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                }
-
-                // Indicador de tarifa de evolución cada 5 niveles
-                let evolutionNotice = "";
-                if (c.level % 5 === 0 && c.xp >= c.maxXp && c.level < 30) {
-                    const evoCost = getManguaCostUSD(0.50);
-                    evolutionNotice = `<p style="color:#f0b90b; font-weight:bold;">⚠️ Requiere Ascensión: ${evoCost.toLocaleString()} $MANGUA ($0.50 USD)</p>`;
+                const potionCostMangua = getManguaCostUSD(0.60);
+                
+                let wName = "Ninguna";
+                if(c.equippedWeaponId) {
+                    let w = weapons.find(x => x.id === c.equippedWeaponId);
+                    if(w) wName = `${w.name} (Ene: ${w.energy}/200)`;
                 }
 
                 container.innerHTML += `
-                    <div class="card ${c.element} ${isSelected ? 'selected' : ''}">
-                        <span class="element-badge badge-${c.element}">${c.element}</span>
+                    <div class="card ${isSelected ? 'selected' : ''}" onclick="selectCharacter(${c.id})">
+                        <div class="element-badge badge-${c.element}">${c.element}</div>
                         <div class="avatar-placeholder">${c.emoji}</div>
                         <h3>${c.name}</h3>
                         <div class="stats-list">
-                            <p>⭐ <strong>Nivel:</strong> ${c.level}/30</p>
-                            <p>⚡ <strong>Poder Base:</strong> ${c.power} PWR</p>
-                            <p>📈 <strong>XP:</strong> ${c.xp}/${c.maxXp}</p>
-                            <div class="xp-bar-bg"><div class="xp-bar-fill" style="width: ${xpPercent}%"></div></div>
-                            <p>🔋 <strong>Energía:</strong> ${c.energy}/200</p>
-                            <div class="energy-bar-bg"><div class="energy-bar-fill" style="width: ${energyPercent}%"></div></div>
-                            <div class="timer-text">${timerDisplay}</div>
-                            ${evolutionNotice}
+                            <div><strong>Nivel:</strong> ${c.level} (XP: ${c.xp}/${c.level * 100})</div>
+                            <div class="xp-bar-bg"><div class="xp-bar-fill" style="width: ${(c.xp / (c.level * 100)) * 100}%"></div></div>
+                            <div><strong>Poder:</strong> ⚡ ${c.power}</div>
+                            <div><strong>Arma:</strong> 🗡️ ${wName}</div>
+                            <div><strong>Energía:</strong> 🔋 ${c.energy}/200</div>
+                            <div class="energy-bar-bg"><div class="energy-bar-fill" style="width: ${(c.energy / 200) * 100}%"></div></div>
                         </div>
-                        <button class="btn-card" onclick="selectHero(${c.id})">
-                            ${isSelected ? '✅ Seleccionado' : 'Seleccionar para Batalla'}
+                        <button class="btn-card btn-potion" onclick="event.stopPropagation(); usePotion(${c.id})">
+                            ${c.potionUsedToday ? '🧪 Poción Usada Hoy' : `🧪 Usar Poción (\$0.60 / ${potionCostMangua.toLocaleString()}$MANGUA)`}
                         </button>
-                        ${c.energy < 200 ? `<button class="btn-card btn-potion" onclick="refillEnergy(${c.id})">🧪 Poción⚡ ($1 USD / ${potionCost.toLocaleString()}$MANGUA)</button>` : ''}
                     </div>
                 `;
             });
-        }
-
-        function refillEnergy(heroId) {
-            const cost = getManguaCostUSD(1.00);
-            if(balance < cost) { alert(`Saldo insuficiente de $MANGUA (Requiere ${cost.toLocaleString()} $MANGUA)`); return; }
-            
-            const hero = characters.find(c => c.id === heroId);
-            if(hero) {
-                balance -= cost;
-                hero.energy = 200;
-                hero.lastEnergyUpdate = Date.now();
-                updateBalance();
-                renderCharacters();
-                updateCombatView();
-                logCombat(`🧪 ¡Usaste una Poción de Energía en ${hero.name}! Energía 200/200.`);
-            }
         }
 
         function renderWeapons() {
@@ -642,99 +524,163 @@
             container.innerHTML = '';
 
             weapons.forEach(w => {
-                const isSelected = selectedWeaponId === w.id;
+                let boundChar = characters.find(c => c.equippedWeaponId === w.id);
+                let boundText = boundChar ? `Vinculada a ${boundChar.name}` : "Libre";
+
                 container.innerHTML += `
-                    <div class="card stars-${w.stars} ${isSelected ? 'selected' : ''}">
-                        <span class="element-badge badge-${w.element}">${'⭐'.repeat(w.stars)}</span>
+                    <div class="card stars-${w.stars}">
+                        <div class="element-badge badge-${w.element}">${w.element}</div>
                         <div class="avatar-placeholder">${w.emoji}</div>
                         <h3>${w.name}</h3>
                         <div class="stats-list">
-                            <p>⚔️ <strong>Bono Poder:</strong> +${w.powerBonus} PWR</p>
-                            <p>🔥 <strong>Elemento:</strong> ${w.element}</p>
+                            <div><strong>Rareza:</strong> ${'⭐'.repeat(w.stars)}</div>
+                            <div><strong>Ataque:</strong> +${w.powerBonus} PWR</div>
+                            <div><strong>Energía Arma:</strong> 🔋 ${w.energy}/200</div>
+                            <div><strong>Estado:</strong> ${boundText}</div>
                         </div>
-                        <button class="btn-card" onclick="selectWeapon(${w.id})">
-                            ${isSelected ? '✅ Equipada' : 'Equipar Arma'}
-                        </button>
                     </div>
                 `;
             });
         }
 
-        function mintCharacter() {
-            const cost = getManguaCostUSD(5.00);
-            if(balance < cost) { alert(`Saldo insuficiente de $MANGUA ($5 USD = ${cost.toLocaleString()} $MANGUA)`); return; }
-            if(characters.length >= 4) { alert("¡Límite alcanzado! Máximo 4 Mangua NFTs."); return; }
+        function selectCharacter(id) {
+            selectedCharacterId = id;
+            let char = characters.find(c => c.id === id);
+            if (char && char.equippedWeaponId) {
+                selectedWeaponId = char.equippedWeaponId;
+            } else {
+                let availableW = weapons.find(w => w.boundToCharId === null || w.boundToCharId === id);
+                if (availableW) {
+                    selectedWeaponId = availableW.id;
+                    char.equippedWeaponId = availableW.id;
+                    availableW.boundToCharId = id;
+                }
+            }
+            renderCharacters();
+            renderWeapons();
+            updateCombatView();
+        }
+
+        function usePotion(charId) {
+            let char = characters.find(c => c.id === charId);
+            if (!char) return;
+
+            if (accountDailyPotionsUsed >= 3) {
+                alert("❌ Has alcanzado el límite global de 3 pociones al día por cuenta.");
+                return;
+            }
+
+            if (char.potionUsedToday) {
+                alert("❌ Este Mangua ya consumió su poción diaria.");
+                return;
+            }
+
+            let cost = getManguaCostUSD(0.60);
+            if (balance < cost) {
+                alert("❌ No tienes suficiente \$MANGUA.");
+                return;
+            }
 
             balance -= cost;
-            const template = manguaTemplates[Math.floor(Math.random() * manguaTemplates.length)];
+            char.energy = 200;
+            char.potionUsedToday = true;
+            accountDailyPotionsUsed++;
 
-            const newChar = {
-                id: Date.now(),
-                name: `${template.name} #${characters.length + 1}`,
-                element: template.element,
-                power: 800 + Math.floor(Math.random() * 100),
+            if (char.equippedWeaponId) {
+                let w = weapons.find(x => x.id === char.equippedWeaponId);
+                if (w) w.energy = 200;
+            }
+
+            updateOracleDisplay();
+            renderCharacters();
+            renderWeapons();
+            updateCombatView();
+            logCombat(`🧪 Has recargado la energía de ${char.name} por $0.60 USD (${cost.toLocaleString()} $MANGUA).`);
+        }
+
+        function mintCharacter() {
+            let cost = getManguaCostUSD(5.00);
+            if(balance < cost) { alert("❌ Saldo insuficiente"); return; }
+            if(characters.length >= 4) { alert("❌ Máximo 4 personajes por cuenta"); return; }
+
+            balance -= cost;
+            let newId = characters.length + 1;
+            let elem = elementsList[Math.floor(Math.random() * elementsList.length)];
+            characters.push({
+                id: newId,
+                name: `Mangua #${newId}`,
+                element: elem,
                 level: 1,
                 xp: 0,
-                maxXp: 100,
+                power: 800 + Math.floor(Math.random() * 100),
                 energy: 200,
-                lastEnergyUpdate: Date.now(),
-                emoji: template.emoji
-            };
+                emoji: "🥭⚔️",
+                potionUsedToday: false,
+                equippedWeaponId: null
+            });
 
-            characters.push(newChar);
-            if(!selectedCharacterId) selectedCharacterId = newChar.id;
-
-            updateBalance();
+            updateOracleDisplay();
             renderCharacters();
-            logCombat(`🥭 ¡Has reclutado a ${newChar.name} (Nivel 1) por ${cost.toLocaleString()} $MANGUA!`);
         }
 
         function forgeWeapon() {
-            const cost = getManguaCostUSD(2.50);
-            if(balance < cost) { alert(`Saldo insuficiente de $MANGUA ($2.50 USD = ${cost.toLocaleString()} $MANGUA)`); return; }
+            let cost = getManguaCostUSD(2.50);
+            if(balance < cost) { alert("❌ Saldo insuficiente"); return; }
 
             balance -= cost;
-            const elements = ['fire', 'water', 'earth', 'lightning'];
-            const randElem = elements[Math.floor(Math.random() * elements.length)];
-            const stars = Math.floor(Math.random() * 3) + 1;
-            const bonus = stars * 120 + Math.floor(Math.random() * 80);
-
-            const newWeapon = {
-                id: Date.now(),
-                name: `ManguaBlade ${stars}★`,
-                element: randElem,
-                powerBonus: bonus,
+            let newId = weapons.length + 1;
+            let elem = elementsList[Math.floor(Math.random() * elementsList.length)];
+            let stars = Math.random() > 0.7 ? 2 : 1;
+            
+            weapons.push({
+                id: newId,
+                name: `Espada Mangua #${newId}`,
+                element: elem,
+                powerBonus: stars === 2 ? 450 : 220,
                 stars: stars,
-                emoji: stars === 3 ? "🗡️✨" : "⚔️"
-            };
+                emoji: "🗡️",
+                energy: 200,
+                boundToCharId: null
+            });
 
-            weapons.push(newWeapon);
-            updateBalance();
+            updateOracleDisplay();
             renderWeapons();
-            logCombat(`🗡️ ¡Has forjado una ${newWeapon.name} (+${bonus} PWR) por ${cost.toLocaleString()} $MANGUA!`);
         }
 
-        function selectHero(id) { selectedCharacterId = id; renderCharacters(); updateCombatView(); }
-        function selectWeapon(id) { selectedWeaponId = id; renderWeapons(); updateCombatView(); }
+        function getTotalPower(char, weapon) {
+            let base = char ? char.power : 0;
+            let wBonus = (weapon && weapon.energy > 0) ? weapon.powerBonus : 0;
+            return base + wBonus;
+        }
 
         function updateCombatView() {
-            const hero = characters.find(c => c.id === selectedCharacterId);
-            const weapon = weapons.find(w => w.id === selectedWeaponId);
+            const heroBox = document.getElementById('arenaHeroContent');
+            const weaponBox = document.getElementById('arenaWeaponContent');
 
-            document.getElementById('arenaHeroContent').innerHTML = hero ? `
-                <div style="font-size: 30px;">${hero.emoji}</div>
-                <strong>${hero.name}</strong><br>
-                <span class="element-badge badge-${hero.element}">${hero.element}</span><br>
-                ⭐ Nivel ${hero.level} | ⚡ ${hero.power} PWR<br>
-                🔋 Energía: ${hero.energy}/200
-            ` : "<em>Ningún Mangua seleccionado.</em>";
+            let char = characters.find(c => c.id === selectedCharacterId);
+            let weapon = weapons.find(w => w.id === selectedWeaponId);
 
-            document.getElementById('arenaWeaponContent').innerHTML = weapon ? `
-                <div style="font-size: 30px;">${weapon.emoji}</div>
-                <strong>${weapon.name}</strong><br>
-                <span class="element-badge badge-${weapon.element}">${'⭐'.repeat(weapon.stars)}</span><br>
-                ⚔️ +${weapon.powerBonus} PWR
-            ` : "<em>Ninguna arma equipada.</em>";
+            if(char) {
+                let totalPWR = getTotalPower(char, weapon);
+                heroBox.innerHTML = `
+                    <h4>${char.name}</h4>
+                    <p>Elem: <span class="element-badge badge-${char.element}">${char.element}</span></p>
+                    <p>🔋 Energía: ${char.energy}/200</p>
+                    <p>⚡ PWR Total: <strong>${totalPWR}</strong></p>
+                `;
+            } else {
+                heroBox.innerHTML = `Selecciona un Mangua en la Plaza`;
+            }
+
+            if(weapon && char && char.equippedWeaponId === weapon.id) {
+                weaponBox.innerHTML = `
+                    <h4>${weapon.name}</h4>
+                    <p>Bonus: +${weapon.powerBonus} PWR</p>
+                    <p>🔋 Energía Arma: ${weapon.energy}/200</p>
+                `;
+            } else {
+                weaponBox.innerHTML = `Sin Arma Equipada`;
+            }
 
             renderEnemies();
         }
@@ -743,150 +689,110 @@
             const container = document.getElementById('enemiesContainer');
             container.innerHTML = '';
 
-            const hero = characters.find(c => c.id === selectedCharacterId);
-            const currentLevel = hero ? hero.level : 0;
-            const currentEnergy = hero ? hero.energy : 0;
+            let char = characters.find(c => c.id === selectedCharacterId);
+            let weapon = weapons.find(w => w.id === selectedWeaponId);
+            let totalPWR = getTotalPower(char, weapon);
 
-            enemies.forEach(e => {
-                const canFight = currentLevel >= e.minLevel;
-                const hasEnergyNormal = currentEnergy >= 40;
-                const hasEnergyUltimate = currentEnergy >= 60;
+            enemies.forEach(enemy => {
+                let pwrMet = char && totalPWR >= enemy.reqPower;
+                let hasEnergy = char && char.energy >= 40;
+                let canFight = char && pwrMet && hasEnergy;
 
-                let advantageText = "";
-                if (hero && checkElementAdvantage(hero.element, e.element)) {
-                    advantageText = `<br><span style="color: #0ecb81; font-weight: bold;">⚡ ¡Superventaja Elemental (+25%)!</span>`;
-                }
+                let btnText = "⚔️ Pelear";
+                if (!char) btnText = "Selecciona Personaje";
+                else if (!hasEnergy) btnText = "Sin Energía";
+                else if (!pwrMet) btnText = `Requiere ${enemy.reqPower} PWR`;
 
                 container.innerHTML += `
-                    <div class="enemy-card ${!canFight ? 'locked' : ''}" id="enemy-card-${e.id}">
+                    <div class="enemy-card">
                         <div>
-                            <strong>😈 ${e.name} (Nivel ${e.minLevel})</strong> [${e.element.toUpperCase()}]<br>
-                            🔒 Req: Nivel ${e.minLevel}+ | ⚔️ Poder: ${e.power} PWR<br>
-                            🏆 Recompensa: +${e.reward.toLocaleString()} $MANGUA${advantageText}
+                            <strong>${enemy.name}</strong> 
+                            <span class="element-badge badge-${enemy.element}">${enemy.element}</span>
+                            <br>
+                            <small>PWR Requerido: ${enemy.reqPower} | Recompensa: ~$${enemy.rewardUSD.toFixed(3)} USD (${enemy.reward.toLocaleString()} $MANGUA)</small>
                         </div>
                         <div class="fight-buttons">
-                            <button class="btn-fight" ${!canFight || !hasEnergyNormal ? 'disabled' : ''} onclick="fight(${e.id}, false)">
-                                ⚔️ Atacar (40⚡)
-                            </button>
-                            <button class="btn-ultimate" ${!canFight || !hasEnergyUltimate ? 'disabled' : ''} onclick="fight(${e.id}, true)">
-                                💥 Definitiva (60⚡)
-                            </button>
+                            <button class="btn-fight" ${!canFight ? 'disabled' : ''} onclick="fight(${enemy.id})">${btnText}</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function fight(enemyId, isUltimate) {
-            const hero = characters.find(c => c.id === selectedCharacterId);
-            if(!hero) { alert("¡Debes seleccionar un Mangua!"); return; }
+        function fight(enemyId) {
+            let char = characters.find(c => c.id === selectedCharacterId);
+            let enemy = enemies.find(e => e.id === enemyId);
+            let weapon = weapons.find(w => w.id === selectedWeaponId);
 
-            const energyCost = isUltimate ? 60 : 40;
-            if(hero.energy < energyCost) { alert(`Energía insuficiente. Necesitas ${energyCost} de energía.`); return; }
+            if(!char || char.energy < 40) return;
 
-            if(isUltimate) playSound('ultimate'); else playSound('hit');
-
-            const weapon = weapons.find(w => w.id === selectedWeaponId);
-            const enemy = enemies.find(e => e.id === enemyId);
-
-            hero.energy -= energyCost;
-            hero.lastEnergyUpdate = Date.now();
-
-            let totalPower = hero.power + (weapon ? weapon.powerBonus : 0);
-            let hasAdvantage = checkElementAdvantage(hero.element, enemy.element);
-            if(hasAdvantage) totalPower = Math.floor(totalPower * 1.25);
-
-            let powerRatio = totalPower / enemy.power;
-            let winChance = Math.min(88, Math.floor(powerRatio * (isUltimate ? 70 : 55)));
-            if(hasAdvantage) winChance = Math.min(92, winChance + 15);
-
-            let roll = Math.floor(Math.random() * 100);
-
-            if(roll < winChance) {
-                playSound('victory');
-                winStreak += 1;
-
-                balance += enemy.reward;
-                let baseClassXp = (isUltimate ? 50 : 35) + (enemy.minLevel * 8);
-                
-                let streakBonusXp = 0;
-                if (winStreak >= 3) {
-                    streakBonusXp = Math.floor(baseClassXp * 0.10);
-                }
-                let totalGainedXp = baseClassXp + streakBonusXp;
-                hero.xp += totalGainedXp;
-
-                let levelUpText = "";
-
-                if (hero.xp >= hero.maxXp && hero.level < 30) {
-                    if (hero.level % 5 === 0) {
-                        const evoFee = getManguaCostUSD(0.50);
-                        if (balance >= evoFee) {
-                            balance -= evoFee;
-                            hero.level += 1;
-                            hero.xp -= hero.maxXp;
-                            hero.maxXp = Math.floor(hero.maxXp * 1.25);
-                            hero.power += 45;
-                            levelUpText = `<br><span style="color: #f0b90b;">🌟 ¡ASCENSIÓN COMPLETADA AL NIVEL ${hero.level}! (-${evoFee.toLocaleString()} $MANGUA / +45 PWR)</span>`;
-                        } else {
-                            hero.xp = hero.maxXp;
-                            levelUpText = `<br><span style="color: #f6465d;">⚠️ Requiere ${evoFee.toLocaleString()} $MANGUA para Ascender al Nivel ${hero.level + 1}.</span>`;
-                        }
-                    } else {
-                        hero.level += 1;
-                        hero.xp -= hero.maxXp;
-                        hero.maxXp = Math.floor(hero.maxXp * 1.25);
-                        hero.power += 45;
-                        levelUpText = `<br><span style="color: var(--primary);">🌟 ¡SUBISTE AL NIVEL ${hero.level}! (+45 PWR)</span>`;
-                    }
-                }
-
-                let streakMsg = streakBonusXp > 0 ? `<br><span style="color: #f0b90b;">🔥 ¡Racha de ${winStreak} Victorias! (+10% XP Extra: +${streakBonusXp} XP)</span>` : '';
-
-                updateBalance();
-                logCombat(`🎉 ¡VICTORIA! Derrotaste a ${enemy.name}. +${enemy.reward.toLocaleString()} $MANGUA`);
-                showModal("🎉 ¡VICTORIA ÉPICA!", `Has vencido a ${enemy.name} (Niv. ${enemy.minLevel})`, `💰 +${enemy.reward.toLocaleString()} $MANGUA<br>📈 +${totalGainedXp} XP ${streakMsg} ${levelUpText}`);
-            } else {
-                playSound('hit');
-                winStreak = 0;
-                logCombat(`💥 DERROTA... ${enemy.name} resistió tu ataque. ¡Racha reiniciada!`);
-                showModal("💥 ¡DERROTA!", `El monstruo ${enemy.name} superó tu ataque.`, "Racha reiniciada. Intenta forjar un arma más potente o usar ventaja elemental.");
+            char.energy -= 40;
+            if(weapon && weapon.energy >= 40) {
+                weapon.energy -= 40;
             }
 
+            playSound('hit');
+
+            let totalPWR = getTotalPower(char, weapon);
+            let isAdvantage = (char.element === 'fire' && enemy.element === 'earth') ||
+                                (char.element === 'water' && enemy.element === 'fire') ||
+                                (char.element === 'earth' && enemy.element === 'lightning') ||
+                                (char.element === 'lightning' && enemy.element === 'water');
+
+            let winRate = isAdvantage ? 0.90 : 0.75;
+            let isWin = Math.random() < winRate;
+
+            if(isWin) {
+                playSound('victory');
+                let reward = enemy.reward;
+                balance += reward;
+                char.xp += 50;
+
+                if(char.xp >= char.level * 100) {
+                    char.xp -= char.level * 100;
+                    char.level++;
+                    char.power += 50;
+                    logCombat(`🎉 ¡${char.name} ha subido al Nivel ${char.level}!`);
+                }
+
+                showModal("🎉 ¡VICTORIA!", `Has derrotado a ${enemy.name}`, `+${reward.toLocaleString()} $MANGUA (~$${enemy.rewardUSD.toFixed(3)} USD)`);
+                logCombat(`⚔️ Victoria contra ${enemy.name}. Recompensa: ${reward.toLocaleString()} $MANGUA.`);
+            } else {
+                showModal("💀 DERROTA", `Has sido superado por ${enemy.name}.`, `+0 $MANGUA`);
+                logCombat(`💀 Derrota contra ${enemy.name}. Entrena y mejora tu PWR.`);
+            }
+
+            updateOracleDisplay();
             renderCharacters();
+            renderWeapons();
             updateCombatView();
         }
 
-        function showModal(title, desc, rewardsHtml) {
+        function logCombat(msg) {
+            const logBox = document.getElementById('combatLog');
+            logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
+        }
+
+        function showModal(title, desc, rewards) {
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalDesc').innerText = desc;
-            document.getElementById('modalRewards').innerHTML = rewardsHtml;
+            document.getElementById('modalRewards').innerText = rewards;
             document.getElementById('rewardModal').style.display = 'flex';
         }
 
-        function closeModal() { document.getElementById('rewardModal').style.display = 'none'; }
-        function updateBalance() { document.getElementById('manguaBalance').innerText = balance.toLocaleString(); }
-        function logCombat(msg) {
-            let logBox = document.getElementById('combatLog');
-            if(logBox) logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
+        function closeModal() {
+            document.getElementById('rewardModal').style.display = 'none';
         }
 
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    const signer = provider.getSigner();
-                    const addr = await signer.getAddress();
-                    document.getElementById('connectWallet').innerText = addr.substring(0, 6) + "..." + addr.substring(38);
-                    logCombat(`Billetera conectada: ${addr}`);
-                } catch(e) { alert("Error conectando billetera"); }
-            } else { alert("Por favor abre la web desde Binance Web3 Wallet o MetaMask Mobile"); }
+        function connectWallet() {
+            document.getElementById('connectWallet').innerText = "0x71C...8A21";
+            logCombat("Web3 Wallet conectada con éxito.");
         }
 
         updateOracleDisplay();
         renderCharacters();
         renderWeapons();
+        updateCombatView();
     </script>
 </body>
 </html>
