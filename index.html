@@ -107,7 +107,7 @@
                 </div>
 
                 <!-- Wallet Button -->
-                <button id="wallet-btn" onclick="showToast('Billetera Web3 conectada exitosamente.')" class="glass-card px-4 py-1.5 rounded-lg flex items-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-300 font-medium transition-all">
+                <button id="wallet-btn" class="glass-card px-4 py-1.5 rounded-lg flex items-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-300 font-medium transition-all cursor-pointer">
                     <i class="fa-solid fa-wallet text-amber-400"></i>
                     <span id="wallet-text">0x71C...4b92</span>
                 </button>
@@ -118,25 +118,25 @@
     <!-- MAIN APP NAVIGATION TABS -->
     <nav class="glass-panel border-b border-white/10 px-4 py-2 sticky top-[65px] z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-start md:justify-center gap-2 overflow-x-auto no-scrollbar py-1">
-            <button onclick="switchTab('tab-minting')" id="btn-tab-minting" class="nav-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap bg-amber-500/20 text-amber-300 border border-amber-500/40">
+            <button data-tab="tab-minting" class="nav-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap bg-amber-500/20 text-amber-300 border border-amber-500/40 cursor-pointer">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Inicio / Minting
             </button>
-            <button onclick="switchTab('tab-aventura')" id="btn-tab-aventura" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-aventura" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-map-location-dot"></i> Aventura (PvE)
             </button>
-            <button onclick="switchTab('tab-armas')" id="btn-tab-armas" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-armas" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-shield-halved"></i> Armas
             </button>
-            <button onclick="switchTab('tab-ascension')" id="btn-tab-ascension" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-ascension" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-fire-flame-curved text-amber-400"></i> Altar de Ascensión
             </button>
-            <button onclick="switchTab('tab-pvp')" id="btn-tab-pvp" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-pvp" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-swords text-red-400"></i> Coliseo PvP
             </button>
-            <button onclick="switchTab('tab-worldboss')" id="btn-tab-worldboss" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-worldboss" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-dragon text-purple-400"></i> World Boss
             </button>
-            <button onclick="switchTab('tab-mochila')" id="btn-tab-mochila" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5">
+            <button data-tab="tab-mochila" class="nav-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white transition-all whitespace-nowrap hover:bg-white/5 cursor-pointer">
                 <i class="fa-solid fa-bag-shopping text-emerald-400"></i> Mochila
             </button>
         </div>
@@ -180,7 +180,7 @@
                         </div>
                     </div>
 
-                    <button onclick="mintNFT('character')" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <button id="btn-mint-char" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-plus-circle"></i> Mintear Personaje ($5.00 USD)
                     </button>
                 </div>
@@ -208,7 +208,7 @@
                         </div>
                     </div>
 
-                    <button onclick="mintNFT('weapon')" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <button id="btn-mint-weapon" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-hammer"></i> Forjar Arma ($2.50 USD)
                     </button>
                 </div>
@@ -234,7 +234,7 @@
                     <h3 class="font-cinzel text-base font-bold text-white border-b border-white/10 pb-2">1. Seleccionar Combatiente</h3>
                     
                     <label class="block text-xs text-gray-400">Mangua NFT Activo</label>
-                    <select id="pve-select-mangua" onchange="updateCharacterStats()" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-sm font-medium text-amber-300 focus:outline-none focus:border-amber-500">
+                    <select id="pve-select-mangua" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-sm font-medium text-amber-300 focus:outline-none focus:border-amber-500">
                         <!-- Populated by JS -->
                     </select>
 
@@ -261,7 +261,7 @@
                         <!-- Dynamically generated levels 1 to 30 -->
                     </div>
 
-                    <button onclick="executePvEBattle()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-black font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <button id="btn-run-pve" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-black font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-play"></i> Iniciar Batalla de Aventura
                     </button>
                 </div>
@@ -296,10 +296,10 @@
                 </p>
 
                 <div class="inline-flex p-1 bg-black/50 rounded-xl border border-white/10">
-                    <button onclick="setAscensionMode('character')" id="asc-toggle-char" class="px-5 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-black shadow cursor-pointer">
+                    <button id="asc-toggle-char" class="px-5 py-1.5 rounded-lg text-xs font-bold transition-all bg-amber-500 text-black shadow cursor-pointer">
                         🧙‍♂️ Personajes Mangua
                     </button>
-                    <button onclick="setAscensionMode('weapon')" id="asc-toggle-weapon" class="px-5 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white cursor-pointer">
+                    <button id="asc-toggle-weapon" class="px-5 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-white cursor-pointer">
                         🗡️ Armas
                     </button>
                 </div>
@@ -311,7 +311,7 @@
                     <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
                         NFT Principal (Asciende)[cite: 1]
                     </span>
-                    <select id="asc-main-select" onchange="updateAscensionPreview()" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white">
+                    <select id="asc-main-select" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white">
                         <!-- Dynamic -->
                     </select>
                     <div id="asc-main-card" class="glass-card p-4 rounded-xl border border-white/10 min-h-[160px] flex flex-col justify-center items-center">
@@ -330,7 +330,7 @@
                         <div class="text-sm font-bold text-amber-400" id="asc-fee-text">$10.00 USD (~2,000 $MANGUA)</div>
                     </div>
 
-                    <button onclick="executeAscension()" id="btn-do-ascension" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:opacity-90 text-black font-extrabold shadow-lg shadow-amber-500/20 transition-all cursor-pointer">
+                    <button id="btn-do-ascension" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:opacity-90 text-black font-extrabold shadow-lg shadow-amber-500/20 transition-all cursor-pointer">
                         Realizar Ascensión
                     </button>
                 </div>
@@ -340,7 +340,7 @@
                     <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase">
                         NFT Secundario (Se Quema 🔥)[cite: 1]
                     </span>
-                    <select id="asc-sac-select" onchange="updateAscensionPreview()" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white">
+                    <select id="asc-sac-select" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white">
                         <!-- Dynamic -->
                     </select>
                     <div id="asc-sac-card" class="glass-card p-4 rounded-xl border border-white/10 min-h-[160px] flex flex-col justify-center items-center">
@@ -371,7 +371,7 @@
                     <select id="pvp-select-mangua" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-amber-300">
                         <!-- Populated dynamically -->
                     </select>
-                    <button onclick="startPvPMatch()" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-bold shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <button id="btn-create-pvp" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-bold shadow-lg shadow-red-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-swords"></i> Depositar $5 USD y Buscar Rival[cite: 1]
                     </button>
                 </div>
@@ -387,7 +387,7 @@
                                     <div class="text-[10px] text-gray-400">Rival: 0x9bA...31aF</div>
                                 </div>
                             </div>
-                            <button onclick="joinPvPMatch()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs cursor-pointer">
+                            <button id="btn-join-pvp" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs cursor-pointer">
                                 Aceptar Duelo ($5)
                             </button>
                         </div>
@@ -415,7 +415,7 @@
                     <select id="boss-select-mangua" class="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-purple-300">
                         <!-- Dynamic -->
                     </select>
-                    <button onclick="attackWorldBoss()" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <button id="btn-attack-boss" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-dragon"></i> Atacar al Boss (-100 Energía)[cite: 1]
                     </button>
                 </div>
@@ -467,7 +467,7 @@
                         <div class="text-xs font-bold text-white">Poción de Energía Max</div>
                         <div class="text-[10px] text-gray-400">Restaura 200/200 de Energía a 1 Mangua</div>[cite: 1]
                     </div>
-                    <button onclick="usePotion()" class="w-full py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 cursor-pointer">Usar Poción</button>
+                    <button id="btn-use-potion" class="w-full py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 cursor-pointer">Usar Poción</button>
                 </div>
 
                 <!-- Soulbound Sphere item -->
@@ -539,7 +539,7 @@
             const targetTab = document.getElementById(tabId);
             if (targetTab) targetTab.classList.remove('hidden');
 
-            const activeBtn = document.getElementById(`btn-${tabId}`);
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('bg-amber-500/20', 'text-amber-300', 'border', 'border-amber-500/40');
                 activeBtn.classList.remove('text-gray-400');
@@ -568,13 +568,16 @@
             container.innerHTML = '';
             for (let i = 1; i <= 30; i++) {
                 const isSelected = selectedStage === i;
-                container.innerHTML += `
-                    <button type="button" onclick="selectStage(${i})" class="stage-btn p-2.5 rounded-xl border text-center transition-all cursor-pointer ${isSelected ? 'bg-amber-500/30 border-amber-500 text-white shadow-lg glow-gold' : 'bg-slate-800/60 border-white/10 text-gray-300 hover:bg-white/10'}">
-                        <div class="text-[10px] text-gray-400">Nivel</div>
-                        <div class="font-bold text-sm">${i}</div>
-                        <div class="text-[9px] text-emerald-400 mt-0.5">~$0.50</div>
-                    </button>
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `stage-btn p-2.5 rounded-xl border text-center transition-all cursor-pointer ${isSelected ? 'bg-amber-500/30 border-amber-500 text-white shadow-lg glow-gold' : 'bg-slate-800/60 border-white/10 text-gray-300 hover:bg-white/10'}`;
+                btn.innerHTML = `
+                    <div class="text-[10px] text-gray-400">Nivel</div>
+                    <div class="font-bold text-sm">${i}</div>
+                    <div class="text-[9px] text-emerald-400 mt-0.5">~$0.50</div>
                 `;
+                btn.onclick = () => selectStage(i);
+                container.appendChild(btn);
             }
             const stageLabel = document.getElementById('selected-stage-label');
             if (stageLabel) stageLabel.innerText = `Etapa Seleccionada: Nivel ${selectedStage}`;
@@ -681,10 +684,6 @@
             gameState.manguaBalance -= 1000;
             showToast("¡Depósito de \$5 USD confirmado en el contrato PvP!");[cite: 1]
             updateUI();
-        }
-
-        function joinPvPMatch() {
-            startPvPMatch();
         }
 
         function setAscensionMode(mode) {
@@ -871,10 +870,59 @@
             populateAscensionSelects();
         }
 
-        window.onload = function() {
+        // EVENT LISTENERS BINDING ON DOM LOAD
+        document.addEventListener("DOMContentLoaded", function() {
+            // Tab switching via event delegation / explicit assignment
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Action buttons binding
+            const btnMintChar = document.getElementById('btn-mint-char');
+            if (btnMintChar) btnMintChar.onclick = () => mintNFT('character');
+
+            const btnMintWeap = document.getElementById('btn-mint-weapon');
+            if (btnMintWeap) btnMintWeap.onclick = () => mintNFT('weapon');
+
+            const btnRunPve = document.getElementById('btn-run-pve');
+            if (btnRunPve) btnRunPve.onclick = executePvEBattle;
+
+            const pveSel = document.getElementById('pve-select-mangua');
+            if (pveSel) pveSel.onchange = updateCharacterStats;
+
+            const ascCharToggle = document.getElementById('asc-toggle-char');
+            if (ascCharToggle) ascCharToggle.onclick = () => setAscensionMode('character');
+
+            const ascWeapToggle = document.getElementById('asc-toggle-weapon');
+            if (ascWeapToggle) ascWeapToggle.onclick = () => setAscensionMode('weapon');
+
+            const mainSel = document.getElementById('asc-main-select');
+            if (mainSel) mainSel.onchange = updateAscensionPreview;
+
+            const sacSel = document.getElementById('asc-sac-select');
+            if (sacSel) sacSel.onchange = updateAscensionPreview;
+
+            const btnDoAsc = document.getElementById('btn-do-ascension');
+            if (btnDoAsc) btnDoAsc.onclick = executeAscension;
+
+            const btnCreatePvp = document.getElementById('btn-create-pvp');
+            if (btnCreatePvp) btnCreatePvp.onclick = startPvPMatch;
+
+            const btnJoinPvp = document.getElementById('btn-join-pvp');
+            if (btnJoinPvp) btnJoinPvp.onclick = startPvPMatch;
+
+            const btnAttackBoss = document.getElementById('btn-attack-boss');
+            if (btnAttackBoss) btnAttackBoss.onclick = attackWorldBoss;
+
+            const btnUsePotion = document.getElementById('btn-use-potion');
+            if (btnUsePotion) btnUsePotion.onclick = usePotion;
+
             renderStages();
             updateUI();
-        }
+        });
     </script>
 </body>
 </html>
