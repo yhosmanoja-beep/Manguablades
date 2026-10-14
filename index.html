@@ -1,626 +1,373 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ManguaBlades Web3 DApp - RPG & Ecosystem</title>
+    <title>ManguaBlades DApp - BNB Chain</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bnb: {
+                            50: '#fefce8',
+                            500: '#f3ba2f',
+                            600: '#d9a322',
+                            900: '#785b0d',
+                        }
+                    }
+                }
+            }
+        }
+    >
+    <!-- FontAwesome para Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-panel { background: rgba(22, 27, 34, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(48, 54, 61, 0.8); }
-        .accent-gradient { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
-        .glow-gold { box-shadow: 0 0 15px rgba(217, 119, 6, 0.4); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0d1117; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col custom-scrollbar">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-bnb-500 selection:text-slate-950">
 
-    <!-- Top Navigation Header -->
-    <header class="glass-panel sticky top-0 z-50 px-6 py-3 border-b border-gray-800 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg accent-gradient flex items-center justify-center text-white font-black text-xl shadow-lg">M</div>
-            <div>
-                <h1 class="font-extrabold text-white text-lg tracking-wider leading-none">MANGUABLADES</h1>
-                <p class="text-xs text-amber-500 font-semibold tracking-widest uppercase">BNB Chain Web3 RPG</p>
-            </div>
-        </div>
-
-        <!-- Token Balance Header & Wallet -->
-        <div class="flex items-center gap-6">
-            <div class="hidden sm:flex items-center gap-4 bg-gray-900/90 px-4 py-2 rounded-xl border border-gray-800">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                    <div>
-                        <div class="text-xs text-gray-400 font-medium">Balance $MANGUA</div>
-                        <div class="text-sm font-bold text-amber-400" id="header-mangua">1,250.00</div>
-                    </div>
+    <!-- HEADER / NAVBAR -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-bnb-500 text-slate-950 font-black p-2 rounded-xl text-xl shadow-lg shadow-bnb-500/20">
+                    <i class="fa-solid fa-khanda"></i>
                 </div>
-                <div class="h-6 w-px bg-gray-800"></div>
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-gem text-amber-500"></i>
-                    <div>
-                        <div class="text-xs text-gray-400 font-medium">Valor Estimado</div>
-                        <div class="text-sm font-bold text-emerald-400" id="header-usd">$6.25 USD</div>
-                    </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-wider text-bnb-500">MANGUABLADES</h1>
+                    <span class="text-xs text-slate-400">Web3 Tactical RPG • BNB Chain</span>
                 </div>
             </div>
 
-            <button id="wallet-btn" onclick="toggleWallet()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-sm transition-all flex items-center gap-2 shadow-lg glow-gold">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="wallet-status">Conectar Billetera</span>
-            </button>
+            <!-- WALLET & BALANCES -->
+            <div class="flex items-center space-x-4">
+                <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance \$MANGUA</div>
+                        <div id="userMangua" class="font-bold text-bnb-500">1,000 \$MANGUA</div>
+                    </div>
+                    <div class="h-6 w-[1px] bg-slate-800"></div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">USD Ref</div>
+                        <div id="userUsd" class="font-bold text-emerald-400">\$5.00 USD</div>
+                    </div>
+                </div>
+                <button onclick="connectWallet()" id="walletBtn" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20 flex items-center space-x-2">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span id="walletText">Conectar Billetera</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Navigation Bar -->
-    <nav class="bg-gray-900/60 border-b border-gray-800 px-6 py-2">
-        <div class="max-w-7xl mx-auto flex gap-2 overflow-x-auto custom-scrollbar">
-            <button onclick="switchTab('adventure')" class="nav-tab active-tab bg-amber-600/20 text-amber-400 border border-amber-500/40 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-map-location-dot"></i> Modo Aventura
-            </button>
-            <button onclick="switchTab('boss')" class="nav-tab text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-dragon"></i> World Boss
-            </button>
-            <button onclick="switchTab('altar')" class="nav-tab text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-fire-alt"></i> Altar de Ascensión
-            </button>
-            <button onclick="switchTab('crafting')" class="nav-tab text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-anvil"></i> Forja & Crafting
-            </button>
-            <button onclick="switchTab('inventory')" class="nav-tab text-gray-400 hover:text-white hover:bg-gray-800 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all">
-                <i class="fa-solid fa-briefcase"></i> Inventario NFTs
-            </button>
-            <button onclick="switchTab('economy')" class="nav-tab text-emerald-400/80 hover:text-emerald-300 hover:bg-emerald-950/30 border border-emerald-500/20 px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all ml-auto">
-                <i class="fa-solid fa-chart-line"></i> Economía & Admin
-            </button>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-6">
-
-        <!-- Active Character Bar -->
-        <section class="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 border-l-4 border-amber-500">
-            <div class="flex items-center gap-4">
-                <div class="relative">
-                    <div class="w-16 h-16 rounded-xl bg-gray-800 border-2 border-amber-500 flex items-center justify-center text-3xl">⚔️</div>
-                    <span class="absolute -bottom-2 -right-2 bg-amber-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">Nvl 1</span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-white font-bold text-lg" id="char-name">Mangua Warrior #1042</h2>
-                        <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded border border-amber-500/30 font-semibold" id="char-rarity">Rara</span>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-0.5">Ataque Base: <span class="text-amber-400 font-bold" id="char-atk">120 ATK</span> | EXP: <span id="char-exp">0 / 100</span></p>
-                </div>
-            </div>
-
-            <!-- Energy Meter -->
-            <div class="w-full md:w-72 bg-gray-900 p-3 rounded-xl border border-gray-800">
-                <div class="flex justify-between items-center text-xs mb-1">
-                    <span class="text-gray-400 font-medium flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-400"></i> Energía Diaria</span>
-                    <span class="text-amber-400 font-bold" id="energy-text">200 / 200</span>
-                </div>
-                <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
-                    <div id="energy-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 100%;"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 1: MODO AVENTURA (PvE) -->
-        <div id="tab-adventure" class="tab-content space-y-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-compass text-amber-500"></i> Modo Aventura (PvE)
-                    </h3>
-                    <p class="text-xs text-gray-400">Supera las 30 etapas para ganar $MANGUA y EXP. Cada batalla consume 40 de Energía (5 diarias).</p>
-                </div>
-                <div class="bg-gray-900 px-4 py-2 rounded-xl border border-gray-800 text-xs">
-                    <span class="text-gray-400">Meta ROI:</span> <span class="text-emerald-400 font-bold">15 Días exactos</span> (Etapas 1-10)
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Aventura Stage Cards -->
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <span class="text-xs font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">Bloque Inicial</span>
-                        <h4 class="text-lg font-bold text-white mt-2">Etapas 1 - 10 (Nvl 1-10)</h4>
-                        <p class="text-xs text-gray-400 mt-1">Dificultad básica. Diseñado para recuperar la inversión inicial de $5.00 USD.</p>
-                        <div class="mt-4 space-y-2 text-xs">
-                            <div class="flex justify-between text-gray-300"><span>Costo Energía:</span><span class="text-amber-400 font-bold">40 pts</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Recompensa:</span><span class="text-emerald-400 font-bold">13.2 $MANGUA (~$0.066 USD)</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Ganancia Diaria:</span><span class="text-emerald-400 font-bold">66 $MANGUA (~$0.33 USD/día)</span></div>
-                        </div>
-                    </div>
-                    <button onclick="playAdventure(1)" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
-                        Iniciar Batalla (40 Energía)
-                    </button>
-                </div>
-
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <span class="text-xs font-bold bg-blue-500/20 text-blue-400 px-2 py-1 rounded">Bloque Intermedio</span>
-                        <h4 class="text-lg font-bold text-white mt-2">Etapas 11 - 20 (Nvl 11-20)</h4>
-                        <p class="text-xs text-gray-400 mt-1">Exige personajes equipados con armas. Retorno acelerado.</p>
-                        <div class="mt-4 space-y-2 text-xs">
-                            <div class="flex justify-between text-gray-300"><span>Costo Energía:</span><span class="text-amber-400 font-bold">40 pts</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Recompensa:</span><span class="text-emerald-400 font-bold">16.5 $MANGUA (~$0.082 USD)</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Ganancia Diaria:</span><span class="text-emerald-400 font-bold">82.5 $MANGUA (~$0.41 USD/día)</span></div>
-                        </div>
-                    </div>
-                    <button onclick="playAdventure(2)" class="w-full bg-gray-800 text-gray-400 font-bold py-2.5 rounded-xl text-sm transition-all cursor-not-allowed">
-                        Requiere Nvl 11 + Arma
-                    </button>
-                </div>
-
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <span class="text-xs font-bold bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Bloque Avanzado</span>
-                        <h4 class="text-lg font-bold text-white mt-2">Etapas 21 - 30 (Nvl 21-30)</h4>
-                        <p class="text-xs text-gray-400 mt-1">Endgame del PvE. Máximo rendimiento de farm diario por personaje.</p>
-                        <div class="mt-4 space-y-2 text-xs">
-                            <div class="flex justify-between text-gray-300"><span>Costo Energía:</span><span class="text-amber-400 font-bold">40 pts</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Recompensa:</span><span class="text-emerald-400 font-bold">20.0 $MANGUA (~$0.100 USD)</span></div>
-                            <div class="flex justify-between text-gray-300"><span>Ganancia Diaria:</span><span class="text-emerald-400 font-bold">100 $MANGUA (~$0.50 USD/día)</span></div>
-                        </div>
-                    </div>
-                    <button onclick="playAdventure(3)" class="w-full bg-gray-800 text-gray-400 font-bold py-2.5 rounded-xl text-sm transition-all cursor-not-allowed">
-                        Requiere Nvl 21 + Épico
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 2: WORLD BOSS -->
-        <div id="tab-boss" class="tab-content hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-red-900/50 bg-gradient-to-r from-red-950/30 to-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="space-y-2">
-                    <span class="bg-red-500/20 text-red-400 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Evento Semanal</span>
-                    <h3 class="text-2xl font-black text-white">Titán Korrath (World Boss)</h3>
-                    <p class="text-xs text-gray-300 max-w-xl">
-                        Atacar al World Boss consume <span class="text-amber-400 font-bold">100 Puntos de Energía (50% diario)</span>. No otorga tokens $MANGUA directos, sino <span class="text-amber-400 font-bold">Fragmentos de Esferas y Pociones</span> indispensables para ascender personajes.
-                    </p>
-                </div>
-                <button onclick="attackBoss()" class="w-full md:w-auto bg-red-600 hover:bg-red-500 text-white font-extrabold px-8 py-3 rounded-xl text-sm transition-all shadow-lg glow-gold whitespace-nowrap">
-                    Atacar Titán (100 Energía)
+    <!-- MAIN INTERFACE -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="lg:col-span-1 space-y-2">
+            <nav class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-2xl space-y-1">
+                <button onclick="switchTab('mint')" id="tab-mint" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
+                    <i class="fa-solid fa-store w-5"></i>
+                    <span>Portal de Minteo</span>
                 </button>
-            </div>
+                <button onclick="switchTab('adventure')" id="tab-adventure" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                    <i class="fa-solid fa-map-marked-alt w-5"></i>
+                    <span>Modo Aventura (Ligas)</span>
+                </button>
+                <button onclick="switchTab('altar')" id="tab-altar" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                    <i class="fa-solid fa-fire-flame-curved w-5"></i>
+                    <span>Altar & Forja</span>
+                </button>
+                <button onclick="switchTab('boss')" id="tab-boss" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                    <i class="fa-solid fa-dragon w-5"></i>
+                    <span>World Boss (Titán Korrath)</span>
+                </button>
+            </nav>
 
-            <!-- Leaderboard Rewards Table -->
-            <div class="glass-panel p-5 rounded-2xl border border-gray-800 space-y-4">
-                <h4 class="text-sm font-bold text-white uppercase tracking-wider text-gray-400">Tabla de Recompensas Semanales del Leaderboard</h4>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs text-gray-300">
-                        <thead class="bg-gray-900 text-gray-400 uppercase font-semibold border-b border-gray-800">
-                            <tr>
-                                <th class="p-3">Rango Leaderboard</th>
-                                <th class="p-3">Tokens $MANGUA</th>
-                                <th class="p-3">Premios Exclusivos (Fragmentos & Pociones)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-800">
-                            <tr class="hover:bg-gray-800/40">
-                                <td class="p-3 font-bold text-amber-400">🥇 Puesto #1</td>
-                                <td class="p-3 text-red-400 font-bold">0 Tokens (Sostenible)</td>
-                                <td class="p-3 text-purple-300">1x Esfera Legendaria Directa + 2x Frag. Épicos + 2x Pociones Max</td>
-                            </tr>
-                            <tr class="hover:bg-gray-800/40">
-                                <td class="p-3 font-bold text-gray-300">🥈 Puestos #2 - #3</td>
-                                <td class="p-3 text-red-400 font-bold">0 Tokens</td>
-                                <td class="p-3 text-blue-300">1x Esfera Épica Directa + 1x Frag. Épico + 1x Poción Max</td>
-                            </tr>
-                            <tr class="hover:bg-gray-800/40">
-                                <td class="p-3 font-bold text-amber-600">🥉 Puestos #4 - #10</td>
-                                <td class="p-3 text-red-400 font-bold">0 Tokens</td>
-                                <td class="p-3 text-emerald-300">2x Fragmentos Épicos + 1x Poción Max</td>
-                            </tr>
-                            <tr class="hover:bg-gray-800/40">
-                                <td class="p-3">🎖️ Puestos #11 - #30</td>
-                                <td class="p-3 text-red-400 font-bold">0 Tokens</td>
-                                <td class="p-3 text-gray-300">1x Fragmento Épico Garantizado</td>
-                            </tr>
-                            <tr class="hover:bg-gray-800/40">
-                                <td class="p-3">🎁 Rango #31 - #100+</td>
-                                <td class="p-3 text-red-400 font-bold">0 Tokens</td>
-                                <td class="p-3 text-gray-400">Lotería RNG (10% de probabilidad de 1x Frag. Épico o Poción)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- ENERGÍA Y CONSUMIBLES -->
+            <div class="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-semibold"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía Diaria</span>
+                    <span id="energyText" class="font-bold text-amber-400">200 / 200</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: ALTAR DE ASCENSIÓN -->
-        <div id="tab-altar" class="tab-content hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-amber-900/40 space-y-4">
-                <div class="flex justify-between items-center">
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="energyBar" class="bg-amber-400 h-full w-full transition-all duration-300"></div>
+                </div>
+                <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center">
                     <div>
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-fire text-amber-500"></i> Altar de Ascensión (New Game+)
-                        </h3>
-                        <p class="text-xs text-gray-400 mt-1">
-                            Combina 2 NFTs iguales al Nvl 30 con 200/200 de energía. El secundario se quema permanentemente (`0x00...dEaD`) y el principal asciende de rareza reiniciando a Nivel 1.
-                        </p>
+                        <div class="text-xs font-bold text-slate-200">Poción de Energía Max</div>
+                        <div class="text-[10px] text-slate-400">$0.50 USD (100$MANGUA)</div>
                     </div>
+                    <button onclick="buyEnergyPotion()" class="bg-slate-800 hover:bg-slate-700 text-bnb-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-bnb-500/30 transition">
+                        Comprar (2/día)
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENT VIEWS -->
+        <section class="lg:col-span-3 space-y-6">
+
+            <!-- TAB 1: PORTAL DE MINTEO (ADQUISICIÓN) -->
+            <div id="view-mint" class="space-y-6">
+                <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-6 rounded-3xl relative overflow-hidden">
+                    <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 text-slate-800/40 text-9xl pointer-events-none">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-shield-halved text-bnb-500 mr-2"></i> Adquisición de Activos Iniciales</h2>
+                    <p class="text-sm text-slate-400 max-w-xl">Mintea tu personaje base para iniciar tu ROI de 15 días en el Modo Aventura o forja tu arma elemental de ataque directo.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    <!-- Target Character Selection -->
-                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-3">
-                        <span class="text-xs font-bold text-gray-400">NFT Principal (Asciende)</span>
-                        <div class="w-20 h-20 mx-auto rounded-xl bg-gray-800 border-2 border-amber-500 flex items-center justify-center text-4xl">⚔️</div>
-                        <p class="text-sm font-bold text-white">Mangua Warrior #1042</p>
-                        <p class="text-xs text-amber-400">Rareza Actual: Rara (Nvl 30 Requerido)</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Card Personaje -->
+                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">NFT Personaje</span>
+                                <span class="text-xs text-slate-400">Rareza: Común (Nivel 1)</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2">Mangua Starter Hero</h3>
+                            <p class="text-xs text-slate-400">Otorgado con 200/200 de energía lista para operar en la Liga Común de Aventura.</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] text-slate-400">Precio Fijo</div>
+                                <div class="text-base font-extrabold text-bnb-500">\$5.00 USD <span class="text-xs text-slate-400 font-normal">(1,000 \$MANGUA)</span></div>
+                            </div>
+                            <button onclick="mintAsset('character', 1000)" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
+                                Mintear Héroe
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Burn Character Selection -->
-                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-3">
-                        <span class="text-xs font-bold text-red-400">NFT Secundario (Se Quema 🔥)</span>
-                        <div class="w-20 h-20 mx-auto rounded-xl bg-gray-800 border-2 border-red-500/50 flex items-center justify-center text-4xl text-gray-600">🛡️</div>
-                        <p class="text-sm font-bold text-gray-400">Seleccionar NFT Raro Nvl 30</p>
-                        <p class="text-xs text-red-400">Se enviará a 0x00...dEaD</p>
+                    <!-- Card Arma -->
+                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold px-3 py-1 rounded-full">NFT Arma</span>
+                                <span class="text-xs text-slate-400">Bono Elemental (+ATK)</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-2">Ballesta Genérica / Báculo</h3>
+                            <p class="text-xs text-slate-400">Equipamiento táctico indispensable para superar las etapas de los bloques avanzados sin fracasar.</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] text-slate-400">Precio Fijo</div>
+                                <div class="text-base font-extrabold text-bnb-500">\$2.50 USD <span class="text-xs text-slate-400 font-normal">(500 \$MANGUA)</span></div>
+                            </div>
+                            <button onclick="mintAsset('weapon', 500)" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
+                                Forjar Arma
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Fees & Action -->
-                <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+            <!-- TAB 2: MODO AVENTURA (LIGAS POR RAREZA) -->
+            <div id="view-adventure" class="space-y-6 hidden">
+                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-map text-bnb-500 mr-2"></i> Modo Aventura por Ligas de Rareza</h2>
+                    <p class="text-sm text-slate-400">Selecciona la Liga correspondiente a la rareza de tu personaje. Cada batalla consume 40 de energía.</p>
+                </div>
+
+                <!-- Selector de Liga -->
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+                    <button onclick="selectLeague('common')" id="league-btn-common" class="bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white">Liga Común</button>
+                    <button onclick="selectLeague('uncommon')" id="league-btn-uncommon" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Poco Común</button>
+                    <button onclick="selectLeague('rare')" id="league-btn-rare" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Rara</button>
+                    <button onclick="selectLeague('epic')" id="league-btn-epic" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Épica</button>
+                    <button onclick="selectLeague('legendary')" id="league-btn-legendary" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Legendaria</button>
+                    <button onclick="selectLeague('mystic')" id="league-btn-mystic" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Mística</button>
+                </div>
+
+                <!-- Contenedor de Sub-etapas de la Liga Activa -->
+                <div id="league-stages-container" class="space-y-4">
+                    <!-- Se carga dinámicamente -->
+                </div>
+            </div>
+
+            <!-- TAB 3: ALTAR & FORJA -->
+            <div id="view-altar" class="space-y-6 hidden">
+                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Crafting</h2>
+                    <p class="text-sm text-slate-400">Sintetiza fragmentos obtenidos en el World Boss y paga la tarifa de oráculo para ascender de rareza.</p>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl text-center space-y-4">
+                    <i class="fa-solid fa-gem text-5xl text-bnb-500 animate-pulse"></i>
+                    <h3 class="text-lg font-bold text-white">Forja de Esferas Soulbound</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto">Combina 3 fragmentos o utiliza el método evolutivo para forjar Esferas Épicas, Legendarias y Místicas vinculadas a tu cuenta.</p>
+                    <div class="pt-2">
+                        <button onclick="alert('Sistema de Altar y Crafting sincronizado con el Smart Contract.')" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg">
+                            Acceder a la Forja
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: WORLD BOSS -->
+            <div id="view-boss" class="space-y-6 hidden">
+                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex justify-between items-center">
                     <div>
-                        <span class="text-gray-400">Tarifa Oráculo (Ascenso a Épico):</span>
-                        <span class="text-amber-400 font-bold ml-1">$10.00 USD (2,000 $MANGUA)</span>
-                        <p class="text-gray-500 mt-0.5">Requiere: 1x Esfera Épica Soulbound</p>
+                        <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-dragon text-red-400 mr-2"></i> World Boss: Titán Korrath</h2>
+                        <p class="text-sm text-slate-400">Consume 100 de energía por ataque. Recompensas enfocadas en fragmentos de esferas y pociones (Sin emisión de tokens).</p>
                     </div>
-                    <button onclick="ascendCharacter()" class="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-white font-bold px-6 py-2.5 rounded-xl transition-all">
-                        Ejecutar Ascensión
+                    <button onclick="attackBoss()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/20">
+                        Atacar al Titán (-100 Energía)
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB 4: FORJA & CRAFTING -->
-        <div id="tab-crafting" class="tab-content hidden space-y-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-anvil text-amber-500"></i> Forja & Crafting de Esferas
-                    </h3>
-                    <p class="text-xs text-gray-400">Combina fragmentos del World Boss para craftear esferas Soulbound de ascensión.</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Crafting Card 1 -->
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-xl">🔮</div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white">Esfera Épica</h4>
-                            <p class="text-xs text-gray-400">Para ascenso Raro ➔ Épico</p>
-                        </div>
-                    </div>
-                    <div class="text-xs space-y-1 text-gray-300">
-                        <p>Receta: <span class="text-amber-400 font-bold">3x Fragmentos Épicos</span></p>
-                        <p>Costo Oráculo: <span class="text-emerald-400">$1.00 USD (200 $MANGUA)</span></p>
-                    </div>
-                    <button onclick="craftSphere('Epic')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-xs transition-all">
-                        Craftear Esfera Épica
-                    </button>
-                </div>
-
-                <!-- Crafting Card 2 -->
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-xl">🟣</div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white">Esfera Legendaria</h4>
-                            <p class="text-xs text-gray-400">Para ascenso Épico ➔ Legendario</p>
-                        </div>
-                    </div>
-                    <div class="text-xs space-y-1 text-gray-300">
-                        <p>Receta A: <span class="text-amber-400 font-bold">3x Frag. Legendarios</span></p>
-                        <p>Receta B: <span class="text-purple-400 font-bold">1x Esfera Épica + 1x Frag. Leg.</span></p>
-                        <p>Costo Oráculo: <span class="text-emerald-400">$2.00 USD (400 $MANGUA)</span></p>
-                    </div>
-                    <button onclick="craftSphere('Legendary')" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-xs transition-all">
-                        Craftear Esfera Legendaria
-                    </button>
-                </div>
-
-                <!-- Crafting Card 3 -->
-                <div class="glass-panel p-5 rounded-2xl border border-gray-800 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl">✨</div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white">Esfera Mística</h4>
-                            <p class="text-xs text-gray-400">Para ascenso Legendario ➔ Místico</p>
-                        </div>
-                    </div>
-                    <div class="text-xs space-y-1 text-gray-300">
-                        <p>Receta A: <span class="text-amber-400 font-bold">3x Frag. Místicos</span></p>
-                        <p>Receta B: <span class="text-amber-400 font-bold">1x Esfera Leg. + 1x Frag. Místico</span></p>
-                        <p>Costo Oráculo: <span class="text-emerald-400">$4.00 USD (800 $MANGUA)</span></p>
-                    </div>
-                    <button onclick="craftSphere('Mystic')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-xl text-xs transition-all">
-                        Craftear Esfera Mística
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 5: INVENTARIO NFTS -->
-        <div id="tab-inventory" class="tab-content hidden space-y-6">
-            <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked text-amber-500"></i> Inventario & Billetera
-                </h3>
-                <span class="text-xs text-gray-400">Límite por billetera: Máximo 4 Personajes / 4 Armas</span>
-            </div>
-
-            <!-- Inventory Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="inventory-grid">
-                <!-- Items populated via JS -->
-            </div>
-        </div>
-
-        <!-- TAB 6: ECONOMÍA, RECICLAJE & ADMIN REVENUE -->
-        <div id="tab-economy" class="tab-content hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-emerald-900/40 space-y-6">
-                <div>
-                    <h3 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
-                        <i class="fa-solid fa-network-wired"></i> Arquitectura Económica & Flujo de Fondos Admin
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Explicación técnica detallada de cómo se recicla el dinero en el contrato y cómo llegan las ganancias a tus billeteras.
-                    </p>
-                </div>
-
-                <!-- Admin Wallet Flow Diagram Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-2">
-                        <div class="text-emerald-400 font-bold text-sm">1. Entrada de Fondos (Minting & Fees)</div>
-                        <p class="text-xs text-gray-400">
-                            Cuando un jugador compra un Mangua Starter ($5 USD), un Arma ($2.50 USD), o paga la Tarifa de Ascensión ($10 USD), el contrato divide el pago automáticamente.
-                        </p>
-                    </div>
-
-                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-2">
-                        <div class="text-amber-400 font-bold text-sm">2. Reciclaje y Tesorería (Pool Rewards)</div>
-                        <p class="text-xs text-gray-400">
-                            El **70% de cada pago** entra directamente a la **Pool de Recompensas del Contrato** para respaldar el ROI de 15 días del modo Aventura de forma indefinida.
-                        </p>
-                    </div>
-
-                    <div class="bg-gray-900/90 p-4 rounded-xl border border-gray-800 space-y-2">
-                        <div class="text-blue-400 font-bold text-sm">3. Tu Billetera Admin (Ganancia Directa)</div>
-                        <p class="text-xs text-gray-400">
-                            El **30% restante (o el 10% de la comisión PvP)** se envía **instantáneamente a tu Billetera Dev/Owner (Admin Fee)** en BNB/$MANGUA sin pasar por intermediarios.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Financial Simulation Table -->
-                <div class="bg-gray-900 p-5 rounded-xl border border-gray-800 space-y-4">
-                    <h4 class="text-sm font-bold text-white">Estimación Financiera por Jugador (Ciclo Completo de Ascensión a Nvl 30)</h4>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs text-gray-300">
-                            <thead class="bg-gray-950 text-gray-400 uppercase font-semibold">
-                                <tr>
-                                    <th class="p-3">Acción del Jugador</th>
-                                    <th class="p-3">Gasto del Jugador ($ USD)</th>
-                                    <th class="p-3">A la Tesorería (70%)</th>
-                                    <th class="p-3">A Tu Billetera Admin (30%)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-800">
-                                <tr>
-                                    <td class="p-3">Mint Personaje #1 + #2 (Para Fusión)</td>
-                                    <td class="p-3 text-red-400 font-bold">$10.00 USD</td>
-                                    <td class="p-3 text-emerald-400">$7.00 USD</td>
-                                    <td class="p-3 text-amber-400 font-bold">$3.00 USD</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3">Forja de 1x Arma Elemental</td>
-                                    <td class="p-3 text-red-400 font-bold">$2.50 USD</td>
-                                    <td class="p-3 text-emerald-400">$1.75 USD</td>
-                                    <td class="p-3 text-amber-400 font-bold">$0.75 USD</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3">Tarifa Oráculo Ascensión a Épico</td>
-                                    <td class="p-3 text-red-400 font-bold">$10.00 USD</td>
-                                    <td class="p-3 text-emerald-400">$7.00 USD</td>
-                                    <td class="p-3 text-amber-400 font-bold">$3.00 USD</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3">Crafting Fee de Esfera Épica</td>
-                                    <td class="p-3 text-red-400 font-bold">$1.00 USD</td>
-                                    <td class="p-3 text-emerald-400">$0.70 USD</td>
-                                    <td class="p-3 text-amber-400 font-bold">$0.30 USD</td>
-                                </tr>
-                                <tr class="bg-gray-950 font-bold">
-                                    <td class="p-3 text-white">TOTAL POR JUGADOR</td>
-                                    <td class="p-3 text-red-400">$23.50 USD</td>
-                                    <td class="p-3 text-emerald-400">$16.45 USD (Sostiene ROI)</td>
-                                    <td class="p-3 text-amber-400">$7.05 USD (Tu Ganancia Directa)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 border-t border-gray-800 py-4 px-6 text-center text-xs text-gray-500">
-        ManguaBlades Web3 Ecosystem © 2026. Operando en BNB Chain Testnet/Mainnet.
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-900/40 py-4 text-center text-xs text-slate-500">
+        ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JavaScript Game State & Logic -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Game State Engine
-        const state = {
-            walletConnected: false,
-            walletAddress: "0x71C...39A2",
-            manguaBalance: 1250.00,
-            usdRate: 0.005, // 1 MANGUA = $0.005 USD
-            energy: 200,
-            maxEnergy: 200,
-            character: {
-                name: "Mangua Warrior #1042",
-                level: 1,
-                rarity: "Rara",
-                atk: 120,
-                exp: 0,
-                maxExp: 100
-            },
-            inventory: {
-                epicFragments: 2,
-                legendaryFragments: 0,
-                mysticFragments: 0,
-                potions: 1,
-                spheres: { epic: 0, legendary: 0, mystic: 0 }
-            }
+        let balanceMangua = 1000;
+        let energy = 200;
+        let activeLeague = 'common';
+
+        const leaguesData = {
+            common: { name: 'Liga Común', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 13.2, usd: 0.33 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 14.2, usd: 0.355 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 15.2, usd: 0.38 }
+            ]},
+            uncommon: { name: 'Liga Poco Común', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 16.2, usd: 0.405 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 17.4, usd: 0.435 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 18.6, usd: 0.465 }
+            ]},
+            rare: { name: 'Liga Rara', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 20.0, usd: 0.50 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 21.6, usd: 0.54 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 23.2, usd: 0.58 }
+            ]},
+            epic: { name: 'Liga Épica', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 25.0, usd: 0.625 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 27.2, usd: 0.68 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 29.4, usd: 0.735 }
+            ]},
+            legendary: { name: 'Liga Legendaria', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 32.0, usd: 0.80 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 35.0, usd: 0.875 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 38.0, usd: 0.95 }
+            ]},
+            mystic: { name: 'Liga Mística', stages: [
+                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 42.0, usd: 1.05 },
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 46.0, usd: 1.15 },
+                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 50.0, usd: 1.25 }
+            ]}
         };
 
-        // UI Tab Switcher
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                el.classList.remove('bg-amber-600/20', 'text-amber-400', 'border', 'border-amber-500/40');
-                el.classList.add('text-gray-400');
-            });
-
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            event.currentTarget.classList.add('bg-amber-600/20', 'text-amber-400', 'border', 'border-amber-500/40');
-            event.currentTarget.classList.remove('text-gray-400');
-        }
-
-        // Connect Wallet Function
-        function toggleWallet() {
-            state.walletConnected = !state.walletConnected;
-            const btnText = document.getElementById('wallet-status');
-            if (state.walletConnected) {
-                btnText.innerText = state.walletAddress;
-                alert("Billetera MetaMask conectada exitosamente a BNB Chain.");
-            } else {
-                btnText.innerText = "Conectar Billetera";
-            }
-        }
-
-        // Play Adventure Battle
-        function playAdventure(block) {
-            if (state.energy < 40) {
-                alert("¡Energía insuficiente! Necesitas 40 puntos de energía para la Aventura.");
-                return;
-            }
-
-            let reward = 0;
-            if (block === 1) reward = 13.2; // Block 1 (ROI 15 days)
-
-            state.energy -= 40;
-            state.manguaBalance += reward;
-            state.character.exp += 25;
-
-            if (state.character.exp >= state.character.maxExp) {
-                state.character.level += 1;
-                state.character.exp = 0;
-                state.character.atk += 15;
-                alert(`¡FELICIDADES! Tu personaje subió al Nivel ${state.character.level}. Ataque aumentado.`);
-            }
-
-            updateUI();
-            alert(`¡Batalla Ganada! Has consumido 40 de Energía y ganado +${reward} $MANGUA y +25 EXP.`);
-        }
-
-        // Attack World Boss
-        function attackBoss() {
-            if (state.energy < 100) {
-                alert("¡Energía insuficiente! Se requieren 100 de Energía (50% diario) para el Titán Korrath.");
-                return;
-            }
-
-            state.energy -= 100;
-            state.inventory.epicFragments += 1;
-            updateUI();
-
-            alert("¡Ataque ejecutado al Titán Korrath! Has obtenido 1x Fragmento Épico en la tabla de clasificación.");
-        }
-
-        // Craft Spheres
-        function craftSphere(type) {
-            if (type === 'Epic') {
-                if (state.inventory.epicFragments < 3) {
-                    alert("Necesitas al menos 3x Fragmentos Épicos para craftear una Esfera Épica.");
-                    return;
-                }
-                if (state.manguaBalance < 200) {
-                    alert("Saldo insuficiente en $MANGUA para pagar la tarifa de oráculo de $1.00 USD (200 $MANGUA).");
-                    return;
-                }
-
-                state.inventory.epicFragments -= 3;
-                state.manguaBalance -= 200;
-                state.inventory.spheres.epic += 1;
-                updateUI();
-                alert("¡Éxito! Has crafteado 1x Esfera Épica Soulbound.");
-            }
-        }
-
-        // Ascend Character
-        function ascendCharacter() {
-            if (state.character.level < 30) {
-                alert("Tu personaje principal debe ser obligatoriamente Nivel 30 para entrar al Altar de Ascensión.");
-                return;
-            }
-        }
-
-        // Update UI Dashboard
         function updateUI() {
-            document.getElementById('header-mangua').innerText = state.manguaBalance.toFixed(2);
-            document.getElementById('header-usd').innerText = `$${(state.manguaBalance * state.usdRate).toFixed(2)} USD`;
-            document.getElementById('energy-text').innerText = `${state.energy} / ${state.maxEnergy}`;
-            document.getElementById('energy-bar').style.width = `${(state.energy / state.maxEnergy) * 100}%`;
-            
-            document.getElementById('char-atk').innerText = `${state.character.atk} ATK`;
-            document.getElementById('char-exp').innerText = `${state.character.exp} / ${state.character.maxExp}`;
-            
-            renderInventory();
+            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
+            const usdVal = (balanceMangua * 0.005).toFixed(2);
+            document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
+            document.getElementById('energyText').innerText = energy + ' / 200';
+            const energyPct = (energy / 200) * 100;
+            document.getElementById('energyBar').style.width = energyPct + '%';
         }
 
-        // Render Inventory Grid
-        function renderInventory() {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = `
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
-                    <div class="text-2xl">🔮</div>
-                    <div class="text-xs text-gray-400">Fragmentos Épicos</div>
-                    <div class="text-sm font-bold text-amber-400">${state.inventory.epicFragments} / 3</div>
-                </div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
-                    <div class="text-2xl">⚡</div>
-                    <div class="text-xs text-gray-400">Pociones de Energía</div>
-                    <div class="text-sm font-bold text-amber-400">${state.inventory.potions}</div>
-                </div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
-                    <div class="text-2xl">🔵</div>
-                    <div class="text-xs text-gray-400">Esferas Épicas</div>
-                    <div class="text-sm font-bold text-amber-400">${state.inventory.spheres.epic}</div>
-                </div>
-                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 text-center space-y-2">
-                    <div class="text-2xl">🟣</div>
-                    <div class="text-xs text-gray-400">Esferas Legendarias</div>
-                    <div class="text-sm font-bold text-amber-400">${state.inventory.spheres.legendary}</div>
-                </div>
-            `;
+        function switchTab(tab) {
+            ['mint', 'adventure', 'altar', 'boss'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200";
+            });
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md";
+            if(tab === 'adventure') renderLeagueStages();
         }
 
-        // Init App
+        function selectLeague(leagueKey) {
+            activeLeague = leagueKey;
+            ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mystic'].forEach(k => {
+                const btn = document.getElementById('league-btn-' + k);
+                if(k === leagueKey) {
+                    btn.className = "bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white shadow";
+                } else {
+                    btn.className = "bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400";
+                }
+            });
+            renderLeagueStages();
+        }
+
+        function renderLeagueStages() {
+            const container = document.getElementById('league-stages-container');
+            const league = leaguesData[activeLeague];
+            let html = `<div class="text-sm font-bold text-bnb-500 mb-2">${league.name}</div>`;
+            
+            league.stages.forEach((st, idx) => {
+                html += `
+                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+                        <div>
+                            <div class="font-bold text-white text-sm">${st.name}</div>
+                            <div class="text-xs text-slate-400">Requisito: ${st.req} • Gana +${st.reward} $MANGUA ($${st.usd} USD)</div>
+                        </div>
+                        <button onclick="playAdventure(${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">
+                            Batallar (-40 Energía)
+                        </button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function mintAsset(type, cost) {
+            if(balanceMangua < cost) {
+                alert('Saldo insuficiente de \$MANGUA para mintear.');
+                return;
+            }
+            balanceMangua -= cost;
+            updateUI();
+            alert('¡Minteo exitoso! NFT añadido a tu inventario.');
+        }
+
+        function playAdventure(reward) {
+            if(energy < 40) {
+                alert('Energía insuficiente. Compra una Poción o espera regeneración.');
+                return;
+            }
+            energy -= 40;
+            balanceMangua += reward;
+            updateUI();
+            alert(`¡Victoria en Aventura! Has ganado +${reward} $MANGUA.`);
+        }
+
+        function buyEnergyPotion() {
+            if(balanceMangua < 100) {
+                alert('Necesitas 100 \$MANGUA (\$0.50 USD) para comprar la poción.');
+                return;
+            }
+            balanceMangua -= 100;
+            energy = 200;
+            updateUI();
+            alert('¡Poción aplicada con éxito! Energía restaurada a 200/200.');
+        }
+
+        function attackBoss() {
+            if(energy < 100) {
+                alert('El ataque al World Boss requiere 100 de energía (50%).');
+                return;
+            }
+            energy -= 100;
+            updateUI();
+            alert('¡Ataque registrado contra el Titán Korrath! Revisa tu caja semanal para ver tus fragmentos de esferas y pociones.');
+        }
+
+        function connectWallet() {
+            document.getElementById('walletText').innerText = '0x71C...3a98';
+            alert('Billetera BNB Chain conectada correctamente.');
+        }
+
         updateUI();
+        renderLeagueStages();
     </script>
 </body>
 </html>
