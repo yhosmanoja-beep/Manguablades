@@ -3,860 +3,776 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ManguaBlades - Web3 RPG ⚔️ (PvP Arena)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <title>ManguaBlades - Web3 Tactical RPG DApp</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0a0910',
+                            card: '#13111c',
+                            border: '#2a243d',
+                            gold: '#fbbf24',
+                            goldDark: '#d97706',
+                            purple: '#8b5cf6',
+                            cyan: '#06b6d4',
+                            red: '#ef4444',
+                            green: '#10b981'
+                        },
+                        rarity: {
+                            common: '#9ca3af',
+                            rare: '#3b82f6',
+                            epic: '#a855f7',
+                            legendary: '#f59e0b',
+                            mystic: '#ec4899'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --bg-color: #0b0e11;
-            --card-bg: #181a20;
-            --border-color: #2b2f36;
-            --primary: #f0b90b;
-            --fire: #ff4d4d;
-            --water: #00b8d9;
-            --earth: #ffab00;
-            --lightning: #9b51e0;
-            --pvp: #f6465d;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            user-select: none;
+            background-color: #08070d;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background-color: #12161c;
-            border-bottom: 1px solid var(--border-color);
+        .font-cinzel { font-family: 'Cinzel', serif; }
+
+        /* Glassmorphism Styling */
+        .glass-panel {
+            background: rgba(19, 17, 28, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: 0 0 8px rgba(240, 185, 11, 0.4);
+        .glass-panel-glow {
+            background: rgba(22, 19, 34, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.08);
         }
 
-        .wallet-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0910; }
+        ::-webkit-scrollbar-thumb { background: #2a243d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
+
+        /* Glow Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); }
         }
+        .animate-glow { animation: pulse-glow 3s infinite; }
 
-        .balance {
-            background: #2b2f36;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-        }
-
-        .price-oracle {
-            background: #181a20;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .btn-connect {
-            background-color: var(--primary);
-            color: #000;
-            border: none;
-            padding: 8px 14px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #181a20;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: #848e9c;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 8px 10px;
-            cursor: pointer;
-        }
-
-        .nav-btn.active, .nav-btn:hover {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .actions-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .btn-action {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(240, 185, 11, 0.2);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .card.selected {
-            box-shadow: 0 0 15px var(--primary);
-            border-color: var(--primary);
-        }
-
-        .stars-1 { border-color: #a0a0a0; }
-        .stars-2 { border-color: #00b8d9; box-shadow: 0 0 10px rgba(0, 184, 217, 0.3); }
-        .stars-3 { border-color: #f0b90b; box-shadow: 0 0 18px rgba(240, 185, 11, 0.5); }
-
-        .element-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .badge-fire { background: var(--fire); color: #fff; }
-        .badge-water { background: var(--water); color: #fff; }
-        .badge-earth { background: var(--earth); color: #000; }
-        .badge-lightning { background: var(--lightning); color: #fff; }
-
-        .avatar-placeholder {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: #2b2f36;
-            margin: 10px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-        }
-
-        .stats-list {
-            text-align: left;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #eaecef;
-        }
-
-        .btn-card {
-            width: 100%;
-            background: #2b2f36;
-            color: #fff;
-            border: none;
-            padding: 7px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .btn-card:hover { background: var(--primary); color: #000; }
-        .btn-potion { background: #6554c0; color: #fff; }
-        .btn-ascend { background: #0ecb81; color: #000; }
-
-        .battle-arena {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 15px;
-            align-items: center;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .vs-badge {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: 0 0 10px var(--primary);
-        }
-
-        .combatant-box {
-            background: #12161c;
-            border: 1px solid #30363d;
-            padding: 12px;
-            border-radius: 10px;
-        }
-
-        .enemy-card {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .btn-fight {
-            background: #da3633;
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .btn-fight:disabled { background: #444; color: #888; cursor: not-allowed; }
-
-        .btn-pvp {
-            background: var(--pvp);
-            color: #fff;
-            box-shadow: 0 0 8px rgba(246, 70, 93, 0.4);
-        }
-
-        .claim-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 500px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-card {
-            background: #181a20;
-            border: 2px solid var(--primary);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(240, 185, 11, 0.4);
-        }
-
-        .modal-btn {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .log-box {
-            background: #000;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            color: #0ecb81;
-            height: 110px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
+        .rarity-common { border-color: #9ca3af; box-shadow: 0 0 10px rgba(156, 163, 175, 0.2); }
+        .rarity-rare { border-color: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.3); }
+        .rarity-epic { border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.35); }
+        .rarity-legendary { border-color: #f59e0b; box-shadow: 0 0 18px rgba(245, 158, 11, 0.4); }
+        .rarity-mystic { border-color: #ec4899; box-shadow: 0 0 22px rgba(236, 72, 153, 0.5); }
     </style>
 </head>
-<body>
-    <header>
-        <div class="logo">MANGUABLADES ⚔️</div>
-        <div class="wallet-info">
-            <div class="price-oracle">📈 1 MANGUA = \$<span id="manguaPriceUSD">0.0000033</span> USD</div>
-            <div class="balance">💰 <span id="manguaBalance">3,000,000</span> \$MANGUA</div>
-            <button class="btn-connect" id="connectWallet" onclick="connectWallet()">Conectar Web3</button>
+<body class="min-h-screen flex flex-col pb-12">
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- CONFIRMATION MODAL FOR ALTAR -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel-glow max-w-md w-full p-6 rounded-2xl border border-brand-gold/40 text-center relative animate-glow">
+            <div class="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center mx-auto mb-4 text-red-400">
+                <i data-lucide="flame" class="w-8 h-8"></i>
+            </div>
+            <h3 class="font-cinzel text-2xl font-bold text-white mb-2">ADVERTENCIA DE QUEMA</h3>
+            <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                Estás a punto de sacrificar a <span id="modal-burn-name" class="font-bold text-red-400">Mangua B</span>. 
+                Este NFT será <span class="text-red-400 font-bold underline">DESTRUIDO PARA SIEMPRE</span> en la blockchain (<code class="text-xs bg-black/50 px-1 py-0.5 rounded text-gray-400">0x00...dEaD</code>). 
+                Esta acción es irreversible.
+            </p>
+            
+            <div class="bg-black/40 rounded-xl p-3 mb-6 border border-brand-border text-left text-xs space-y-1">
+                <div class="flex justify-between text-gray-400"><span>Target:</span><span id="modal-target-info" class="text-brand-gold font-semibold">Mangua A (Nivel 30)</span></div>
+                <div class="flex justify-between text-gray-400"><span>Sacrificio:</span><span id="modal-sacrifice-info" class="text-red-400 font-semibold">Mangua B (Nivel 30)</span></div>
+                <div class="flex justify-between text-gray-400"><span>Tarifa Oráculo:</span><span class="text-white font-semibold">12,500 $MANGUA</span></div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-3 rounded-xl border border-brand-border bg-brand-card hover:bg-gray-800 text-gray-300 font-semibold transition">
+                    Cancelar
+                </button>
+                <button onclick="executeFusion()" class="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-red-600 to-brand-goldDark text-white font-bold hover:brightness-125 transition shadow-lg shadow-red-900/40">
+                    Confirmar Quema
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVBAR -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-brand-border/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-gold to-brand-purple p-0.5 shadow-lg shadow-brand-gold/20 flex items-center justify-center">
+                        <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+                            <i data-lucide="shield" class="w-6 h-6 text-brand-gold"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-cinzel font-black text-2xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-white to-brand-cyan">
+                            MANGUABLADES
+                        </h1>
+                        <p class="text-[10px] text-brand-purple tracking-widest font-semibold uppercase">Tactical RPG • BNB Chain</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Desktop -->
+                <nav class="hidden lg:flex items-center gap-1 bg-black/40 p-1.5 rounded-2xl border border-brand-border">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-brand-gold bg-brand-purple/20 border border-brand-purple/40">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('altar')" id="nav-altar" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-gray-400 hover:text-white">
+                        <i data-lucide="flame" class="w-4 h-4 text-brand-gold"></i> Altar de Ascensión
+                    </button>
+                    <button onclick="switchTab('mochila')" id="nav-mochila" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-gray-400 hover:text-white">
+                        <i data-lucide="briefcase" class="w-4 h-4 text-brand-cyan"></i> Mochila
+                    </button>
+                    <button onclick="switchTab('worldboss')" id="nav-worldboss" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-gray-400 hover:text-white">
+                        <i data-lucide="skull" class="w-4 h-4 text-red-400"></i> World Boss
+                    </button>
+                    <button onclick="switchTab('pvp')" id="nav-pvp" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-gray-400 hover:text-white">
+                        <i data-lucide="swords" class="w-4 h-4 text-purple-400"></i> Coliseo PvP
+                    </button>
+                    <button onclick="switchTab('marketplace')" id="nav-marketplace" class="nav-btn px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition flex items-center gap-2 text-gray-400 hover:text-white">
+                        <i data-lucide="shopping-bag" class="w-4 h-4 text-green-400"></i> Mercado
+                    </button>
+                </nav>
+
+                <!-- Wallet Indicators -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-3 bg-black/50 px-3 py-1.5 rounded-xl border border-brand-border text-xs">
+                        <div class="flex items-center gap-1.5 text-brand-gold font-semibold">
+                            <i data-lucide="coins" class="w-3.5 h-3.5"></i>
+                            <span id="mangua-balance">145,200</span> <span class="text-[10px]">MANGUA</span>
+                        </div>
+                        <div class="w-px h-4 bg-brand-border"></div>
+                        <div class="flex items-center gap-1.5 text-brand-cyan font-semibold">
+                            <span id="bnb-balance">0.45</span> <span class="text-[10px]">BNB</span>
+                        </div>
+                    </div>
+
+                    <button class="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-purple to-indigo-600 hover:from-brand-purple hover:to-indigo-500 text-white font-semibold text-xs transition shadow-md shadow-brand-purple/20 flex items-center gap-2 border border-purple-400/30">
+                        <div class="w-2 h-2 rounded-full bg-brand-green animate-ping"></div>
+                        <span>0x71C...4f9a</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Bar -->
+        <div class="lg:hidden flex overflow-x-auto gap-2 px-4 py-2 bg-black/60 border-t border-brand-border text-xs no-scrollbar">
+            <button onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg whitespace-nowrap bg-brand-purple/30 text-white">Dashboard</button>
+            <button onclick="switchTab('altar')" class="px-3 py-1.5 rounded-lg whitespace-nowrap text-gray-400">Altar</button>
+            <button onclick="switchTab('mochila')" class="px-3 py-1.5 rounded-lg whitespace-nowrap text-gray-400">Mochila</button>
+            <button onclick="switchTab('worldboss')" class="px-3 py-1.5 rounded-lg whitespace-nowrap text-gray-400">World Boss</button>
+            <button onclick="switchTab('pvp')" class="px-3 py-1.5 rounded-lg whitespace-nowrap text-gray-400">PvP</button>
+            <button onclick="switchTab('marketplace')" class="px-3 py-1.5 rounded-lg whitespace-nowrap text-gray-400">Mercado</button>
         </div>
     </header>
-    <nav>
-        <button class="nav-btn active" id="btn-plaza" onclick="switchTab('plaza')">🏛️ Plaza</button>
-        <button class="nav-btn" id="btn-herreria" onclick="switchTab('herreria')">🔨 Herrería</button>
-        <button class="nav-btn" id="btn-pve" onclick="switchTab('pve')">🌲 Aventura PvE</button>
-        <button class="nav-btn" id="btn-pvp" onclick="switchTab('pvp')">🔥 Arena PvP</button>
-        <button class="nav-btn" id="btn-retiros" onclick="switchTab('retiros')">🏦 Retiros</button>
-        <button class="nav-btn" id="btn-mercado" onclick="switchTab('mercado')">🛒 Mercado</button>
-    </nav>
-    <div class="container">
-        <!-- PLAZA -->
-        <div id="tab-plaza" class="tab-content active">
-            <div class="actions-bar">
-                <h2>Tus Personajes Mangua (<span id="charCount">0</span>/4)</h2>
-                <button class="btn-action" onclick="mintCharacter()">Reclutar Mangua (\$5 USD / <span id="costMintMangua">1,500,000</span> \$MANGUA)</button>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 flex-1">
+
+        <!-- ================= TAB 1: DASHBOARD ================= -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Hero Stats Banner -->
+            <div class="glass-panel p-6 rounded-3xl border border-brand-border relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-brand-purple/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Manguas Activos</p>
+                        <h2 class="text-3xl font-black text-white font-cinzel mt-1">4 NFTs</h2>
+                        <p class="text-xs text-brand-green mt-1 flex items-center gap-1">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 2 Listos para Fusión
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Energía Total</p>
+                        <h2 class="text-3xl font-black text-brand-cyan font-cinzel mt-1">600 / 800</h2>
+                        <p class="text-xs text-gray-400 mt-1">Regeneración: +10 / hora</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Estimado ROI (15 Días)</p>
+                        <h2 class="text-3xl font-black text-brand-gold font-cinzel mt-1">~$18.50 / Día</h2>
+                        <p class="text-xs text-brand-gold mt-1">Sostenibilidad: 15% Claim Fee</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Rango World Boss</p>
+                        <h2 class="text-3xl font-black text-purple-400 font-cinzel mt-1">Top #14</h2>
+                        <p class="text-xs text-purple-300 mt-1">Elegible: Esfera Legendaria</p>
+                    </div>
+                </div>
             </div>
-            <div style="margin-bottom: 15px; font-size: 13px; color: #f0b90b;">
-                🧪 Pociones usadas en la cuenta hoy: <span id="accountPotionsCount">0</span>/3
+
+            <!-- Character Quick Showcase -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-cinzel font-bold text-xl text-white flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-brand-gold"></i> Tus Personajes Manguas
+                    </h3>
+                    <button onclick="switchTab('altar')" class="text-xs text-brand-gold hover:underline flex items-center gap-1">
+                        Ir al Altar de Ascensión <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="dashboard-mangua-list">
+                    <!-- Dynamic Javascript injection -->
+                </div>
             </div>
-            <div class="grid" id="charactersContainer"></div>
-        </div>
+        </section>
 
-        <!-- HERRERÍA -->
-        <div id="tab-pve" class="tab-content">
-            <!-- HERRERÍA -->
-        </div>
 
-        <div id="tab-herreria" class="tab-content">
-            <div class="actions-bar">
-                <h2>Herrería / ManguaBlade Armas</h2>
-                <button class="btn-action" onclick="forgeWeapon()">Forjar Arma (\$2.50 USD / <span id="costForgeMangua">750,000</span> \$MANGUA)</button>
-            </div>
-            <div class="grid" id="weaponsContainer"></div>
-        </div>
-
-        <!-- PVE ARENA -->
-        <div id="tab-pve" class="tab-content active"> <!-- Corregido abajo en JS --> </div>
-
-        <!-- PvP ARENA (JUGADOR VS JUGADOR) -->
-        <div id="tab-pvp" class="tab-content">
-            <h2>🔥 Coliseo PvP (Duelo de Apuestas de Manguas)</h2>
-            <p style="color: #848e9c; font-size: 13px;">Retar a otro jugador cuesta una apuesta de <strong>100,000 \$MANGUA</strong>. El ganador se lleva el pozo (menos un 10% de comisión de protocolo para el desarrollador).</p>
+        <!-- ================= TAB 2: ALTAR DE ASCENSIÓN Y FUSIÓN ================= -->
+        <section id="tab-altar" class="tab-content space-y-6 hidden">
             
-            <div class="battle-arena">
-                <div class="combatant-box" id="pvpHeroBox">
-                    <h3>Tu Mangua</h3>
-                    <div id="pvpHeroContent">Selecciona un Mangua en la Plaza</div>
+            <!-- Section Header -->
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="font-cinzel text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-white to-brand-goldDark">
+                    ALTAR DE ASCENSIÓN Y FUSIÓN
+                </h2>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Sacrifica un NFT de Nivel 30 con energía completa (200/200) para elevar la rareza del objetivo y romper los límites de poder. El NFT sacrificado se quemará permanentemente.
+                </p>
+
+                <!-- Mode Selector -->
+                <div class="inline-flex p-1 bg-black/60 rounded-2xl border border-brand-border mt-3">
+                    <button id="btn-mode-manguas" onclick="setAltarMode('manguas')" class="px-6 py-2 rounded-xl text-xs font-bold transition bg-gradient-to-r from-brand-gold to-brand-goldDark text-black shadow-md">
+                        Manguas (Personajes)
+                    </button>
+                    <button id="btn-mode-armas" onclick="setAltarMode('armas')" class="px-6 py-2 rounded-xl text-xs font-bold transition text-gray-400 hover:text-white">
+                        Armas (Herrería)
+                    </button>
                 </div>
-                <div class="vs-badge" style="color: var(--pvp);">VS</div>
-                <div class="combatant-box">
-                    <h3>Rival Seleccionado</h3>
-                    <div id="pvpRivalContent">Elige un contrincante abajo</div>
+            </div>
+
+            <!-- Dynamic Anti-Exploit Warning Banner -->
+            <div id="altar-warning-banner" class="glass-panel p-4 rounded-2xl border border-red-500/50 bg-red-950/20 flex items-center gap-4 text-red-300 text-xs">
+                <div class="p-2.5 bg-red-500/20 rounded-xl text-red-400 shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-red-400 uppercase tracking-wide">REQUISITO DE ENERGÍA CRÍTICO (ANTI-EXPLOIT)</h4>
+                    <p class="text-gray-300 mt-0.5">Ambos NFTs seleccionados deben tener <span class="text-white font-bold">200/200 de energía completa</span>. No se permite fusionar NFTs con energía agotada.</p>
                 </div>
             </div>
 
-            <h3>Rivales en Espera (PvP)</h3>
-            <div id="pvpRivalsContainer"></div>
-
-            <h3>📜 Registro de Duelos PvP</h3>
-            <div class="log-box" id="pvpLog">Entrada al Coliseo PvP lista. ¡Demuestra tu poder!</div>
-        </div>
-
-        <!-- PVE (Aventura) -->
-        <div id="tab-pve-real" class="tab-content">
-            <h2>🌲 Aventura PvE (Monstruos & Farmeo Diario)</h2>
-            <div class="battle-arena">
-                <div class="combatant-box" id="arenaHeroBox">
-                    <h3>Tu Mangua</h3>
-                    <div id="arenaHeroContent">Selecciona un Mangua en la Plaza</div>
-                </div>
-                <div class="vs-badge">VS</div>
-                <div class="combatant-box" id="arenaWeaponBox">
-                    <h3>Arma Equipada</h3>
-                    <div id="arenaWeaponContent">Ninguna</div>
-                </div>
-            </div>
-            <h3>Monstruos del Mundo</h3>
-            <div id="enemiesContainer"></div>
-            <h3>📜 Registro de Aventura</h3>
-            <div class="log-box" id="combatLog">Bienvenido a la aventura PvE.</div>
-        </div>
-
-        <!-- RETIROS -->
-        <div id="tab-retiros" class="tab-content">
-            <h2>🏦 Retiro de Fondos y Sostenibilidad</h2>
-            <div class="claim-card">
-                <p>Retira tus ganancias acumuladas a tu billetera personal en tokens \$MANGUA.</p>
-                <div style="font-size: 18px; margin: 15px 0; color: var(--primary);">
-                    Saldo Disponible: <strong id="claimableBalance">3,000,000</strong> \$MANGUA
-                </div>
-                <div style="font-size: 12px; color: #848e9c; margin-bottom: 15px;">
-                    ⚡ Tasa de Sostenibilidad del Protocolo: <strong>15%</strong>.
-                </div>
-                <button class="btn-action" onclick="claimTokens()">Retirar a Billetera</button>
-            </div>
-        </div>
-
-        <!-- MERCADO -->
-        <div id="tab-mercado" class="tab-content">
-            <h2>🛒 Mercado Mangua NFT</h2>
-            <p>Comercio P2P descentralizado.</p>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal-overlay" id="rewardModal">
-        <div class="modal-card">
-            <h2 id="modalTitle">🎉 ¡VICTORIA!</h2>
-            <p id="modalDesc">Has derrotado al rival.</p>
-            <div id="modalRewards" style="font-size: 16px; margin: 15px 0; color: #0ecb81; font-weight: bold;"></div>
-            <button class="modal-btn" onclick="closeModal()">¡Excelente!</button>
-        </div>
-    </div>
-
-    <script>
-        let currentPriceUSD = 0.000003333;
-        let balance = 3000000;
-        let selectedCharacterId = null;
-        let selectedWeaponId = null;
-        let accountDailyPotionsUsed = 0;
-
-        let characters = [
-            { id: 1, name: "Manguito Guerrero", element: "fire", level: 1, xp: 0, power: 800, energy: 200, emoji: "🥭⚔️", potionUsedToday: false, equippedWeaponId: null, ascended: false }
-        ];
-
-        let weapons = [
-            { id: 1, name: "Hoja Manguera", element: "fire", powerBonus: 200, stars: 1, emoji: "🗡️", energy: 200, boundToCharId: null }
-        ];
-
-        // Rivales de PvP simulados en la red
-        let pvpRivals = [
-            { id: 1, name: "SlayerGod #99", element: "lightning", power: 1250, rewardPool: "180,000 \$MANGUA" },
-            { id: 2, name: "ShadowBlade #12", element: "water", power: 1100, rewardPool: "180,000 \$MANGUA" },
-            { id: 3, name: "ManguitoFire #1", element: "earth", power: 950, rewardPool: "180,000 \$MANGUA" }
-        ];
-
-        const elementsList = ["earth", "fire", "water", "lightning"];
-        const monsterNames = ["Plaga Podrida", "Espectro", "Duende Sombrío", "Bestia Rabiosa", "Guardián Pantano"];
-
-        let enemies = [];
-        for (let lvl = 1; lvl <= 15; lvl++) {
-            let elem = elementsList[(lvl - 1) % elementsList.length];
-            let nameIdx = (lvl - 1) % monsterNames.length;
-            let reqPWR = 750 + (lvl * 150);
-            let rewardUSD = 0.10 + ((lvl - 1) * 0.01586);
-            let rewardMangua = Math.floor(rewardUSD / currentPriceUSD);
-
-            enemies.push({
-                id: lvl,
-                name: `${monsterNames[nameIdx]} Lvl ${lvl}`,
-                minLevel: lvl,
-                element: elem,
-                reqPower: reqPWR,
-                rewardUSD: rewardUSD,
-                reward: rewardMangua
-            });
-        }
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            if (type === 'hit') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.15);
-            } else if (type === 'victory') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(554.37, audioCtx.currentTime + 0.1);
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
-            }
-        }
-
-        function getManguaCostUSD(usdValue) {
-            return Math.floor(usdValue / currentPriceUSD);
-        }
-
-        function updateOracleDisplay() {
-            document.getElementById('manguaPriceUSD').innerText = currentPriceUSD.toFixed(7);
-            document.getElementById('costMintMangua').innerText = getManguaCostUSD(5.00).toLocaleString();
-            document.getElementById('costForgeMangua').innerText = getManguaCostUSD(2.50).toLocaleString();
-            document.getElementById('manguaBalance').innerText = balance.toLocaleString();
-            document.getElementById('claimableBalance').innerText = balance.toLocaleString();
-            document.getElementById('accountPotionsCount').innerText = accountDailyPotionsUsed;
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
-            if(tabName === 'pve') {
-                document.getElementById('tab-pve-real').classList.add('active');
-                document.getElementById('btn-pve').classList.add('active');
-                updateCombatView();
-            } else if(tabName === 'pvp') {
-                document.getElementById('tab-pvp').classList.add('active');
-                document.getElementById('btn-pvp').classList.add('active');
-                updatePvpView();
-            } else {
-                document.getElementById('tab-' + tabName).classList.add('active');
-                document.getElementById('btn-' + tabName).classList.add('active');
-            }
-        }
-
-        function renderCharacters() {
-            const container = document.getElementById('charactersContainer');
-            container.innerHTML = '';
-            document.getElementById('charCount').innerText = characters.length;
-
-            characters.forEach(c => {
-                const isSelected = selectedCharacterId === c.id;
-                const ascendCostMangua = getManguaCostUSD(2.00);
+            <!-- Fusion Slots Arena -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                 
-                let wName = "Ninguna";
-                if(c.equippedWeaponId) {
-                    let w = weapons.find(x => x.id === c.equippedWeaponId);
-                    if(w) wName = `${w.name} (Ene: ${w.energy}/200)`;
-                }
+                <!-- SLOT A (TARGET) -->
+                <div class="lg:col-span-5 glass-panel p-5 rounded-3xl border border-brand-border space-y-4 relative overflow-hidden">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase tracking-wider text-brand-gold flex items-center gap-1.5">
+                            <i data-lucide="target" class="w-4 h-4"></i> Slot A (Objetivo Principal)
+                        </span>
+                        <span class="text-[10px] bg-brand-gold/10 text-brand-gold px-2 py-0.5 rounded-full border border-brand-gold/30">Evolucionará</span>
+                    </div>
 
-                let needsAscension = c.level >= 10 && !c.ascended;
+                    <!-- Target Card Selector -->
+                    <div id="slot-a-card" class="bg-black/40 p-4 rounded-2xl border border-brand-border space-y-3 cursor-pointer hover:border-brand-gold/50 transition">
+                        <!-- Populated via JS -->
+                    </div>
 
-                container.innerHTML += `
-                    <div class="card ${isSelected ? 'selected' : ''}" onclick="selectCharacter(${c.id})">
-                        <div class="element-badge badge-${c.element}">${c.element}</div>
-                        <div class="avatar-placeholder">${c.emoji}</div>
-                        <h3>${c.name}</h3>
-                        <div class="stats-list">
-                            <div><strong>Nivel:</strong> ${c.level} ${c.ascended ? '⭐' : ''}</div>
-                            <div><strong>Poder:</strong> ⚡ ${c.power}</div>
-                            <div><strong>Arma:</strong> 🗡️ ${wName}</div>
-                            <div><strong>Energía:</strong> 🔋 ${c.energy}/200</div>
+                    <div class="text-xs text-gray-400 flex justify-between px-1">
+                        <span>Energía Requerida:</span>
+                        <span id="slot-a-energy-val" class="font-bold text-brand-green">200 / 200 (100%)</span>
+                    </div>
+                </div>
+
+                <!-- FUSION INDICATOR (MIDDLE) -->
+                <div class="lg:col-span-2 flex flex-col items-center justify-center space-y-3">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-red-600 via-brand-gold to-brand-purple p-0.5 shadow-xl shadow-red-900/30 flex items-center justify-center animate-glow">
+                        <div class="w-full h-full bg-brand-dark rounded-full flex items-center justify-center text-brand-gold">
+                            <i data-lucide="flame" class="w-7 h-7"></i>
                         </div>
-                        ${needsAscension ? `
-                            <button class="btn-card btn-ascend" onclick="event.stopPropagation(); ascendCharacter(\${c.id})">
-                                🔼 Ascender (\$2.00)
-                            </button>
-                        ` : ''}
-                        <button class="btn-card btn-potion" onclick="event.stopPropagation(); usePotion(${c.id})">
-                            ${c.potionUsedToday ? '🧪 Poción Usada' : `🧪 Usar Poción (\$0.60)`}
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 tracking-widest uppercase">FUSIÓN DE ALMAS</span>
+                </div>
+
+                <!-- SLOT B (SACRIFICE / BURN) -->
+                <div class="lg:col-span-5 glass-panel p-5 rounded-3xl border border-red-500/30 bg-red-950/10 space-y-4 relative overflow-hidden">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                            <i data-lucide="flame" class="w-4 h-4"></i> Slot B (Sacrificio)
+                        </span>
+                        <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/40 font-bold animate-pulse">SE QUEMARÁ (BURN)</span>
+                    </div>
+
+                    <!-- Sacrifice Card Selector -->
+                    <div id="slot-b-card" class="bg-black/40 p-4 rounded-2xl border border-red-500/30 space-y-3 cursor-pointer hover:border-red-500/60 transition">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div class="text-xs text-gray-400 flex justify-between px-1">
+                        <span>Energía Requerida:</span>
+                        <span id="slot-b-energy-val" class="font-bold text-brand-green">200 / 200 (100%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fusion Requirements & Execute Panel -->
+            <div class="glass-panel-glow p-6 rounded-3xl border border-brand-gold/30 space-y-6">
+                <h3 class="font-cinzel font-bold text-lg text-white flex items-center gap-2 border-b border-brand-border pb-3">
+                    <i data-lucide="scroll" class="w-5 h-5 text-brand-gold"></i> Requisitos de Evolución & Tarifas
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="bg-black/40 p-3.5 rounded-xl border border-brand-border space-y-1">
+                        <p class="text-gray-400">Tarifa Oráculo (Pagada en $MANGUA):</p>
+                        <p class="text-base font-bold text-brand-gold flex items-center gap-1.5">
+                            <i data-lucide="coins" class="w-4 h-4"></i> 12,500 $MANGUA <span class="text-xs text-gray-400">($3.50 USD)</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-black/40 p-3.5 rounded-xl border border-brand-border space-y-1">
+                        <p class="text-gray-400">Materiales Requeridos (Mochila):</p>
+                        <p class="text-base font-bold text-purple-400 flex items-center gap-1.5">
+                            <i data-lucide="gem" class="w-4 h-4"></i> 5x Fragmento de Boss
+                            <span id="mat-check-badge" class="ml-auto text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded">Listo ✅</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-black/40 p-3.5 rounded-xl border border-brand-border space-y-1">
+                        <p class="text-gray-400">Resultado Estimado:</p>
+                        <p class="text-base font-bold text-brand-cyan flex items-center gap-1.5">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> Mangua Épico (Nivel 1)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="btn-execute-fusion" onclick="openConfirmationModal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-brand-gold via-brand-goldDark to-red-600 hover:brightness-110 text-black font-cinzel font-black text-lg tracking-wider transition shadow-xl shadow-brand-gold/20 flex items-center justify-center gap-3">
+                    <i data-lucide="flame" class="w-6 h-6"></i> EVOLUCIONAR Y QUEMAR NFT
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 3: MOCHILA (BACKPACK) ================= -->
+        <section id="tab-mochila" class="tab-content space-y-6 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
+                        <i data-lucide="briefcase" class="w-6 h-6 text-brand-cyan"></i> MOCHILA DE INVENTARIO
+                    </h2>
+                    <p class="text-xs text-gray-400">Gestiona tus pociones, consumibles y materiales exclusivos del World Boss.</p>
+                </div>
+
+                <!-- Inventory Category Filter -->
+                <div class="flex gap-2 bg-black/40 p-1 rounded-xl border border-brand-border text-xs">
+                    <button onclick="filterBackpack('all')" class="px-3 py-1.5 rounded-lg bg-brand-purple/30 text-white font-semibold">Todos</button>
+                    <button onclick="filterBackpack('consumable')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white">Consumibles</button>
+                    <button onclick="filterBackpack('material')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white">Materiales</button>
+                </div>
+            </div>
+
+            <!-- Inventory Grid & Detail Drawer -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Grid Area -->
+                <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="backpack-grid">
+                    <!-- Dynamic Items -->
+                </div>
+
+                <!-- Selected Item Details Panel -->
+                <div class="lg:col-span-4 glass-panel p-5 rounded-3xl border border-brand-border space-y-4 h-fit sticky top-28">
+                    <h3 class="font-cinzel font-bold text-base text-white border-b border-brand-border pb-2">Detalles del Objeto</h3>
+                    
+                    <div id="item-detail-content" class="space-y-4">
+                        <div class="w-20 h-20 mx-auto rounded-2xl bg-black/50 border border-brand-border flex items-center justify-center text-brand-cyan">
+                            <i data-lucide="box" class="w-10 h-10"></i>
+                        </div>
+                        <p class="text-center text-xs text-gray-400">Selecciona un objeto de la mochila para ver sus atributos y opciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 4: WORLD BOSS SEMANAL ================= -->
+        <section id="tab-worldboss" class="tab-content space-y-6 hidden">
+            <!-- Boss Hero Banner -->
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-red-500/30 bg-gradient-to-r from-red-950/30 via-brand-card to-purple-950/20 relative overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="space-y-2 max-w-xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold">
+                            <i data-lucide="skull" class="w-3.5 h-3.5"></i> EVENTO SEMANAL ACTIVO
+                        </div>
+                        <h2 class="font-cinzel text-3xl sm:text-4xl font-black text-white">MAGNUS EL DESTRUCTOR</h2>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Consume <span class="text-brand-gold font-bold">100 de Energía (50%)</span> para lanzar un ataque al Titán. Todo el daño infligido se suma al Leaderboard semanal por Esferas Místicas y Legendarias.
+                        </p>
+                        
+                        <div class="flex items-center gap-4 pt-2">
+                            <div class="text-xs">
+                                <span class="text-gray-400">Reinicio en:</span>
+                                <span class="font-mono font-bold text-brand-gold block text-sm">3d 14h 22m 10s</span>
+                            </div>
+                            <div class="w-px h-8 bg-brand-border"></div>
+                            <div class="text-xs">
+                                <span class="text-gray-400">HP Restante del Boss:</span>
+                                <span class="font-mono font-bold text-red-400 block text-sm">14,250,900 / 50,000,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-auto flex flex-col gap-3">
+                        <button onclick="simulateBossAttack()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-red-600 to-brand-goldDark text-white font-cinzel font-black text-base hover:brightness-125 transition shadow-lg shadow-red-900/40 flex items-center justify-center gap-2">
+                            <i data-lucide="swords" class="w-5 h-5"></i> ATACAR AL WORLD BOSS
                         </button>
+                        <p class="text-[11px] text-gray-400 text-center">Costo: 100 / 200 Energía</p>
                     </div>
-                `;
+                </div>
+            </div>
+
+            <!-- Leaderboard & Drops Table -->
+            <div class="space-y-4">
+                <h3 class="font-cinzel font-bold text-xl text-white flex items-center gap-2">
+                    <i data-lucide="trophy" class="w-5 h-5 text-brand-gold"></i> Tabla de Clasificación & Drops de Esferas
+                </h3>
+
+                <div class="glass-panel rounded-2xl border border-brand-border overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-black/50 border-b border-brand-border text-gray-400 uppercase font-semibold">
+                                <th class="p-4">Rango</th>
+                                <th class="p-4">Jugador</th>
+                                <th class="p-4">Daño Acumulado</th>
+                                <th class="p-4">Drop Esfera Mística</th>
+                                <th class="p-4">Drop Esfera Legendaria</th>
+                                <th class="p-4">Tokens $MANGUA</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-brand-border/40 text-gray-300">
+                            <tr class="bg-brand-gold/5">
+                                <td class="p-4 font-bold text-brand-gold">Top 1 – 5</td>
+                                <td class="p-4 font-semibold text-white">0x9aF...11b2 (Élite)</td>
+                                <td class="p-4 font-mono font-bold text-brand-cyan">1,450,200 pts</td>
+                                <td class="p-4"><span class="bg-pink-500/20 text-pink-400 font-bold px-2 py-1 rounded border border-pink-500/30">100% (1x Guaranteed)</span></td>
+                                <td class="p-4"><span class="bg-amber-500/20 text-amber-400 font-bold px-2 py-1 rounded border border-amber-500/30">100% (2x Guaranteed)</span></td>
+                                <td class="p-4 font-bold text-brand-gold">50,000 $MANGUA</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-bold text-purple-400">Top 6 – 20</td>
+                                <td class="p-4 font-semibold text-white">0x71C...4f9a (TÚ)</td>
+                                <td class="p-4 font-mono font-bold text-brand-cyan">890,400 pts</td>
+                                <td class="p-4"><span class="bg-pink-500/10 text-pink-300 px-2 py-1 rounded">20% Probabilidad</span></td>
+                                <td class="p-4"><span class="bg-amber-500/20 text-amber-400 font-bold px-2 py-1 rounded">100% (1x Guaranteed)</span></td>
+                                <td class="p-4 font-bold text-brand-gold">15,000 $MANGUA</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-bold text-blue-400">Top 21 – 50</td>
+                                <td class="p-4 text-gray-400">0x3b2...89ee</td>
+                                <td class="p-4 font-mono text-gray-300">420,100 pts</td>
+                                <td class="p-4"><span class="text-gray-500">5% Probabilidad</span></td>
+                                <td class="p-4"><span class="bg-amber-500/10 text-amber-300 px-2 py-1 rounded">40% Probabilidad</span></td>
+                                <td class="p-4 text-gray-300">5,000 $MANGUA</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-bold text-gray-400">Top 51 – 100</td>
+                                <td class="p-4 text-gray-400">0x111...44aa</td>
+                                <td class="p-4 font-mono text-gray-300">180,000 pts</td>
+                                <td class="p-4"><span class="text-gray-600">0%</span></td>
+                                <td class="p-4"><span class="text-gray-400">15% Probabilidad</span></td>
+                                <td class="p-4 text-gray-300">1,500 $MANGUA</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 5: COLISEO PVP ================= -->
+        <section id="tab-pvp" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-3xl border border-purple-500/30 text-center max-w-2xl mx-auto space-y-3">
+                <i data-lucide="swords" class="w-12 h-12 text-brand-purple mx-auto"></i>
+                <h2 class="font-cinzel text-3xl font-black text-white">COLISEO PVP (DUELOS P2P)</h2>
+                <p class="text-xs text-gray-300">Aposta tokens $MANGUA en duelos 1v1 en tiempo real. El ganador se lleva el 90% del pozo y el 10% va a la tesorería del protocolo.</p>
+                
+                <div class="pt-4 flex justify-center gap-4">
+                    <button onclick="showToast('Buscando rival en el matchmaking...', 'info')" class="px-6 py-3 rounded-xl bg-brand-purple text-white font-bold text-xs hover:brightness-125 transition">
+                        Crear Sala (100,000 $MANGUA)
+                    </button>
+                    <button onclick="showToast('No hay salas públicas abiertas en este instante.', 'warning')" class="px-6 py-3 rounded-xl bg-black/50 border border-brand-border text-gray-300 font-bold text-xs hover:bg-gray-800 transition">
+                        Unirse a Sala
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: MARKETPLACE ================= -->
+        <section id="tab-marketplace" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-3xl border border-green-500/30 text-center max-w-2xl mx-auto space-y-3">
+                <i data-lucide="shopping-bag" class="w-12 h-12 text-brand-green mx-auto"></i>
+                <h2 class="font-cinzel text-3xl font-black text-white">MERCADO SECUNDARIO NFT</h2>
+                <p class="text-xs text-gray-300">Compra y vende Manguas y Armas avanzadas en $MANGUA. 5% de comisión por transacción (2.5% Tesorería / 2.5% Burn).</p>
+                
+                <div class="pt-2">
+                    <span class="inline-block px-4 py-2 rounded-full bg-green-500/20 border border-green-500/40 text-green-400 font-bold text-xs">
+                        Comercio en Vivo Proximamente
+                    </span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPT DE LÓGICA INTERACTIVA DE LA DAPP -->
+    <script>
+        // MOCK DATA DE PERSONAJES
+        const manguasData = [
+            { id: 1, name: "Mangua PyroClast", level: 30, rarity: "Rara", energy: 200, power: 1450, element: "Fuego", image: "🔥" },
+            { id: 2, name: "Mangua StormBlade", level: 30, rarity: "Rara", energy: 200, power: 1420, element: "Rayo", image: "⚡" },
+            { id: 3, name: "Mangua AquaGuard", level: 24, rarity: "Común", energy: 120, power: 890, element: "Agua", image: "💧" },
+            { id: 4, name: "Mangua TerraShield", level: 30, rarity: "Épica", energy: 200, power: 2100, element: "Tierra", image: "🛡️" }
+        ];
+
+        // MOCK DATA DE MOCHILA
+        const backpackData = [
+            { id: 101, name: "Poción de Energía Legendaria", type: "consumable", icon: "flask-conical", count: 4, soulbound: false, desc: "Restaura el 100% de la energía de un Mangua inmediatamente." },
+            { id: 102, name: "Esfera Mística", type: "material", icon: "gem", count: 2, soulbound: true, desc: "Recurso Soulbound del World Boss. Requerido para fusión Mística." },
+            { id: 103, name: "Esfera Legendaria", type: "material", icon: "sparkles", count: 8, soulbound: true, desc: "Recurso Soulbound del World Boss. Requerido para fusión Legendaria." },
+            { id: 104, name: "Fragmento de Boss", type: "material", icon: "shard", count: 12, soulbound: false, desc: "Material esencial para fusionar artefactos de rareza Épica." }
+        ];
+
+        let selectedSlotA = manguasData[0];
+        let selectedSlotB = manguasData[1];
+
+        // INITIALIZE APP
+        window.onload = function() {
+            lucide.createIcons();
+            renderDashboardManguas();
+            renderAltarSlots();
+            renderBackpackGrid(backpackData);
+        };
+
+        // TAB SWITCHING LOGIC
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('text-brand-gold', 'bg-brand-purple/20', 'border', 'border-brand-purple/40');
+                el.classList.add('text-gray-400');
             });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.remove('text-gray-400');
+                activeNav.classList.add('text-brand-gold', 'bg-brand-purple/20', 'border', 'border-brand-purple/40');
+            }
         }
 
-        function renderWeapons() {
-            const container = document.getElementById('weaponsContainer');
-            container.innerHTML = '';
-            weapons.forEach(w => {
-                let boundChar = characters.find(c => c.equippedWeaponId === w.id);
-                let boundText = boundChar ? `Vinculada a ${boundChar.name}` : "Libre";
-
-                container.innerHTML += `
-                    <div class="card stars-${w.stars}">
-                        <div class="element-badge badge-${w.element}">${w.element}</div>
-                        <div class="avatar-placeholder">${w.emoji}</div>
-                        <h3>${w.name}</h3>
-                        <div class="stats-list">
-                            <div><strong>Rareza:</strong> ${'⭐'.repeat(w.stars)}</div>
-                            <div><strong>Ataque:</strong> +${w.powerBonus} PWR</div>
-                            <div><strong>Estado:</strong> ${boundText}</div>
+        // RENDER DASHBOARD MANGUAS
+        function renderDashboardManguas() {
+            const container = document.getElementById('dashboard-mangua-list');
+            container.innerHTML = manguasData.map(m => `
+                <div class="glass-panel p-4 rounded-2xl border ${getRarityBorder(m.rarity)} space-y-3 relative">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl">${m.image}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded ${getRarityBadge(m.rarity)}">${m.rarity}</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${m.name}</h4>
+                        <p class="text-xs text-gray-400">Nivel ${m.level} • Poder: ${m.power}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[10px] text-gray-400">
+                            <span>Energía:</span>
+                            <span class="${m.energy === 200 ? 'text-brand-green font-bold' : 'text-brand-gold'}">${m.energy} / 200</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden">
+                            <div class="h-full bg-brand-cyan" style="width: ${(m.energy/200)*100}%"></div>
                         </div>
                     </div>
-                `;
-            });
+                </div>
+            `).join('');
         }
 
-        function selectCharacter(id) {
-            selectedCharacterId = id;
-            let char = characters.find(c => c.id === id);
-            if (char && char.equippedWeaponId) {
-                selectedWeaponId = char.equippedWeaponId;
+        // RENDER ALTAR SLOTS
+        function renderAltarSlots() {
+            const slotACard = document.getElementById('slot-a-card');
+            const slotBCard = document.getElementById('slot-b-card');
+
+            slotACard.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-white text-sm">${selectedSlotA.name}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${getRarityBadge(selectedSlotA.rarity)}">${selectedSlotA.rarity}</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>Nivel Max: <strong class="text-white">${selectedSlotA.level}</strong></span>
+                    <span>Poder: <strong class="text-brand-gold">${selectedSlotA.power}</strong></span>
+                </div>
+            `;
+
+            slotBCard.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-white text-sm">${selectedSlotB.name}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${getRarityBadge(selectedSlotB.rarity)}">${selectedSlotB.rarity}</span>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>Nivel Max: <strong class="text-white">${selectedSlotB.level}</strong></span>
+                    <span>Poder: <strong class="text-brand-gold">${selectedSlotB.power}</strong></span>
+                </div>
+            `;
+
+            checkEnergyWarning();
+        }
+
+        // CHECK ENERGY FOR FUSION
+        function checkEnergyWarning() {
+            const banner = document.getElementById('altar-warning-banner');
+            const btn = document.getElementById('btn-execute-fusion');
+
+            if (selectedSlotA.energy < 200 || selectedSlotB.energy < 200) {
+                banner.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
             } else {
-                let availableW = weapons.find(w => w.boundToCharId === null || w.boundToCharId === id);
-                if (availableW) {
-                    selectedWeaponId = availableW.id;
-                    char.equippedWeaponId = availableW.id;
-                    availableW.boundToCharId = id;
-                }
+                banner.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-            renderCharacters();
-            renderWeapons();
-            updateCombatView();
-            updatePvpView();
         }
 
-        function ascendCharacter(charId) {
-            let char = characters.find(c => c.id === charId);
-            if (!char) return;
-            let cost = getManguaCostUSD(2.00);
-            if (balance < cost) { alert("❌ Saldo insuficiente."); return; }
-            balance -= cost;
-            char.ascended = true;
-            char.power += 300;
-            updateOracleDisplay();
-            renderCharacters();
-            alert(`🎉 ¡${char.name} ha ascendido con éxito!`);
-        }
-
-        function usePotion(charId) {
-            let char = characters.find(c => c.id === charId);
-            if (!char) return;
-            if (accountDailyPotionsUsed >= 3) { alert("❌ Límite de 3 pociones alcanzado."); return; }
-            if (char.potionUsedToday) { alert("❌ Este Mangua ya usó su poción hoy."); return; }
-            let cost = getManguaCostUSD(0.60);
-            if (balance < cost) { alert("❌ Saldo insuficiente."); return; }
-            balance -= cost;
-            char.energy = 200;
-            char.potionUsedToday = true;
-            accountDailyPotionsUsed++;
-            if (char.equippedWeaponId) {
-                let w = weapons.find(x => x.id === char.equippedWeaponId);
-                if (w) w.energy = 200;
-            }
-            updateOracleDisplay();
-            renderCharacters();
-            renderWeapons();
-        }
-
-        function mintCharacter() {
-            let cost = getManguaCostUSD(5.00);
-            if(balance < cost) { alert("❌ Saldo insuficiente"); return; }
-            if(characters.length >= 4) { alert("❌ Máximo 4 personajes"); return; }
-            balance -= cost;
-            characters.push({
-                id: characters.length + 1,
-                name: `Mangua #${characters.length + 1}`,
-                element: elementsList[Math.floor(Math.random() * elementsList.length)],
-                level: 1, xp: 0, power: 800, energy: 200, emoji: "🥭⚔️", potionUsedToday: false, equippedWeaponId: null, ascended: false
-            });
-            updateOracleDisplay();
-            renderCharacters();
-        }
-
-        function forgeWeapon() {
-            let cost = getManguaCostUSD(2.50);
-            if(balance < cost) { alert("❌ Saldo insuficiente"); return; }
-            balance -= cost;
-            let stars = Math.random() > 0.7 ? 2 : 1;
-            weapons.push({
-                id: weapons.length + 1,
-                name: `Espada #${weapons.length + 1}`,
-                element: elementsList[Math.floor(Math.random() * elementsList.length)],
-                powerBonus: stars === 2 ? 450 : 220,
-                stars: stars, emoji: "🗡️", energy: 200, boundToCharId: null
-            });
-            updateOracleDisplay();
-            renderWeapons();
-        }
-
-        function getTotalPower(char, weapon) {
-            let base = char ? char.power : 0;
-            let wBonus = (weapon && weapon.energy > 0) ? weapon.powerBonus : 0;
-            return base + wBonus;
-        }
-
-        function updateCombatView() {
-            const heroBox = document.getElementById('arenaHeroContent');
-            const weaponBox = document.getElementById('arenaWeaponContent');
-            let char = characters.find(c => c.id === selectedCharacterId);
-            let weapon = weapons.find(w => w.id === selectedWeaponId);
-
-            if(char) {
-                heroBox.innerHTML = `<h4>${char.name}</h4><p>Elem: <span class="element-badge badge-${char.element}">${char.element}</span></p><p>⚡ PWR: ${getTotalPower(char, weapon)}</p>`;
-            } else {
-                heroBox.innerHTML = `Selecciona un Mangua en la Plaza`;
-            }
-            if(weapon && char && char.equippedWeaponId === weapon.id) {
-                weaponBox.innerHTML = `<h4>${weapon.name}</h4><p>Bonus: +${weapon.powerBonus} PWR</p>`;
-            } else {
-                weaponBox.innerHTML = `Sin Arma`;
-            }
-            renderEnemies();
-        }
-
-        function renderEnemies() {
-            const container = document.getElementById('enemiesContainer');
-            container.innerHTML = '';
-            let char = characters.find(c => c.id === selectedCharacterId);
-            let weapon = weapons.find(w => w.id === selectedWeaponId);
-            let totalPWR = getTotalPower(char, weapon);
-
-            enemies.forEach(enemy => {
-                let pwrMet = char && totalPWR >= enemy.reqPower;
-                let hasEnergy = char && char.energy >= 40;
-                let canFight = char && pwrMet && hasEnergy;
-                container.innerHTML += `
-                    <div class="enemy-card">
-                        <div><strong>${enemy.name}</strong> <span class="element-badge badge-${enemy.element}">${enemy.element}</span><br><small>Req PWR: ${enemy.reqPower} | Recompensa: ${enemy.reward.toLocaleString()} $MANGUA</small></div>
-                        <button class="btn-fight" ${!canFight ? 'disabled' : ''} onclick="fight(${enemy.id})">Pelear</button>
+        // BACKPACK RENDER & ACTIONS
+        function renderBackpackGrid(items) {
+            const grid = document.getElementById('backpack-grid');
+            grid.innerHTML = items.map(item => `
+                <div onclick="selectBackpackItem(${item.id})" class="glass-panel p-3 rounded-2xl border border-brand-border hover:border-brand-cyan/60 cursor-pointer transition flex flex-col items-center text-center space-y-2 relative">
+                    ${item.soulbound ? `<span class="absolute top-2 right-2 text-[9px] bg-pink-500/20 text-pink-400 border border-pink-500/30 px-1.5 py-0.5 rounded font-bold">SOULBOUND</span>` : ''}
+                    <div class="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center text-brand-cyan mt-2">
+                        <i data-lucide="${item.icon}" class="w-6 h-6"></i>
                     </div>
-                `;
-            });
+                    <h5 class="text-xs font-bold text-white leading-tight">${item.name}</h5>
+                    <span class="text-[10px] text-gray-400">Cantidad: ${item.count}</span>
+                </div>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function updatePvpView() {
-            const heroBox = document.getElementById('pvpHeroContent');
-            let char = characters.find(c => c.id === selectedCharacterId);
-            let weapon = weapons.find(w => w.id === selectedWeaponId);
-
-            if(char) {
-                heroBox.innerHTML = `<h4>${char.name}</h4><p>Elem: <span class="element-badge badge-${char.element}">${char.element}</span></p><p>⚡ PWR: ${getTotalPower(char, weapon)}</p>`;
-            } else {
-                heroBox.innerHTML = `Selecciona un Mangua en la Plaza`;
-            }
-
-            const container = document.getElementById('pvpRivalsContainer');
-            container.innerHTML = '';
-            pvpRivals.forEach(rival => {
-                container.innerHTML += `
-                    <div class="enemy-card">
-                        <div><strong>${rival.name}</strong> <span class="element-badge badge-${rival.element}">${rival.element}</span><br><small>Poder Rival: ⚡ ${rival.power} | Pozo en Apuesta: ${rival.rewardPool}</small></div>
-                        <button class="btn-fight btn-pvp" onclick="fightPvp('${rival.name}', ${rival.power})">⚔️ Retar (Apostar 100k)</button>
-                    </div>
-                `;
-            });
+        function selectBackpackItem(id) {
+            const item = backpackData.find(i => i.id === id);
+            const container = document.getElementById('item-detail-content');
+            
+            container.innerHTML = `
+                <div class="w-20 h-20 mx-auto rounded-2xl bg-black/50 border border-brand-cyan/40 flex items-center justify-center text-brand-cyan">
+                    <i data-lucide="${item.icon}" class="w-10 h-10"></i>
+                </div>
+                <div class="text-center">
+                    <h4 class="font-bold text-white text-sm">${item.name}</h4>
+                    <span class="text-[10px] ${item.soulbound ? 'text-pink-400 font-bold' : 'text-gray-400'}">
+                        ${item.soulbound ? '🔒 No Transferible (Soulbound)' : '🔓 Comerciable'}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed bg-black/30 p-3 rounded-xl border border-brand-border">${item.desc}</p>
+                ${item.type === 'consumable' ? `
+                    <button onclick="consumePotion()" class="w-full py-2.5 rounded-xl bg-brand-cyan text-black font-bold text-xs hover:brightness-110 transition">
+                        Usar Poción (+200 Energía)
+                    </button>
+                ` : ''}
+            `;
+            lucide.createIcons();
         }
 
-        function fight(enemyId) {
-            let char = characters.find(c => c.id === selectedCharacterId);
-            let enemy = enemies.find(e => e.id === enemyId);
-            let weapon = weapons.find(w => w.id === selectedWeaponId);
-            if(!char || char.energy < 40) return;
-            char.energy -= 40;
-            if(weapon && weapon.energy >= 40) weapon.energy -= 40;
-            playSound('hit');
-
-            let isWin = Math.random() < 0.8;
-            if(isWin) {
-                playSound('victory');
-                balance += enemy.reward;
-                showModal("🎉 ¡VICTORIA PvE!", `Has derrotado a ${enemy.name}`, `+${enemy.reward.toLocaleString()} $MANGUA`);
-            } else {
-                showModal("💀 DERROTA", `Has sido superado.`, `+0 $MANGUA`);
-            }
-            updateOracleDisplay();
-            renderCharacters();
-            updateCombatView();
+        function consumePotion() {
+            showToast("¡Poción consumida! Energía de Mangua restaurada a 200/200.", "success");
         }
 
-        function fightPvp(rivalName, rivalPower) {
-            let char = characters.find(c => c.id === selectedCharacterId);
-            let weapon = weapons.find(w => w.id === selectedWeaponId);
-            let stake = 100000; // Apuesta fija en \$MANGUA
-
-            if(!char) { alert("Selecciona un Mangua primero."); return; }
-            if(balance < stake) { alert("❌ No tienes suficientes \$MANGUA para cubrir la apuesta de 100,000 tokens."); return; }
-            if(char.energy < 40) { alert("❌ Tu Mangua no tiene energía suficiente (requiere 40)."); return; }
-
-            // Deducción de energía y apuesta inicial
-            char.energy -= 40;
-            if(weapon && weapon.energy >= 40) weapon.energy -= 40;
-            balance -= stake;
-
-            playSound('hit');
-
-            let totalPWR = getTotalPower(char, weapon);
-            // Probabilidad de victoria basada en tu poder vs el poder del rival
-            let winChance = totalPWR >= rivalPower ? 0.65 : 0.35;
-            let isWin = Math.random() < winChance;
-
-            if(isWin) {
-                playSound('victory');
-                // Pozo total = tu apuesta (100k) + apuesta rival (100k) = 200k. 
-                // Comisión del protocolo (10%) = 20k para el desarrollador.
-                // Ganancia neta para el jugador = 180,000 \$MANGUA.
-                let prize = 180000;
-                balance += prize;
-                showModal("🔥 ¡VICTORIA EN PVP!", `¡Has vencido a ${rivalName} en el coliseo!`, `+${prize.toLocaleString()} $MANGUA (Pozo descontando 10% de comisión de dev)`);
-                logLogPvp(`🔥 Victoria PvP contra ${rivalName}. Ganaste el duelo y ${prize.toLocaleString()} $MANGUA.`);
-            } else {
-                showModal("💀 DERROTA EN PVP", `Tu rival ${rivalName} te ha superado en combate táctico.`, `Has perdido tu apuesta de 100,000 $MANGUA`);
-                logLogPvp(`💀 Derrota PvP contra ${rivalName}. Perdiste los 100,000 $MANGUA apostados.`);
-            }
-
-            updateOracleDisplay();
-            renderCharacters();
-            updatePvpView();
+        // SIMULATE BOSS ATTACK
+        function simulateBossAttack() {
+            showToast("⚔️ Atacando al World Boss... Daño infligido: 124,500 pts!", "info");
         }
 
-        function logLogPvp(msg) {
-            const logBox = document.getElementById('pvpLog');
-            logBox.innerHTML = `> ${msg}<br>` + logBox.innerHTML;
-        }
-
-        function claimTokens() {
-            if (balance <= 0) { alert("No tienes tokens."); return; }
-            let netClaim = Math.floor(balance * 0.85);
-            alert(`✅ ¡Retiro exitoso de ${netClaim.toLocaleString()} $MANGUA (15% tasa de sostenibilidad aplicada)!`);
-            balance = 0;
-            updateOracleDisplay();
-        }
-
-        function showModal(title, desc, rewards) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalDesc').innerText = desc;
-            document.getElementById('modalRewards').innerText = rewards;
-            document.getElementById('rewardModal').style.display = 'flex';
+        // MODAL ACTIONS
+        function openConfirmationModal() {
+            document.getElementById('modal-overlay').classList.remove('hidden');
         }
 
         function closeModal() {
-            document.getElementById('rewardModal').style.display = 'none';
+            document.getElementById('modal-overlay').classList.add('hidden');
         }
 
-        function connectWallet() {
-            document.getElementById('connectWallet').innerText = "0x71C...8A21";
+        function executeFusion() {
+            closeModal();
+            showToast("🔥 ¡Fusión exitosa! Mangua B quemado. Mangua A evolucionó a ÉPICO (Nivel 1).", "success");
         }
 
-        updateOracleDisplay();
-        renderCharacters();
-        renderWeapons();
-        updateCombatView();
+        // UTILITY FUNCTIONS
+        function getRarityBorder(rarity) {
+            switch(rarity) {
+                case 'Común': return 'border-gray-500/40';
+                case 'Rara': return 'border-blue-500/40';
+                case 'Épica': return 'border-purple-500/40';
+                case 'Legendaria': return 'border-amber-500/40';
+                case 'Mística': return 'border-pink-500/40';
+            }
+        }
+
+        function getRarityBadge(rarity) {
+            switch(rarity) {
+                case 'Común': return 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
+                case 'Rara': return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+                case 'Épica': return 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
+                case 'Legendaria': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                case 'Mística': return 'bg-pink-500/20 text-pink-400 border border-pink-500/30';
+            }
+        }
+
+        // TOAST SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-brand-card border-brand-purple/50 text-white';
+            if (type === 'success') bg = 'bg-green-950/80 border-green-500/50 text-green-200';
+            if (type === 'warning') bg = 'bg-amber-950/80 border-amber-500/50 text-amber-200';
+
+            toast.className = `px-4 py-3 rounded-xl border ${bg} shadow-xl text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
     </script>
 </body>
 </html>
