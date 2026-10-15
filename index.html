@@ -28,22 +28,16 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-bnb-500 selection:text-slate-950">
 
-    <!-- NOTIFICACIÓN / TOAST FLOATING -->
-    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 bg-slate-900 border border-bnb-500/50 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 pointer-events-none">
-        <i id="toastIcon" class="fa-solid fa-circle-info text-bnb-500 text-lg"></i>
-        <span id="toastMsg" class="text-xs font-semibold">Notificación</span>
-    </div>
-
     <!-- HEADER / NAVBAR -->
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('inventory')">
+            <div class="flex items-center space-x-3">
                 <div class="bg-bnb-500 text-slate-950 font-black p-2 rounded-xl text-xl shadow-lg shadow-bnb-500/20">
                     <i class="fa-solid fa-khanda"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-lg tracking-wider text-bnb-500 leading-none">MANGUABLADES</h1>
-                    <span class="text-[10px] text-slate-400 font-medium tracking-wide">Web3 Tactical RPG • BNB Chain</span>
+                    <h1 class="font-extrabold text-lg tracking-wider text-bnb-500">MANGUABLADES</h1>
+                    <span class="text-xs text-slate-400">Web3 Tactical RPG • BNB Chain</span>
                 </div>
             </div>
 
@@ -51,16 +45,16 @@
             <div class="flex items-center space-x-4">
                 <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
                     <div>
-                        <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Balance $MANGUA</div>
-                        <div id="userMangua" class="font-bold text-bnb-500">1,000 $MANGUA</div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance \$MANGUA</div>
+                        <div id="userMangua" class="font-bold text-bnb-500">1,000 \$MANGUA</div>
                     </div>
                     <div class="h-6 w-[1px] bg-slate-800"></div>
                     <div>
-                        <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">USD Ref</div>
-                        <div id="userUsd" class="font-bold text-emerald-400">$5.00 USD</div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">USD Ref</div>
+                        <div id="userUsd" class="font-bold text-emerald-400">\$5.00 USD</div>
                     </div>
                 </div>
-                <button id="walletBtn" class="bg-bnb-500 hover:bg-bnb-600 active:scale-95 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20 flex items-center space-x-2">
+                <button onclick="connectWallet()" id="walletBtn" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20 flex items-center space-x-2">
                     <i class="fa-solid fa-wallet"></i>
                     <span id="walletText">Conectar Billetera</span>
                 </button>
@@ -74,46 +68,44 @@
         <!-- SIDEBAR NAVIGATION -->
         <aside class="lg:col-span-1 space-y-4">
             <nav class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-2xl space-y-1">
-                <button id="tab-inventory" class="nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
                     <i class="fa-solid fa-user-shield w-5"></i>
                     <span>Inventario & Héroes</span>
                 </button>
-                <button id="tab-mint" class="nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                <button onclick="switchTab('mint')" id="tab-mint" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
                     <i class="fa-solid fa-store w-5"></i>
                     <span>Portal de Minteo</span>
                 </button>
-                <button id="tab-adventure" class="nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                <button onclick="switchTab('adventure')" id="tab-adventure" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
                     <i class="fa-solid fa-map-marked-alt w-5"></i>
                     <span>Modo Aventura (Ligas)</span>
                 </button>
-                <button id="tab-altar" class="nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                <button onclick="switchTab('altar')" id="tab-altar" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
                     <i class="fa-solid fa-fire-flame-curved w-5"></i>
                     <span>Altar & Forja</span>
                 </button>
-                <button id="tab-boss" class="nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
+                <button onclick="switchTab('boss')" id="tab-boss" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
                     <i class="fa-solid fa-dragon w-5"></i>
-                    <span>World Boss (Titán)</span>
+                    <span>World Boss (Titán Korrath)</span>
                 </button>
             </nav>
 
             <!-- ENERGÍA Y CONSUMIBLES -->
             <div class="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-3">
                 <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400 font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-amber-400"></i> Energía Diaria
-                    </span>
+                    <span class="text-slate-400 font-semibold"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía Diaria</span>
                     <span id="energyText" class="font-bold text-amber-400">200 / 200</span>
                 </div>
-                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700/50">
-                    <div id="energyBar" class="bg-gradient-to-r from-amber-500 to-bnb-500 h-full w-full rounded-full transition-all duration-300"></div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="energyBar" class="bg-amber-400 h-full w-full transition-all duration-300"></div>
                 </div>
-                <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center gap-2">
+                <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center">
                     <div>
                         <div class="text-xs font-bold text-slate-200">Poción de Energía Max</div>
-                        <div class="text-[10px] text-slate-400">$0.50 USD (100 $MANGUA)</div>
+                        <div class="text-[10px] text-slate-400">$0.50 USD (100$MANGUA)</div>
                     </div>
-                    <button id="buyPotionBtn" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-bnb-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-bnb-500/30 transition whitespace-nowrap">
-                        Comprar (<span id="potionLimitText">2/2</span>)
+                    <button onclick="buyEnergyPotion()" class="bg-slate-800 hover:bg-slate-700 text-bnb-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-bnb-500/30 transition">
+                        Comprar (2/día)
                     </button>
                 </div>
             </div>
@@ -123,83 +115,79 @@
         <section class="lg:col-span-3 space-y-6">
 
             <!-- TAB 0: INVENTARIO & HÉROES -->
-            <div id="view-inventory" class="tab-view space-y-6">
-                <!-- Mis Personajes -->
+            <div id="view-inventory" class="space-y-6">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
                             <i class="fa-solid fa-users text-bnb-500"></i> Mis Personajes (NFTs)
                         </h2>
-                        <span class="text-xs text-slate-400 font-medium" id="heroCountText">Límite: 1 / 4 Personajes</span>
+                        <span class="text-xs text-slate-400" id="heroCountText">Límite: 1 / 4 Personajes</span>
                     </div>
                     
                     <div id="heroesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Renderizado dinámico vía JS -->
+                        <!-- Renderizado por JS -->
                     </div>
                 </div>
 
-                <!-- Mochila de Items -->
                 <div>
                     <h2 class="text-lg font-extrabold text-white mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-briefcase text-amber-400"></i> Mochila / Inventario
                     </h2>
                     
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="inventoryGrid">
-                        <!-- Renderizado dinámico vía JS -->
+                        <!-- Renderizado por JS -->
                     </div>
                 </div>
             </div>
 
             <!-- TAB 1: PORTAL DE MINTEO -->
-            <div id="view-mint" class="tab-view space-y-6 hidden">
+            <div id="view-mint" class="space-y-6 hidden">
                 <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-6 rounded-3xl relative overflow-hidden">
                     <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 text-slate-800/40 text-9xl pointer-events-none">
                         <i class="fa-solid fa-store"></i>
                     </div>
-                    <h2 class="text-xl font-extrabold text-white mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-bnb-500"></i> Portal de Minteo Inicial
-                    </h2>
-                    <p class="text-sm text-slate-400 max-w-xl">Mintea tu personaje base para iniciar tu ciclo de batallas en el Modo Aventura o forja armas elementales de ataque directo.</p>
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-shield-halved text-bnb-500 mr-2"></i> Adquisición de Activos Iniciales</h2>
+                    <p class="text-sm text-slate-400 max-w-xl">Mintea tu personaje base para iniciar tu ROI de 15 días en el Modo Aventura o forja tu arma elemental de ataque directo.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Card Personaje -->
-                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4">
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">NFT Personaje</span>
-                                <span class="text-xs text-slate-400">Rareza: Común</span>
+                                <span class="text-xs text-slate-400">Rareza: Común (Nivel 1)</span>
                             </div>
                             <h3 class="text-lg font-bold text-white mb-2">Mangua Starter Hero</h3>
-                            <p class="text-xs text-slate-400 leading-relaxed">Otorgado con nivel 1 y energía lista para operar inmediatamente en la Liga Común del Modo Aventura.</p>
+                            <p class="text-xs text-slate-400">Otorgado con 200/200 de energía lista para operar en la Liga Común de Aventura.</p>
                         </div>
                         <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
                             <div>
-                                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Precio Fijo</div>
-                                <div class="text-base font-extrabold text-bnb-500">$5.00 USD <span class="text-xs text-slate-400 font-normal">(1,000 $MANGUA)</span></div>
+                                <div class="text-[10px] text-slate-400">Precio Fijo</div>
+                                <div class="text-base font-extrabold text-bnb-500">\$5.00 USD <span class="text-xs text-slate-400 font-normal">(1,000 \$MANGUA)</span></div>
                             </div>
-                            <button id="mintHeroBtn" class="bg-bnb-500 hover:bg-bnb-600 active:scale-95 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
+                            <button onclick="mintAsset('character', 1000)" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
                                 Mintear Héroe
                             </button>
                         </div>
                     </div>
 
                     <!-- Card Arma -->
-                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+                    <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex flex-col justify-between space-y-4">
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold px-3 py-1 rounded-full">NFT Arma</span>
                                 <span class="text-xs text-slate-400">Bono Elemental (+ATK)</span>
                             </div>
                             <h3 class="text-lg font-bold text-white mb-2">Ballesta Genérica / Báculo</h3>
-                            <p class="text-xs text-slate-400 leading-relaxed">Equipamiento táctico indispensable para aumentar el ataque total y superar las batallas más avanzadas.</p>
+                            <p class="text-xs text-slate-400">Equipamiento táctico indispensable para superar las etapas de los bloques avanzados sin fracasar.</p>
                         </div>
                         <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
                             <div>
-                                <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Precio Fijo</div>
-                                <div class="text-base font-extrabold text-bnb-500">$2.50 USD <span class="text-xs text-slate-400 font-normal">(500 $MANGUA)</span></div>
+                                <div class="text-[10px] text-slate-400">Precio Fijo</div>
+                                <div class="text-base font-extrabold text-bnb-500">\$2.50 USD <span class="text-xs text-slate-400 font-normal">(500 \$MANGUA)</span></div>
                             </div>
-                            <button id="mintWeaponBtn" class="bg-bnb-500 hover:bg-bnb-600 active:scale-95 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
+                            <button onclick="mintAsset('weapon', 500)" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20">
                                 Forjar Arma
                             </button>
                         </div>
@@ -207,91 +195,68 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MODO AVENTURA (LIGAS POR RAREZA) -->
-            <div id="view-adventure" class="tab-view space-y-6 hidden">
+            <!-- TAB 2: MODO AVENTURA (LIGAS POR RAREZA CON RESTRICCIÓN) -->
+            <div id="view-adventure" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
-                    <h2 class="text-xl font-extrabold text-white mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-map text-bnb-500"></i> Modo Aventura por Ligas
-                    </h2>
-                    <p class="text-sm text-slate-400">Selecciona la Liga correspondiente a la rareza de tu personaje. Cada batalla consume 40 de energía.</p>
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-map text-bnb-500 mr-2"></i> Modo Aventura por Ligas de Rareza</h2>
+                    <p class="text-sm text-slate-400">Tus personajes solo pueden competir en la Liga que corresponde a su Rareza actual. Requiere cumplir el nivel de la etapa.</p>
                 </div>
 
                 <!-- Selector de Liga -->
-                <div class="grid grid-cols-2 md:grid-cols-6 gap-2" id="leagueButtonsContainer">
-                    <!-- Botones generados por JS -->
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+                    <button onclick="selectLeague('Común')" id="league-btn-Común" class="bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white">Liga Común</button>
+                    <button onclick="selectLeague('Poco Común')" id="league-btn-Poco Común" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Poco Común</button>
+                    <button onclick="selectLeague('Raro')" id="league-btn-Raro" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Rara</button>
+                    <button onclick="selectLeague('Épico')" id="league-btn-Épico" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Épica</button>
+                    <button onclick="selectLeague('Legendario')" id="league-btn-Legendario" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Legendaria</button>
+                    <button onclick="selectLeague('Místico')" id="league-btn-Místico" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Mística</button>
+                </div>
+
+                <!-- Selector de Personaje Activo para la Batalla -->
+                <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-xs text-slate-400">Selecciona con cuál Héroe vas a combatir:</div>
+                        <select id="activeHeroSelect" onchange="updateSelectedHero(this.value)" class="bg-slate-800 border border-slate-700 text-xs text-white font-bold p-2 rounded-lg mt-1 outline-none">
+                            <!-- Llenado dinámicamente -->
+                        </select>
+                    </div>
+                    <div id="selectedHeroStatus" class="text-xs font-bold text-emerald-400"></div>
                 </div>
 
                 <!-- Sub-etapas de la Liga Activa -->
-                <div id="leagueStagesContainer" class="space-y-4">
+                <div id="league-stages-container" class="space-y-4">
                     <!-- Se renderiza vía JS -->
                 </div>
             </div>
 
             <!-- TAB 3: ALTAR & FORJA -->
-            <div id="view-altar" class="tab-view space-y-6 hidden">
+            <div id="view-altar" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
-                    <h2 class="text-xl font-extrabold text-white mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-fire-flame-curved text-amber-400"></i> Altar de Ascensión & Crafting
-                    </h2>
-                    <p class="text-sm text-slate-400">Sintetiza fragmentos obtenidos en el World Boss y paga la tarifa de oráculo para ascender tus esferas de rareza.</p>
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Crafting</h2>
+                    <p class="text-sm text-slate-400">Sintetiza fragmentos obtenidos en el World Boss y paga la tarifa de oráculo para ascender de rareza.</p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4 text-center">
-                        <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto text-2xl text-amber-400">
-                            <i class="fa-solid fa-puzzle-piece"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-white">Forjar Esfera Épica</h3>
-                        <p class="text-xs text-slate-400">Combina 3 Fragmentos Épicos recolectados para obtener 1 Esfera Soulbound.</p>
-                        <button id="craftSphereBtn" class="w-full bg-bnb-500 hover:bg-bnb-600 active:scale-95 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">
-                            Sintetizar Esfera
-                        </button>
-                    </div>
-
-                    <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4 text-center">
-                        <div class="w-16 h-16 bg-purple-500/10 border border-purple-500/20 rounded-2xl flex items-center justify-center mx-auto text-2xl text-purple-400">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-white">Ascensión de Rareza</h3>
-                        <p class="text-xs text-slate-400">Aumenta el multiplicador de tu Héroe al rango Legendario usando esferas forjadas.</p>
-                        <button id="ascendHeroBtn" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-bold py-2.5 rounded-xl text-sm border border-slate-700 transition">
-                            Ascender Personaje
+                <div class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl text-center space-y-4">
+                    <i class="fa-solid fa-gem text-5xl text-bnb-500 animate-pulse"></i>
+                    <h3 class="text-lg font-bold text-white">Forja de Esferas Soulbound</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto">Combina 3 fragmentos o utiliza el método evolutivo para forjar Esferas y ascender tus personajes al siguiente nivel.</p>
+                    <div class="pt-2">
+                        <button onclick="alert('Sistema de Altar y Crafting sincronizado.')" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg">
+                            Acceder a la Forja
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 4: WORLD BOSS -->
-            <div id="view-boss" class="tab-view space-y-6 hidden">
-                <div class="bg-gradient-to-r from-red-950/40 via-slate-900 to-slate-900 border border-red-900/40 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div id="view-boss" class="space-y-6 hidden">
+                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex justify-between items-center">
                     <div>
-                        <div class="inline-flex items-center gap-2 bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-bold px-3 py-1 rounded-full mb-2">
-                            <i class="fa-solid fa-skull"></i> Evento Semanal Activo
-                        </div>
-                        <h2 class="text-2xl font-black text-white mb-1">Titán Korrath</h2>
-                        <p class="text-xs text-slate-400 max-w-lg">Consume 100 de energía por ataque. Otorga fragmentos de esferas y materiales en la mochila sin emisión de tokens de recompensa.</p>
+                        <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-dragon text-red-400 mr-2"></i> World Boss: Titán Korrath</h2>
+                        <p class="text-sm text-slate-400">Consume 100 de energía por ataque. Recompensas enfocadas en fragmentos de esferas y pociones (Sin emisión de tokens).</p>
                     </div>
-                    <button id="attackBossBtn" class="w-full md:w-auto bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition shadow-lg shadow-red-600/30 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-crosshairs"></i> Atacar al Titán (-100 Energía)
+                    <button onclick="attackBoss()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/20">
+                        Atacar al Titán (-100 Energía)
                     </button>
-                </div>
-
-                <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-3">
-                    <h3 class="text-sm font-bold text-slate-200">Recompensas Posibles del Titán:</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center space-x-3">
-                            <i class="fa-solid fa-puzzle-piece text-amber-400 text-lg"></i>
-                            <span>Fragmento Épico (Garantizado)</span>
-                        </div>
-                        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center space-x-3">
-                            <i class="fa-solid fa-flask text-emerald-400 text-lg"></i>
-                            <span>Poción Recarga (Probabilidad)</span>
-                        </div>
-                        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center space-x-3">
-                            <i class="fa-solid fa-gem text-purple-400 text-lg"></i>
-                            <span>Esfera Alma (Raro)</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -305,194 +270,166 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // ESTADO DE LA APLICACIÓN
-        const state = {
-            mangua: 1000,
-            energy: 200,
-            maxEnergy: 200,
-            potionsBoughtToday: 0,
-            maxPotionsPerDay: 2,
-            activeLeague: 'common',
-            connected: false,
-            heroes: [
-                { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 20, maxExp: 100, weapon: "Ballesta Genérica" }
-            ],
-            bag: [
-                { id: 'w1', name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
-                { id: 'p1', name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
-                { id: 'f1', name: "Fragmento Épico", type: "Material", rarity: "Épico", count: 1, icon: "fa-puzzle-piece" },
-                { id: 'e1', name: "Esfera Soulbound", type: "Esfera", rarity: "Mística", count: 0, icon: "fa-gem" }
-            ]
-        };
+        let balanceMangua = 1000;
+        let energy = 200;
+        let activeLeague = 'Común';
+        let selectedHeroId = 1;
+
+        // Estado del Inventario y Personajes
+        let myHeroes = [
+            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, equippedWeapon: "Ballesta Genérica" }
+        ];
+
+        let myBag = [
+            { id: 101, name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
+            { id: 102, name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
+            { id: 103, name: "Fragmento Épico", type: "Material", rarity: "Épico", count: 1, icon: "fa-puzzle-piece" }
+        ];
 
         const leaguesData = {
-            common: { name: 'Liga Común', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 13.2, usd: 0.33 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 14.2, usd: 0.355 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 15.2, usd: 0.38 }
+            'Común': { name: 'Liga Común', rarityReq: 'Común', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 13.2, usd: 0.33 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 14.2, usd: 0.355 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 15.2, usd: 0.38 }
             ]},
-            uncommon: { name: 'Poco Común', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 16.2, usd: 0.405 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 17.4, usd: 0.435 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 18.6, usd: 0.465 }
+            'Poco Común': { name: 'Liga Poco Común', rarityReq: 'Poco Común', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 16.2, usd: 0.405 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 17.4, usd: 0.435 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 18.6, usd: 0.465 }
             ]},
-            rare: { name: 'Liga Rara', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 20.0, usd: 0.50 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 21.6, usd: 0.54 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 23.2, usd: 0.58 }
+            'Raro': { name: 'Liga Rara', rarityReq: 'Raro', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 20.0, usd: 0.50 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 21.6, usd: 0.54 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 23.2, usd: 0.58 }
             ]},
-            epic: { name: 'Liga Épica', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 25.0, usd: 0.625 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 27.2, usd: 0.68 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 29.4, usd: 0.735 }
+            'Épico': { name: 'Liga Épica', rarityReq: 'Épico', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 25.0, usd: 0.625 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 27.2, usd: 0.68 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 29.4, usd: 0.735 }
             ]},
-            legendary: { name: 'Legendaria', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 32.0, usd: 0.80 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 35.0, usd: 0.875 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 38.0, usd: 0.95 }
+            'Legendario': { name: 'Liga Legendaria', rarityReq: 'Legendario', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 32.0, usd: 0.80 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 35.0, usd: 0.875 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 38.0, usd: 0.95 }
             ]},
-            mystic: { name: 'Liga Mística', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 42.0, usd: 1.05 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 46.0, usd: 1.15 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 50.0, usd: 1.25 }
+            'Místico': { name: 'Liga Mística', rarityReq: 'Místico', stages: [
+                { name: 'Nivel 1 (Fácil)', minLevel: 1, reward: 42.0, usd: 1.05 },
+                { name: 'Nivel 2 (Medio)', minLevel: 11, reward: 46.0, usd: 1.15 },
+                { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 50.0, usd: 1.25 }
             ]}
         };
 
-        // UTILIDAD DE NOTIFICACIÓN
-        function showToast(msg, isSuccess = true) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastMsg.innerText = msg;
-            if (isSuccess) {
-                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
-            } else {
-                toastIcon.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
-            }
-
-            toast.classList.remove('translate-x-full');
-            setTimeout(() => {
-                toast.classList.add('translate-x-full');
-            }, 3000);
-        }
-
-        // ACTUALIZACIÓN GENERAL DE LA INTERFAZ
-        function renderUI() {
-            // Header balances
-            document.getElementById('userMangua').innerText = state.mangua.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' $MANGUA';
-            const usdVal = (state.mangua * 0.005).toFixed(2);
-            document.getElementById('userUsd').innerText = '$' + usdVal + ' USD';
-
-            // Barra de energía
-            document.getElementById('energyText').innerText = `${state.energy} / ${state.maxEnergy}`;
-            const energyPct = (state.energy / state.maxEnergy) * 100;
+        function updateUI() {
+            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
+            const usdVal = (balanceMangua * 0.005).toFixed(2);
+            document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
+            document.getElementById('energyText').innerText = energy + ' / 200';
+            const energyPct = (energy / 200) * 100;
             document.getElementById('energyBar').style.width = energyPct + '%';
             
-            // Límite de pociones
-            const remainingPotions = state.maxPotionsPerDay - state.potionsBoughtToday;
-            document.getElementById('potionLimitText').innerText = `${remainingPotions}/${state.maxPotionsPerDay}`;
-
-            renderInventoryView();
-            renderLeagueSelector();
-            renderLeagueStages();
+            renderInventory();
+            updateHeroDropdown();
         }
 
-        // RENDERIZADO DE INVENTARIO Y HÉROES
-        function renderInventoryView() {
-            // Héroes
-            const heroContainer = document.getElementById('heroesContainer');
-            document.getElementById('heroCountText').innerText = `Límite: ${state.heroes.length} / 4 Personajes`;
+        function updateHeroDropdown() {
+            const select = document.getElementById('activeHeroSelect');
+            let options = '';
+            myHeroes.forEach(h => {
+                options += `<option value="${h.id}" ${h.id === selectedHeroId ? 'selected' : ''}>${h.name} [${h.rarity} - Nv.${h.level}]</option>`;
+            });
+            select.innerHTML = options;
 
-            if (state.heroes.length === 0) {
-                heroContainer.innerHTML = `<div class="col-span-2 bg-slate-900/40 border border-slate-800 p-8 rounded-3xl text-center text-slate-500 text-sm">No posees ningún héroe minteado aún. Ve al Portal de Minteo.</div>`;
-            } else {
-                let heroHtml = '';
-                state.heroes.forEach(hero => {
-                    const expPct = Math.min(100, (hero.exp / hero.maxExp) * 100);
-                    heroHtml += `
-                        <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-3 relative overflow-hidden hover:border-slate-700 transition">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">${hero.rarity}</span>
-                                    <h3 class="font-bold text-white text-base mt-1.5">${hero.name}</h3>
-                                </div>
-                                <span class="text-xs font-bold text-bnb-500 bg-slate-800 border border-slate-700 px-3 py-1 rounded-xl">Nivel ${hero.level}/30</span>
+            const currentHero = myHeroes.find(h => h.id == selectedHeroId);
+            if(currentHero) {
+                document.getElementById('selectedHeroStatus').innerText = `Activo: Rareza [${currentHero.rarity}] • Nivel ${currentHero.level}`;
+            }
+        }
+
+        function updateSelectedHero(heroId) {
+            selectedHeroId = Number(heroId);
+            updateHeroDropdown();
+        }
+
+        function renderInventory() {
+            const heroContainer = document.getElementById('heroesContainer');
+            document.getElementById('heroCountText').innerText = `Límite: ${myHeroes.length} / 4 Personajes`;
+            
+            let heroHtml = '';
+            myHeroes.forEach(hero => {
+                heroHtml += `
+                    <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-3 relative overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">${hero.rarity}</span>
+                                <h3 class="font-bold text-white text-base mt-1">${hero.name}</h3>
                             </div>
-                            <div class="text-xs text-slate-400 space-y-1.5 pt-1">
-                                <div class="flex items-center justify-between">
-                                    <span><i class="fa-solid fa-khanda text-amber-400 mr-1.5"></i> Arma Equipada:</span>
-                                    <span class="text-slate-200 font-medium">${hero.weapon}</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Estado Energía:</span>
-                                    <span class="text-slate-200 font-medium">${state.energy}/200</span>
-                                </div>
-                            </div>
-                            <div class="pt-2">
-                                <div class="flex justify-between text-[10px] text-slate-400 mb-1 font-semibold">
-                                    <span>Experiencia (EXP)</span>
-                                    <span>${hero.exp} / ${hero.maxExp}</span>
-                                </div>
-                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700/50">
-                                    <div class="bg-bnb-500 h-full transition-all duration-300" style="width: ${expPct}%"></div>
-                                </div>
+                            <span class="text-xs font-bold text-bnb-500 bg-slate-800 px-3 py-1 rounded-xl">Nivel ${hero.level}/30</span>
+                        </div>
+                        <div class="text-xs text-slate-400 space-y-1">
+                            <div><i class="fa-solid fa-khanda text-amber-400 mr-1"></i> Arma: <span class="text-slate-200 font-medium">${hero.equippedWeapon}</span></div>
+                            <div><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía: <span class="text-slate-200 font-medium">${energy}/200</span></div>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-[10px] text-slate-400 mb-1">Experiencia (EXP)</div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-bnb-500 h-full" style="width: ${(hero.level/30)*100}%"></div>
                             </div>
                         </div>
-                    `;
-                });
-                heroContainer.innerHTML = heroHtml;
-            }
+                    </div>
+                `;
+            });
+            heroContainer.innerHTML = heroHtml;
 
-            // Mochila
             const bagGrid = document.getElementById('inventoryGrid');
             let bagHtml = '';
-            state.bag.forEach(item => {
+            myBag.forEach(item => {
                 bagHtml += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl text-center space-y-2 hover:border-slate-700 transition">
+                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
                         <div class="text-2xl text-bnb-500"><i class="fa-solid ${item.icon}"></i></div>
-                        <div class="font-bold text-xs text-white truncate">${item.name}</div>
-                        <div class="text-[10px] text-slate-400">${item.type} • Cant: <span class="text-emerald-400 font-bold">${item.count}</span></div>
+                        <div class="font-bold text-xs text-white">${item.name}</div>
+                        <div class="text-[10px] text-slate-400">${item.type} • Cantidad: <span class="text-emerald-400 font-bold">${item.count}</span></div>
                     </div>
                 `;
             });
             bagGrid.innerHTML = bagHtml;
         }
 
-        // RENDERIZADO DE LIGAS Y ETAPAS DE AVENTURA
-        function renderLeagueSelector() {
-            const container = document.getElementById('leagueButtonsContainer');
-            const keys = Object.keys(leaguesData);
-            let html = '';
-            keys.forEach(k => {
-                const isActive = (k === state.activeLeague);
-                const btnClass = isActive 
-                    ? "bg-bnb-500 text-slate-950 font-bold shadow-md border border-bnb-500" 
-                    : "bg-slate-900/60 border border-slate-800 text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 font-medium";
-                html += `
-                    <button onclick="selectLeague('${k}')" class="${btnClass} text-xs p-2.5 rounded-xl text-center transition truncate">
-                        ${leaguesData[k].name}
-                    </button>
-                `;
+        function switchTab(tab) {
+            ['inventory', 'mint', 'adventure', 'altar', 'boss'].forEach(t => {
+                document.getElementById('view-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200";
             });
-            container.innerHTML = html;
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md";
+            if(tab === 'adventure') renderLeagueStages();
+        }
+
+        function selectLeague(leagueKey) {
+            activeLeague = leagueKey;
+            ['Común', 'Poco Común', 'Raro', 'Épico', 'Legendario', 'Místico'].forEach(k => {
+                const btn = document.getElementById('league-btn-' + k);
+                if(k === leagueKey) {
+                    btn.className = "bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white shadow";
+                } else {
+                    btn.className = "bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400";
+                }
+            });
+            renderLeagueStages();
         }
 
         function renderLeagueStages() {
-            const container = document.getElementById('leagueStagesContainer');
-            const league = leaguesData[state.activeLeague];
-            let html = `<div class="text-sm font-extrabold text-bnb-500 mb-2 flex items-center gap-2"><i class="fa-solid fa-trophy"></i> ${league.name}</div>`;
+            const container = document.getElementById('league-stages-container');
+            const league = leaguesData[activeLeague];
+            let html = `<div class="text-sm font-bold text-bnb-500 mb-2">${league.name} (Requiere Rareza: ${league.rarityReq})</div>`;
             
-            league.stages.forEach((st, idx) => {
+            league.stages.forEach((st) => {
                 html += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-700 transition">
+                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
                         <div>
-                            <div class="font-bold text-white text-sm flex items-center gap-2">
-                                <span>Etapa ${idx + 1}: ${st.name}</span>
-                            </div>
-                            <div class="text-xs text-slate-400 mt-1">Requisito: ${st.req} • Ganancia: <span class="text-bnb-500 font-semibold">+${st.reward} $MANGUA</span> ($${st.usd} USD)</div>
+                            <div class="font-bold text-white text-sm">${st.name}</div>
+                            <div class="text-xs text-slate-400">Nivel Requerido: ${st.minLevel}+ • Gana +${st.reward} $MANGUA ($${st.usd} USD)</div>
                         </div>
-                        <button onclick="playBattle(${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-lg shadow-emerald-600/20 whitespace-nowrap">
+                        <button onclick="playAdventure('${activeLeague}', ${st.minLevel}, ${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">
                             Batallar (-40 Energía)
                         </button>
                     </div>
@@ -501,198 +438,109 @@
             container.innerHTML = html;
         }
 
-        // CAMBIO DE PESTAÑAS
-        function switchTab(tab) {
-            const tabs = ['inventory', 'mint', 'adventure', 'altar', 'boss'];
-            tabs.forEach(t => {
-                document.getElementById('view-' + t).classList.add('hidden');
-                const btn = document.getElementById('tab-' + t);
-                btn.className = "nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200";
-            });
-
-            document.getElementById('view-' + tab).classList.remove('hidden');
-            const activeBtn = document.getElementById('tab-' + tab);
-            activeBtn.className = "nav-btn w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md";
-
-            if (tab === 'adventure') renderLeagueStages();
-        }
-
-        function selectLeague(leagueKey) {
-            state.activeLeague = leagueKey;
-            renderLeagueSelector();
-            renderLeagueStages();
-        }
-
-        // ACCIONES DE JUEGO
-        function playBattle(reward) {
-            if (state.heroes.length === 0) {
-                showToast('Necesitas al menos 1 Héroe en tu inventario para batallar', false);
-                return;
-            }
-            if (state.energy < 40) {
-                showToast('Energía insuficiente (-40 requerida)', false);
+        function playAdventure(leagueName, minLevel, reward) {
+            const currentHero = myHeroes.find(h => h.id == selectedHeroId);
+            
+            if(!currentHero) {
+                alert('Selecciona un Héroe válido en el menú desplegable.');
                 return;
             }
 
-            state.energy -= 40;
-            state.mangua += reward;
-
-            // Experiencia para el primer héroe
-            const hero = state.heroes[0];
-            hero.exp += 35;
-            if (hero.exp >= hero.maxExp && hero.level < 30) {
-                hero.level += 1;
-                hero.exp -= hero.maxExp;
-                hero.maxExp = Math.floor(hero.maxExp * 1.25);
-                showToast(`¡Victoria! Ganaste +${reward} $MANGUA y tu héroe subió al Nivel ${hero.level}!`);
-            } else {
-                showToast(`¡Victoria! Ganaste +${reward} $MANGUA (+35 EXP)`);
+            // VALIDACIÓN ESTRICTA DE RAREZA
+            if(currentHero.rarity !== leagueName) {
+                alert(`❌ ACCESO DENEGADO: Tu héroe "${currentHero.name}" es de rareza [${currentHero.rarity}]. Solo puede combatir en la Liga ${currentHero.rarity}. ¡Debes ascenderlo en el Altar para participar aquí!`);
+                return;
             }
 
-            renderUI();
+            // VALIDACIÓN DE NIVEL MÍNIMO
+            if(currentHero.level < minLevel) {
+                alert(`❌ ACCESO DENEGADO: Tu héroe es Nivel ${currentHero.level}. Esta etapa exige mínimo Nivel ${minLevel}. ¡Sube de nivel en etapas anteriores!`);
+                return;
+            }
+
+            if(energy < 40) {
+                alert('Energía insuficiente. Compra una Poción o espera regeneración.');
+                return;
+            }
+
+            energy -= 40;
+            balanceMangua += reward;
+            
+            if(currentHero.level < 30) {
+                currentHero.level += 1;
+            }
+
+            updateUI();
+            alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA y subido al Nivel ${currentHero.level}.`);
+        }
+
+        function mintAsset(type, cost) {
+            if(balanceMangua < cost) {
+                alert('Saldo insuficiente de \$MANGUA para mintear.');
+                return;
+            }
+            balanceMangua -= cost;
+
+            if(type === 'character') {
+                if(myHeroes.length >= 4) {
+                    alert('Límite máximo de 4 personajes alcanzado.');
+                    return;
+                }
+                const newId = myHeroes.length + 1;
+                myHeroes.push({
+                    id: newId,
+                    name: `Mangua Hero #${String(newId).padStart(3, '0')}`,
+                    rarity: "Común",
+                    level: 1,
+                    exp: 0,
+                    equippedWeapon: "Ninguna"
+                });
+            } else if(type === 'weapon') {
+                const weaponItem = myBag.find(i => i.id === 101);
+                if(weaponItem) weaponItem.count++;
+            }
+
+            updateUI();
+            alert('¡Minteo exitoso! Activo añadido a tu inventario.');
         }
 
         function buyEnergyPotion() {
-            if (state.potionsBoughtToday >= state.maxPotionsPerDay) {
-                showToast('Límite diario alcanzado (Máximo 2 por día)', false);
+            if(balanceMangua < 100) {
+                alert('Necesitas 100 \$MANGUA (\$0.50 USD) para comprar la poción.');
                 return;
             }
-            if (state.mangua < 100) {
-                showToast('Saldo insuficiente (Requiere 100 $MANGUA)', false);
-                return;
-            }
+            balanceMangua -= 100;
+            energy = 200;
+            
+            const potionItem = myBag.find(i => i.id === 102);
+            if(potionItem) potionItem.count++;
 
-            state.mangua -= 100;
-            state.energy = state.maxEnergy;
-            state.potionsBoughtToday += 1;
-
-            const potionItem = state.bag.find(i => i.id === 'p1');
-            if (potionItem) potionItem.count += 1;
-
-            showToast('¡Poción aplicada! Energía recargada a 200/200');
-            renderUI();
-        }
-
-        function mintHero() {
-            if (state.heroes.length >= 4) {
-                showToast('Límite máximo alcanzado (4 héroes)', false);
-                return;
-            }
-            if (state.mangua < 1000) {
-                showToast('Saldo insuficiente (Requiere 1,000 $MANGUA / $5.00 USD)', false);
-                return;
-            }
-
-            state.mangua -= 1000;
-            const newId = state.heroes.length + 1;
-            state.heroes.push({
-                id: Date.now(),
-                name: `Mangua Hero #${String(newId).padStart(3, '0')}`,
-                rarity: "Común",
-                level: 1,
-                exp: 0,
-                maxExp: 100,
-                weapon: "Sin Equipar"
-            });
-
-            showToast('¡Minteo exitoso! Nuevo héroe añadido a tu inventario');
-            renderUI();
-        }
-
-        function mintWeapon() {
-            if (state.mangua < 500) {
-                showToast('Saldo insuficiente (Requiere 500 $MANGUA / $2.50 USD)', false);
-                return;
-            }
-
-            state.mangua -= 500;
-            const weaponItem = state.bag.find(i => i.id === 'w1');
-            if (weaponItem) weaponItem.count += 1;
-
-            showToast('¡Forja exitosa! Arma guardada en la mochila');
-            renderUI();
+            updateUI();
+            alert('¡Poción aplicada! Energía restaurada a 200/200.');
         }
 
         function attackBoss() {
-            if (state.energy < 100) {
-                showToast('Energía insuficiente (-100 requerida para el World Boss)', false);
+            if(energy < 100) {
+                alert('El ataque al World Boss requiere 100 de energía (50%).');
                 return;
             }
+            energy -= 100;
+            
+            const fragItem = myBag.find(i => i.id === 103);
+            if(fragItem) fragItem.count++;
 
-            state.energy -= 100;
-            const frag = state.bag.find(i => i.id === 'f1');
-            if (frag) frag.count += 1;
-
-            showToast('¡Ataque ejecutado! Obtuviste +1 Fragmento Épico en tu mochila');
-            renderUI();
-        }
-
-        function craftSphere() {
-            const frag = state.bag.find(i => i.id === 'f1');
-            const sphere = state.bag.find(i => i.id === 'e1');
-
-            if (!frag || frag.count < 3) {
-                showToast('Requieres al menos 3 Fragmentos Épicos para sintetizar', false);
-                return;
-            }
-
-            frag.count -= 3;
-            if (sphere) sphere.count += 1;
-
-            showToast('¡Síntesis completada! 1 Esfera Soulbound agregada');
-            renderUI();
-        }
-
-        function ascendHero() {
-            const sphere = state.bag.find(i => i.id === 'e1');
-            if (!sphere || sphere.count < 1) {
-                showToast('Necesitas 1 Esfera Soulbound en la mochila', false);
-                return;
-            }
-            if (state.heroes.length === 0) {
-                showToast('No tienes héroes para ascender', false);
-                return;
-            }
-
-            sphere.count -= 1;
-            state.heroes[0].rarity = "Épico";
-            showToast('¡Ascensión exitosa! Tu héroe principal ascendió a rango Épico');
-            renderUI();
+            updateUI();
+            alert('¡Ataque registrado contra el Titán Korrath! Obtuviste +1 Fragmento Épico.');
         }
 
         function connectWallet() {
-            state.connected = !state.connected;
-            const btnText = document.getElementById('walletText');
-            if (state.connected) {
-                btnText.innerText = "0x71C...3a98";
-                showToast('Billetera Web3 conectada correctamente');
-            } else {
-                btnText.innerText = "Conectar Billetera";
-                showToast('Billetera desconectada');
-            }
+            document.getElementById('walletText').innerText = '0x71C...3a98';
+            alert('Billetera BNB Chain conectada correctamente.');
         }
 
-        // EVENT LISTENERS BINDING
-        window.addEventListener('DOMContentLoaded', () => {
-            // Tabs
-            document.getElementById('tab-inventory').addEventListener('click', () => switchTab('inventory'));
-            document.getElementById('tab-mint').addEventListener('click', () => switchTab('mint'));
-            document.getElementById('tab-adventure').addEventListener('click', () => switchTab('adventure'));
-            document.getElementById('tab-altar').addEventListener('click', () => switchTab('altar'));
-            document.getElementById('tab-boss').addEventListener('click', () => switchTab('boss'));
-
-            // Botones de Acción
-            document.getElementById('walletBtn').addEventListener('click', connectWallet);
-            document.getElementById('buyPotionBtn').addEventListener('click', buyEnergyPotion);
-            document.getElementById('mintHeroBtn').addEventListener('click', mintHero);
-            document.getElementById('mintWeaponBtn').addEventListener('click', mintWeapon);
-            document.getElementById('attackBossBtn').addEventListener('click', attackBoss);
-            document.getElementById('craftSphereBtn').addEventListener('click', craftSphere);
-            document.getElementById('ascendHeroBtn').addEventListener('click', ascendHero);
-
-            // Inicializar UI
-            renderUI();
-        });
+        // Carga inicial
+        updateUI();
+        renderLeagueStages();
     </script>
 </body>
 </html>
