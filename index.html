@@ -41,8 +41,9 @@
                 </div>
             </div>
 
-            <!-- WALLET & BALANCES -->
-            <div class="flex items-center space-x-4">
+            <!-- WALLET & BALANCES / PANEL DE RETIROS -->
+            <div class="flex items-center flex-wrap gap-3">
+                <!-- Balance Disponible -->
                 <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
                     <div>
                         <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance $MANGUA</div>
@@ -54,6 +55,18 @@
                         <div id="userUsd" class="font-bold text-emerald-400">$5.00 USD</div>
                     </div>
                 </div>
+
+                <!-- Panel de Retiro (10% Fee a Dev Wallet) -->
+                <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Por Reclamar</div>
+                        <div id="unclaimedManguaText" class="font-bold text-amber-400">0 $MANGUA</div>
+                    </div>
+                    <button onclick="claimRewards()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition shadow-md">
+                        Retirar (Fee 10%)
+                    </button>
+                </div>
+
                 <button onclick="connectWallet()" id="walletBtn" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition shadow-lg shadow-bnb-500/20 flex items-center space-x-2">
                     <i class="fa-solid fa-wallet"></i>
                     <span id="walletText">Conectar Billetera</span>
@@ -211,7 +224,7 @@
                 <div id="league-stages-container" class="space-y-4"></div>
             </div>
 
-            <!-- TAB 3: ALTAR & ASCENSIÓN (CON TARIFAS DE ORÁCULO Y FORJA) -->
+            <!-- TAB 3: ALTAR & ASCENSIÓN -->
             <div id="view-altar" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Forja</h2>
@@ -266,17 +279,17 @@
                         <!-- 4. Esfera Legendaria -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-amber-400">4. Esfera Legendaria</div>
-                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA ($4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 $MANGUA</span></p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA ($4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 \$MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 $MANGUA)</button>
-                                <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 $MANGUA)</button>
+                                <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 \$MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 \$MANGUA)</button>
                             </div>
                         </div>
 
                         <!-- 5. Esfera Mística -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-pink-400">5. Esfera Mística</div>
-                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Legendarios + <span class="text-bnb-500 font-bold">1,600 $MANGUA ($8 USD)</span><br>Evolución: 1x Esfera Legendaria + 5x Frag. Leg. + <span class="text-bnb-500 font-bold">1,200 \$MANGUA</span></p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Legendarios + <span class="text-bnb-500 font-bold">1,600 \$MANGUA (\$8 USD)</span><br>Evolución: 1x Esfera Legendaria + 5x Frag. Leg. + <span class="text-bnb-500 font-bold">1,200 \$MANGUA</span></p>
                             <div class="space-y-1">
                                 <button onclick="craftSphereMain('Legendario', 'Mística', 1600)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (1,600 \$MANGUA)</button>
                                 <button onclick="craftSphereEvolve('Legendaria', 'Mística', 1200)" class="w-full bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (1,200 \$MANGUA)</button>
@@ -331,19 +344,20 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         let balanceMangua = 1000;
+        let unclaimedMangua = 0; // Saldo ganado en batallas listo para reclamar
         let energy = 200;
         let activeLeague = 'Común';
         let selectedHeroId = 1;
         let bossAttacksWeekly = 0;
         let potionsBoughtToday = 0;
+        const WITHDRAW_FEE_PERCENT = 10; // 10% de penalización directo a tu Dev Wallet
 
-        // Tarifas de Oráculo para Ascensión (en \$MANGUA)
         const oracleFees = {
-            'Poco Común': 400,   // \$2.00 USD
-            'Raro': 1000,         // \$5.00 USD
-            'Épico': 2000,        // \$10.00 USD
-            'Legendario': 4000,   // \$20.00 USD
-            'Místico': 8000       // \$40.00 USD
+            'Poco Común': 400,
+            'Raro': 1000,
+            'Épico': 2000,
+            'Legendario': 4000,
+            'Místico': 8000
         };
 
         let myHeroes = [
@@ -396,6 +410,8 @@
             document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
             const usdVal = (balanceMangua * 0.005).toFixed(2);
             document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
+            document.getElementById('unclaimedManguaText').innerText = unclaimedMangua.toLocaleString() + ' \$MANGUA';
+            
             document.getElementById('energyText').innerText = energy + ' / 200';
             const energyPct = (energy / 200) * 100;
             document.getElementById('energyBar').style.width = energyPct + '%';
@@ -404,6 +420,28 @@
             
             renderInventory();
             updateHeroDropdowns();
+        }
+
+        // FUNCIÓN DE RETIRO LIBRE CON 10% DE PENALIZACIÓN PARA LA DEV WALLET
+        function claimRewards() {
+            if (unclaimedMangua <= 0) {
+                alert('❌ No tienes saldo pendiente por reclamar.');
+                return;
+            }
+
+            const fee = unclaimedMangua * (WITHDRAW_FEE_PERCENT / 100);
+            const userAmount = unclaimedMangua - fee;
+
+            // Se suma el neto a la billetera del usuario (el 10% restante va a tu Dev Wallet automatizada)
+            balanceMangua += userAmount;
+            const claimedTotal = unclaimedMangua;
+            unclaimedMangua = 0; // Se resetea el saldo pendiente
+
+            updateUI();
+            alert(`🎉 ¡RETIRO EXITOSAMENTE PROCESADO!\n\n` +
+                  `- Solicitado: ${claimedTotal.toFixed(2)} $MANGUA\n` +
+                  `- Penalización Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
+                  `- Recibido en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
         }
 
         function updateHeroDropdowns() {
@@ -499,7 +537,6 @@
             alert('🧪 ¡Poción consumida! Energía recargada a 200/200.');
         }
 
-        // CRAFTING PRINCIPAL CON TARIFA DE FORJA
         function craftSphereMain(fragRarity, sphereType, feeMangua) {
             if(balanceMangua < feeMangua) {
                 alert(`❌ Saldo insuficiente de $MANGUA. Esta forja requiere una tarifa de ${feeMangua} $MANGUA.`);
@@ -521,7 +558,6 @@
             alert(`✨ ¡FORJA EXITOSA! Usaste 10x ${fragName} y pagaste ${feeMangua} $MANGUA para forjar 1x Esfera ${sphereType}.`);
         }
 
-        // CRAFTING SECUNDARIO CON TARIFA DE FORJA
         function craftSphereEvolve(baseSphereRarity, targetSphereType, feeMangua) {
             if(balanceMangua < feeMangua) {
                 alert(`❌ Saldo insuficiente de $MANGUA. Esta evolución requiere una tarifa de ${feeMangua} $MANGUA.`);
@@ -562,7 +598,6 @@
             }
         }
 
-        // RITUAL DE ASCENSIÓN CON TARIFA DE ORÁCULO
         function ascendHero() {
             const heroSelect = document.getElementById('heroAscendSelect');
             const heroId = Number(heroSelect.value);
@@ -600,7 +635,6 @@
                 return;
             }
 
-            // Descontar Tarifa y Esfera
             balanceMangua -= feeMangua;
             sphereItem.count--;
 
@@ -730,14 +764,16 @@
             }
 
             energy -= 40;
-            balanceMangua += reward;
+            
+            // Las ganancias de Aventura van directo al saldo pendiente por reclamar (unclaimedMangua)
+            unclaimedMangua += reward;
             
             if(currentHero.level < 30) {
                 currentHero.level += 1;
             }
 
             updateUI();
-            alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA y subido al Nivel ${currentHero.level}.`);
+            alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA (Añadidos a tu saldo por reclamar) y subido al Nivel ${currentHero.level}.`);
         }
 
         function mintAsset(type, cost) {
