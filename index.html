@@ -22,7 +22,7 @@
                 }
             }
         }
-    >
+    </script>
     <!-- FontAwesome para Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -66,7 +66,7 @@
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <!-- SIDEBAR NAVIGATION -->
-        <aside class="lg:col-span-1 space-y-2">
+        <aside class="lg:col-span-1 space-y-4">
             <nav class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-2xl space-y-1">
                 <button onclick="switchTab('mint')" id="tab-mint" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
                     <i class="fa-solid fa-store w-5"></i>
@@ -110,7 +110,7 @@
         <!-- CONTENT VIEWS -->
         <section class="lg:col-span-3 space-y-6">
 
-            <!-- TAB 1: PORTAL DE MINTEO (ADQUISICIÓN) -->
+            <!-- TAB 1: PORTAL DE MINTEO -->
             <div id="view-mint" class="space-y-6">
                 <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-6 rounded-3xl relative overflow-hidden">
                     <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 text-slate-800/40 text-9xl pointer-events-none">
@@ -165,7 +165,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MODO AVENTURA (LIGAS POR RAREZA) -->
+            <!-- TAB 2: MODO AVENTURA (LIGAS) -->
             <div id="view-adventure" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-map text-bnb-500 mr-2"></i> Modo Aventura por Ligas de Rareza</h2>
@@ -182,9 +182,9 @@
                     <button onclick="selectLeague('mystic')" id="league-btn-mystic" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Mística</button>
                 </div>
 
-                <!-- Contenedor de Sub-etapas de la Liga Activa -->
+                <!-- Sub-etapas de la Liga Activa -->
                 <div id="league-stages-container" class="space-y-4">
-                    <!-- Se carga dinámicamente -->
+                    <!-- Se renderiza vía JS -->
                 </div>
             </div>
 
@@ -199,7 +199,7 @@
                     <h3 class="text-lg font-bold text-white">Forja de Esferas Soulbound</h3>
                     <p class="text-xs text-slate-400 max-w-md mx-auto">Combina 3 fragmentos o utiliza el método evolutivo para forjar Esferas Épicas, Legendarias y Místicas vinculadas a tu cuenta.</p>
                     <div class="pt-2">
-                        <button onclick="alert('Sistema de Altar y Crafting sincronizado con el Smart Contract.')" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg">
+                        <button onclick="alert('Sistema de Altar y Crafting sincronizado.')" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg">
                             Acceder a la Forja
                         </button>
                     </div>
@@ -246,128 +246,4 @@
             ]},
             rare: { name: 'Liga Rara', stages: [
                 { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 20.0, usd: 0.50 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 21.6, usd: 0.54 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 23.2, usd: 0.58 }
-            ]},
-            epic: { name: 'Liga Épica', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 25.0, usd: 0.625 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 27.2, usd: 0.68 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 29.4, usd: 0.735 }
-            ]},
-            legendary: { name: 'Liga Legendaria', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 32.0, usd: 0.80 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 35.0, usd: 0.875 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 38.0, usd: 0.95 }
-            ]},
-            mystic: { name: 'Liga Mística', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 42.0, usd: 1.05 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 46.0, usd: 1.15 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 50.0, usd: 1.25 }
-            ]}
-        };
-
-        function updateUI() {
-            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
-            const usdVal = (balanceMangua * 0.005).toFixed(2);
-            document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
-            document.getElementById('energyText').innerText = energy + ' / 200';
-            const energyPct = (energy / 200) * 100;
-            document.getElementById('energyBar').style.width = energyPct + '%';
-        }
-
-        function switchTab(tab) {
-            ['mint', 'adventure', 'altar', 'boss'].forEach(t => {
-                document.getElementById('view-' + t).classList.add('hidden');
-                document.getElementById('tab-' + t).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200";
-            });
-            document.getElementById('view-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md";
-            if(tab === 'adventure') renderLeagueStages();
-        }
-
-        function selectLeague(leagueKey) {
-            activeLeague = leagueKey;
-            ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mystic'].forEach(k => {
-                const btn = document.getElementById('league-btn-' + k);
-                if(k === leagueKey) {
-                    btn.className = "bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white shadow";
-                } else {
-                    btn.className = "bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400";
-                }
-            });
-            renderLeagueStages();
-        }
-
-        function renderLeagueStages() {
-            const container = document.getElementById('league-stages-container');
-            const league = leaguesData[activeLeague];
-            let html = `<div class="text-sm font-bold text-bnb-500 mb-2">${league.name}</div>`;
-            
-            league.stages.forEach((st, idx) => {
-                html += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-white text-sm">${st.name}</div>
-                            <div class="text-xs text-slate-400">Requisito: ${st.req} • Gana +${st.reward} $MANGUA ($${st.usd} USD)</div>
-                        </div>
-                        <button onclick="playAdventure(${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">
-                            Batallar (-40 Energía)
-                        </button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function mintAsset(type, cost) {
-            if(balanceMangua < cost) {
-                alert('Saldo insuficiente de \$MANGUA para mintear.');
-                return;
-            }
-            balanceMangua -= cost;
-            updateUI();
-            alert('¡Minteo exitoso! NFT añadido a tu inventario.');
-        }
-
-        function playAdventure(reward) {
-            if(energy < 40) {
-                alert('Energía insuficiente. Compra una Poción o espera regeneración.');
-                return;
-            }
-            energy -= 40;
-            balanceMangua += reward;
-            updateUI();
-            alert(`¡Victoria en Aventura! Has ganado +${reward} $MANGUA.`);
-        }
-
-        function buyEnergyPotion() {
-            if(balanceMangua < 100) {
-                alert('Necesitas 100 \$MANGUA (\$0.50 USD) para comprar la poción.');
-                return;
-            }
-            balanceMangua -= 100;
-            energy = 200;
-            updateUI();
-            alert('¡Poción aplicada con éxito! Energía restaurada a 200/200.');
-        }
-
-        function attackBoss() {
-            if(energy < 100) {
-                alert('El ataque al World Boss requiere 100 de energía (50%).');
-                return;
-            }
-            energy -= 100;
-            updateUI();
-            alert('¡Ataque registrado contra el Titán Korrath! Revisa tu caja semanal para ver tus fragmentos de esferas y pociones.');
-        }
-
-        function connectWallet() {
-            document.getElementById('walletText').innerText = '0x71C...3a98';
-            alert('Billetera BNB Chain conectada correctamente.');
-        }
-
-        updateUI();
-        renderLeagueStages();
-    </script>
-</body>
-</html>
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 11
