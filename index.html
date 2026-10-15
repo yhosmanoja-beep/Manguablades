@@ -45,7 +45,7 @@
             <div class="flex items-center space-x-4">
                 <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
                     <div>
-                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance \$MANGUA</div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance $MANGUA</div>
                         <div id="userMangua" class="font-bold text-bnb-500">1,000 \$MANGUA</div>
                     </div>
                     <div class="h-6 w-[1px] bg-slate-800"></div>
@@ -134,8 +134,8 @@
                         <i class="fa-solid fa-briefcase text-amber-400"></i> Mochila / Inventario
                     </h2>
                     
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="inventoryGrid">
-                        <!-- Renderizado por JS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="inventoryGrid">
+                        <!-- Renderizado por JS con botón de Uso para Pociones -->
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MODO AVENTURA (LIGAS POR RAREZA CON RESTRICCIÓN) -->
+            <!-- TAB 2: MODO AVENTURA -->
             <div id="view-adventure" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-map text-bnb-500 mr-2"></i> Modo Aventura por Ligas de Rareza</h2>
@@ -212,7 +212,7 @@
                     <button onclick="selectLeague('Místico')" id="league-btn-Místico" class="bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400">Liga Mística</button>
                 </div>
 
-                <!-- Selector de Personaje Activo para la Batalla -->
+                <!-- Selector de Personaje Activo -->
                 <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
                     <div>
                         <div class="text-xs text-slate-400">Selecciona con cuál Héroe vas a combatir:</div>
@@ -225,38 +225,86 @@
 
                 <!-- Sub-etapas de la Liga Activa -->
                 <div id="league-stages-container" class="space-y-4">
-                    <!-- Se renderiza vía JS -->
+                    <!-- Renderizado por JS -->
                 </div>
             </div>
 
-            <!-- TAB 3: ALTAR & FORJA -->
+            <!-- TAB 3: ALTAR & FORJA DE ESFERAS (SISTEMA 10 FRAGMENTOS = 1 ESFERA) -->
             <div id="view-altar" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
-                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Crafting</h2>
-                    <p class="text-sm text-slate-400">Sintetiza fragmentos obtenidos en el World Boss y paga la tarifa de oráculo para ascender de rareza.</p>
+                    <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Forja de Esferas</h2>
+                    <p class="text-sm text-slate-400">Sintetiza 10 Fragmentos de una misma rareza para forjar 1 Esfera Soulbound de la rareza superior necesaria para la ascensión.</p>
                 </div>
-                <div class="bg-slate-900/60 border border-slate-800 p-8 rounded-3xl text-center space-y-4">
-                    <i class="fa-solid fa-gem text-5xl text-bnb-500 animate-pulse"></i>
-                    <h3 class="text-lg font-bold text-white">Forja de Esferas Soulbound</h3>
-                    <p class="text-xs text-slate-400 max-w-md mx-auto">Combina 3 fragmentos o utiliza el método evolutivo para forjar Esferas y ascender tus personajes al siguiente nivel.</p>
-                    <div class="pt-2">
-                        <button onclick="alert('Sistema de Altar y Crafting sincronizado.')" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-lg">
-                            Acceder a la Forja
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Receta 1: Esfera Épica -->
+                    <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">Esfera Épica</span>
+                            <i class="fa-solid fa-gem text-purple-400 text-xl"></i>
+                        </div>
+                        <div class="text-xs text-slate-300">Requisito: <span class="font-bold text-blue-400">10 Fragmentos Raros</span></div>
+                        <button onclick="craftSphere('Raro', 'Épica')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+                            Forjar Esfera Épica
+                        </button>
+                    </div>
+
+                    <!-- Receta 2: Esfera Legendaria -->
+                    <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">Esfera Legendaria</span>
+                            <i class="fa-solid fa-gem text-amber-400 text-xl"></i>
+                        </div>
+                        <div class="text-xs text-slate-300">Requisito: <span class="font-bold text-purple-400">10 Fragmentos Épicos</span></div>
+                        <button onclick="craftSphere('Épico', 'Legendaria')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+                            Forjar Esfera Legendaria
+                        </button>
+                    </div>
+
+                    <!-- Receta 3: Esfera Mística -->
+                    <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-pink-400 bg-pink-500/10 border border-pink-500/20 px-3 py-1 rounded-full">Esfera Mística</span>
+                            <i class="fa-solid fa-gem text-pink-400 text-xl"></i>
+                        </div>
+                        <div class="text-xs text-slate-300">Requisito: <span class="font-bold text-amber-400">10 Fragmentos Legendarios</span></div>
+                        <button onclick="craftSphere('Legendario', 'Mística')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+                            Forjar Esfera Mística
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: WORLD BOSS -->
+            <!-- TAB 4: WORLD BOSS (LÍMITE 10/SEMANA & TABLA PROBABILÍSTICA) -->
             <div id="view-boss" class="space-y-6 hidden">
-                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-dragon text-red-400 mr-2"></i> World Boss: Titán Korrath</h2>
-                        <p class="text-sm text-slate-400">Consume 100 de energía por ataque. Recompensas enfocadas en fragmentos de esferas y pociones (Sin emisión de tokens).</p>
+                <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-dragon text-red-400 mr-2"></i> World Boss: Titán Korrath</h2>
+                            <p class="text-sm text-slate-400">Consume 100 de energía. Sin emisión de tokens. Recompensas semanales por probabilidad.</p>
+                        </div>
+                        <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-2xl text-right">
+                            <div class="text-[10px] text-slate-400 uppercase">Ataques Semanales</div>
+                            <div id="bossAttacksText" class="text-base font-extrabold text-red-400">0 / 10 Usados</div>
+                        </div>
                     </div>
-                    <button onclick="attackBoss()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/20">
-                        Atacar al Titán (-100 Energía)
-                    </button>
+
+                    <!-- Tabla de Probabilidades -->
+                    <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl space-y-2 text-xs">
+                        <div class="font-bold text-slate-300 mb-1">🎯 Tabla de Loot por Ataque (RNG):</div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center"><span class="text-amber-400 font-bold">45%</span> Poción Energía</div>
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center"><span class="text-blue-400 font-bold">35%</span> Frag. Raro</div>
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center"><span class="text-purple-400 font-bold">15%</span> Frag. Épico</div>
+                            <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center"><span class="text-amber-400 font-bold">5%</span> Frag. Legendario</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex justify-end">
+                        <button onclick="attackBoss()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/20">
+                            Atacar al Titán (-100 Energía)
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -274,8 +322,8 @@
         let energy = 200;
         let activeLeague = 'Común';
         let selectedHeroId = 1;
+        let bossAttacksWeekly = 0;
 
-        // Estado del Inventario y Personajes
         let myHeroes = [
             { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, equippedWeapon: "Ballesta Genérica" }
         ];
@@ -283,7 +331,10 @@
         let myBag = [
             { id: 101, name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
             { id: 102, name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
-            { id: 103, name: "Fragmento Épico", type: "Material", rarity: "Épico", count: 1, icon: "fa-puzzle-piece" }
+            { id: 103, name: "Fragmento Raro", type: "Material", rarity: "Raro", count: 5, icon: "fa-puzzle-piece" },
+            { id: 104, name: "Fragmento Épico", type: "Material", rarity: "Épico", count: 2, icon: "fa-puzzle-piece" },
+            { id: 105, name: "Fragmento Legendario", type: "Material", rarity: "Legendario", count: 0, icon: "fa-puzzle-piece" },
+            { id: 106, name: "Esfera Épica", type: "Esfera", rarity: "Épico", count: 0, icon: "fa-gem" }
         ];
 
         const leaguesData = {
@@ -326,6 +377,7 @@
             document.getElementById('energyText').innerText = energy + ' / 200';
             const energyPct = (energy / 200) * 100;
             document.getElementById('energyBar').style.width = energyPct + '%';
+            document.getElementById('bossAttacksText').innerText = `${bossAttacksWeekly} / 10 Usados`;
             
             renderInventory();
             updateHeroDropdown();
@@ -380,18 +432,110 @@
             });
             heroContainer.innerHTML = heroHtml;
 
+            // Render Mochila con Botón de Uso
             const bagGrid = document.getElementById('inventoryGrid');
             let bagHtml = '';
             myBag.forEach(item => {
+                let actionBtn = '';
+                if(item.id === 102 && item.count > 0) {
+                    actionBtn = `<button onclick="usePotionFromBag()" class="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-1 px-2 rounded-lg text-xs transition">Usar Poción</button>`;
+                }
                 bagHtml += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl text-center space-y-2">
-                        <div class="text-2xl text-bnb-500"><i class="fa-solid ${item.icon}"></i></div>
-                        <div class="font-bold text-xs text-white">${item.name}</div>
-                        <div class="text-[10px] text-slate-400">${item.type} • Cantidad: <span class="text-emerald-400 font-bold">${item.count}</span></div>
+                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between text-center space-y-2">
+                        <div>
+                            <div class="text-2xl text-bnb-500"><i class="fa-solid ${item.icon}"></i></div>
+                            <div class="font-bold text-xs text-white mt-1">${item.name}</div>
+                            <div class="text-[10px] text-slate-400">${item.type} • Cantidad: <span class="text-emerald-400 font-bold">${item.count}</span></div>
+                        </div>
+                        ${actionBtn}
                     </div>
                 `;
             });
             bagGrid.innerHTML = bagHtml;
+        }
+
+        function usePotionFromBag() {
+            const potionItem = myBag.find(i => i.id === 102);
+            if(!potionItem || potionItem.count <= 0) {
+                alert('No tienes pociones disponibles en la mochila.');
+                return;
+            }
+            if(energy >= 200) {
+                alert('Tu energía ya está al máximo (200/200).');
+                return;
+            }
+            potionItem.count--;
+            energy = 200;
+            updateUI();
+            alert('🧪 ¡Poción consumida! Energía recargada a 200/200.');
+        }
+
+        function craftSphere(fragRarity, sphereType) {
+            const fragName = `Fragmento ${fragRarity}`;
+            const fragItem = myBag.find(i => i.name === fragName);
+            
+            if(!fragItem || fragItem.count < 10) {
+                alert(`❌ Necesitas mínimo 10 ${fragName}s para forjar 1 Esfera ${sphereType}. Actual: ${fragItem ? fragItem.count : 0}/10.`);
+                return;
+            }
+
+            fragItem.count -= 10;
+            let sphereItem = myBag.find(i => i.name === `Esfera ${sphereType}`);
+            if(!sphereItem) {
+                myBag.push({ id: Date.now(), name: `Esfera ${sphereType}`, type: "Esfera", rarity: sphereType, count: 1, icon: "fa-gem" });
+            } else {
+                sphereItem.count++;
+            }
+
+            updateUI();
+            alert(`✨ ¡FORJA EXITOSA! Has sintetizado 10 ${fragName}s para crear 1x Esfera ${sphereType}.`);
+        }
+
+        function attackBoss() {
+            if(bossAttacksWeekly >= 10) {
+                alert('❌ Límite alcanzado: Ya utilizaste tus 10 ataques semanales al World Boss.');
+                return;
+            }
+            if(energy < 100) {
+                alert('El ataque al World Boss requiere 100 de energía (50%).');
+                return;
+            }
+
+            energy -= 100;
+            bossAttacksWeekly++;
+
+            // SISTEMA DE PROBABILIDADES (RNG)
+            const rng = Math.random() * 100;
+            let rewardMsg = '';
+
+            if(rng < 45) {
+                // 45% Poción
+                const potion = myBag.find(i => i.id === 102);
+                potion.count++;
+                rewardMsg = '🧪 ¡Obtuviste 1x Poción de Energía Max! (45% Probabilidad)';
+            } else if(rng < 80) {
+                // 35% Fragmento Raro (45 + 35 = 80)
+                const frag = myBag.find(i => i.name === 'Fragmento Raro');
+                frag.count++;
+                rewardMsg = '🔷 ¡Obtuviste 1x Fragmento Raro! (35% Probabilidad)';
+            } else if(rng < 95) {
+                // 15% Fragmento Épico (80 + 15 = 95)
+                const frag = myBag.find(i => i.name === 'Fragmento Épico');
+                frag.count++;
+                rewardMsg = '🟣 ¡Obtuviste 1x Fragmento Épico! (15% Probabilidad)';
+            } else {
+                // 5% Fragmento Legendario
+                let frag = myBag.find(i => i.name === 'Fragmento Legendario');
+                if(!frag) {
+                    myBag.push({ id: 105, name: "Fragmento Legendario", type: "Material", rarity: "Legendario", count: 1, icon: "fa-puzzle-piece" });
+                } else {
+                    frag.count++;
+                }
+                rewardMsg = '🟡 ¡RECOMPENSA RARA! Has obtenido 1x Fragmento Legendario (5% Probabilidad)';
+            }
+
+            updateUI();
+            alert(`⚔️ Ataque #${bossAttacksWeekly}/10 al Titán Korrath completado.\n\n${rewardMsg}`);
         }
 
         function switchTab(tab) {
@@ -442,19 +586,17 @@
             const currentHero = myHeroes.find(h => h.id == selectedHeroId);
             
             if(!currentHero) {
-                alert('Selecciona un Héroe válido en el menú desplegable.');
+                alert('Selecciona un Héroe válido.');
                 return;
             }
 
-            // VALIDACIÓN ESTRICTA DE RAREZA
             if(currentHero.rarity !== leagueName) {
-                alert(`❌ ACCESO DENEGADO: Tu héroe "${currentHero.name}" es de rareza [${currentHero.rarity}]. Solo puede combatir en la Liga ${currentHero.rarity}. ¡Debes ascenderlo en el Altar para participar aquí!`);
+                alert(`❌ ACCESO DENEGADO: Tu héroe "${currentHero.name}" es de rareza [${currentHero.rarity}]. Solo puede combatir en la Liga ${currentHero.rarity}.`);
                 return;
             }
 
-            // VALIDACIÓN DE NIVEL MÍNIMO
             if(currentHero.level < minLevel) {
-                alert(`❌ ACCESO DENEGADO: Tu héroe es Nivel ${currentHero.level}. Esta etapa exige mínimo Nivel ${minLevel}. ¡Sube de nivel en etapas anteriores!`);
+                alert(`❌ ACCESO DENEGADO: Tu héroe es Nivel ${currentHero.level}. Esta etapa exige mínimo Nivel ${minLevel}.`);
                 return;
             }
 
@@ -516,21 +658,7 @@
             if(potionItem) potionItem.count++;
 
             updateUI();
-            alert('¡Poción aplicada! Energía restaurada a 200/200.');
-        }
-
-        function attackBoss() {
-            if(energy < 100) {
-                alert('El ataque al World Boss requiere 100 de energía (50%).');
-                return;
-            }
-            energy -= 100;
-            
-            const fragItem = myBag.find(i => i.id === 103);
-            if(fragItem) fragItem.count++;
-
-            updateUI();
-            alert('¡Ataque registrado contra el Titán Korrath! Obtuviste +1 Fragmento Épico.');
+            alert('¡Poción comprada y aplicada! Energía restaurada a 200/200.');
         }
 
         function connectWallet() {
