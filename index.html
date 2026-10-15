@@ -211,82 +211,82 @@
                 <div id="league-stages-container" class="space-y-4"></div>
             </div>
 
-            <!-- TAB 3: ALTAR & ASCENSIÓN (ORDENADO + DOBLE RECETA) -->
+            <!-- TAB 3: ALTAR & ASCENSIÓN (CON TARIFAS DE ORÁCULO Y FORJA) -->
             <div id="view-altar" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-fire-flame-curved text-amber-400 mr-2"></i> Altar de Ascensión & Forja</h2>
-                    <p class="text-sm text-slate-400">Forja las esferas mediante fragmentos o evolucionando esferas inferiores, y asciende a tus héroes de Nivel 30.</p>
+                    <p class="text-sm text-slate-400">Paga la tarifa de forja/oráculo en $MANGUA para sintetizar esferas y ascender de rareza a tus héroes en Nivel 30.</p>
                 </div>
 
                 <!-- RITUAL DE ASCENSIÓN DE HÉROE -->
                 <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4">
                     <h3 class="font-bold text-white text-base"><i class="fa-solid fa-arrow-up-right-dots text-bnb-500 mr-2"></i> Ritual de Ascensión de Personaje</h3>
-                    <p class="text-xs text-slate-400">Asciende un héroe en Nivel 30 al siguiente rango de rareza (Consume 1x Esfera objetivo).</p>
+                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera + Tarifa de Oráculo en $MANGUA).</p>
                     
                     <div class="flex flex-wrap items-center gap-4 pt-2">
                         <select id="heroAscendSelect" class="bg-slate-800 border border-slate-700 text-xs text-white font-bold p-2.5 rounded-xl outline-none"></select>
                         <button onclick="ascendHero()" class="bg-bnb-500 hover:bg-bnb-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg">
-                            Ascender Héroe (Nv. 30 + Esfera)
+                            Ascender Héroe (Requiere Nv. 30 + Esfera + Tarifa Oráculo)
                         </button>
                     </div>
                 </div>
 
-                <!-- FORJA ORDENADA EN PASOS + SECUNDARIAS -->
+                <!-- FORJA DE ESFERAS CON TARIFAS DE MANGUA -->
                 <div class="space-y-4">
-                    <h3 class="font-bold text-white text-base"><i class="fa-solid fa-gem text-amber-400 mr-2"></i> Recetas de Forja de Esferas</h3>
+                    <h3 class="font-bold text-white text-base"><i class="fa-solid fa-gem text-amber-400 mr-2"></i> Recetas de Forja de Esferas (Con Tarifa de Forja)</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- 1. Esfera Poco Común -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-emerald-400">1. Esfera Poco Común</div>
-                            <p class="text-[10px] text-slate-400">Receta Principal: 10x Frag. Común</p>
-                            <button onclick="craftSphereMain('Común', 'Poco Común')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs">Forjar (10 Frag. Común)</button>
+                            <p class="text-[10px] text-slate-400">10x Frag. Común + <span class="text-bnb-500 font-bold">100 $MANGUA ($0.50)</span></p>
+                            <button onclick="craftSphereMain('Común', 'Poco Común', 100)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs">Forjar (100 $MANGUA)</button>
                         </div>
 
                         <!-- 2. Esfera Rara -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-blue-400">2. Esfera Rara</div>
-                            <p class="text-[10px] text-slate-400">Principal: 10x Frag. Poco Común<br>Secundaria: 1x Esfera Poco Común + 5x Frag. Poco Común</p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. P.Común + <span class="text-bnb-500 font-bold">200 $MANGUA ($1 USD)</span><br>Evolución: 1x Esfera P.Común + 5x Frag. P.Común + <span class="text-bnb-500 font-bold">150 $MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Poco Común', 'Rara')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (10 Frag. P.Común)</button>
-                                <button onclick="craftSphereEvolve('Poco Común', 'Rara')" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar Esfera</button>
+                                <button onclick="craftSphereMain('Poco Común', 'Rara', 200)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (200 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Poco Común', 'Rara', 150)" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (150 $MANGUA)</button>
                             </div>
                         </div>
 
                         <!-- 3. Esfera Épica -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-purple-400">3. Esfera Épica</div>
-                            <p class="text-[10px] text-slate-400">Principal: 10x Frag. Raros<br>Secundaria: 1x Esfera Rara + 5x Frag. Raros</p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Raros + <span class="text-bnb-500 font-bold">400 $MANGUA ($2 USD)</span><br>Evolución: 1x Esfera Rara + 5x Frag. Raros + <span class="text-bnb-500 font-bold">300 $MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Raro', 'Épica')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (10 Frag. Raros)</button>
-                                <button onclick="craftSphereEvolve('Rara', 'Épica')" class="w-full bg-slate-800 hover:bg-slate-700 text-purple-400 border border-purple-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar Esfera</button>
+                                <button onclick="craftSphereMain('Raro', 'Épica', 400)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (400 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Rara', 'Épica', 300)" class="w-full bg-slate-800 hover:bg-slate-700 text-purple-400 border border-purple-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (300 $MANGUA)</button>
                             </div>
                         </div>
 
                         <!-- 4. Esfera Legendaria -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-amber-400">4. Esfera Legendaria</div>
-                            <p class="text-[10px] text-slate-400">Principal: 10x Frag. Épicos<br>Secundaria: 1x Esfera Épica + 5x Frag. Épicos</p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA ($4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 $MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Épico', 'Legendaria')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (10 Frag. Épicos)</button>
-                                <button onclick="craftSphereEvolve('Épica', 'Legendaria')" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar Esfera</button>
+                                <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 $MANGUA)</button>
                             </div>
                         </div>
 
                         <!-- 5. Esfera Mística -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-pink-400">5. Esfera Mística</div>
-                            <p class="text-[10px] text-slate-400">Principal: 10x Frag. Legendarios<br>Secundaria: 1x Esfera Legendaria + 5x Frag. Legendarios</p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Legendarios + <span class="text-bnb-500 font-bold">1,600 $MANGUA ($8 USD)</span><br>Evolución: 1x Esfera Legendaria + 5x Frag. Leg. + <span class="text-bnb-500 font-bold">1,200 \$MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Legendario', 'Mística')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (10 Frag. Legendarios)</button>
-                                <button onclick="craftSphereEvolve('Legendaria', 'Mística')" class="w-full bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar Esfera</button>
+                                <button onclick="craftSphereMain('Legendario', 'Mística', 1600)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (1,600 \$MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Legendaria', 'Mística', 1200)" class="w-full bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (1,200 \$MANGUA)</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4: WORLD BOSS (LOOT COMPLETO CON TODOS LOS FRAGMENTOS) -->
+            <!-- TAB 4: WORLD BOSS -->
             <div id="view-boss" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
@@ -300,7 +300,6 @@
                         </div>
                     </div>
 
-                    <!-- Tabla de Probabilidades Completa -->
                     <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl space-y-2 text-xs">
                         <div class="font-bold text-slate-300 mb-1">🎯 Tabla de Loot por Ataque (RNG):</div>
                         <div class="grid grid-cols-2 md:grid-cols-6 gap-2 text-center">
@@ -338,6 +337,15 @@
         let bossAttacksWeekly = 0;
         let potionsBoughtToday = 0;
 
+        // Tarifas de Oráculo para Ascensión (en \$MANGUA)
+        const oracleFees = {
+            'Poco Común': 400,   // \$2.00 USD
+            'Raro': 1000,         // \$5.00 USD
+            'Épico': 2000,        // \$10.00 USD
+            'Legendario': 4000,   // \$20.00 USD
+            'Místico': 8000       // \$40.00 USD
+        };
+
         let myHeroes = [
             { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, equippedWeapon: "Ballesta Genérica" }
         ];
@@ -345,7 +353,7 @@
         let myBag = [
             { id: 101, name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
             { id: 102, name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
-            { id: 103, name: "Fragmento Común", type: "Material", rarity: "Común", count: 8, icon: "fa-puzzle-piece" },
+            { id: 103, name: "Fragmento Común", type: "Material", rarity: "Común", count: 10, icon: "fa-puzzle-piece" },
             { id: 104, name: "Fragmento Poco Común", type: "Material", rarity: "Poco Común", count: 5, icon: "fa-puzzle-piece" },
             { id: 105, name: "Fragmento Raro", type: "Material", rarity: "Raro", count: 2, icon: "fa-puzzle-piece" },
             { id: 106, name: "Esfera Poco Común", type: "Esfera", rarity: "Poco Común", count: 1, icon: "fa-gem" }
@@ -491,8 +499,13 @@
             alert('🧪 ¡Poción consumida! Energía recargada a 200/200.');
         }
 
-        // CRAFTING PRINCIPAL (10 FRAGMENTOS)
-        function craftSphereMain(fragRarity, sphereType) {
+        // CRAFTING PRINCIPAL CON TARIFA DE FORJA
+        function craftSphereMain(fragRarity, sphereType, feeMangua) {
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente de $MANGUA. Esta forja requiere una tarifa de ${feeMangua} $MANGUA.`);
+                return;
+            }
+
             const fragName = `Fragmento ${fragRarity}`;
             const fragItem = myBag.find(i => i.name === fragName);
             
@@ -501,14 +514,20 @@
                 return;
             }
 
+            balanceMangua -= feeMangua;
             fragItem.count -= 10;
             addSphereToBag(sphereType);
             updateUI();
-            alert(`✨ ¡FORJA EXITOSA! Usaste 10x ${fragName} para forjar 1x Esfera ${sphereType}.`);
+            alert(`✨ ¡FORJA EXITOSA! Usaste 10x ${fragName} y pagaste ${feeMangua} $MANGUA para forjar 1x Esfera ${sphereType}.`);
         }
 
-        // CRAFTING SECUNDARIO (EVOLUCIONAR ESFERA)
-        function craftSphereEvolve(baseSphereRarity, targetSphereType) {
+        // CRAFTING SECUNDARIO CON TARIFA DE FORJA
+        function craftSphereEvolve(baseSphereRarity, targetSphereType, feeMangua) {
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente de $MANGUA. Esta evolución requiere una tarifa de ${feeMangua} $MANGUA.`);
+                return;
+            }
+
             const baseSphereName = `Esfera ${baseSphereRarity}`;
             const requiredFragName = `Fragmento ${baseSphereRarity}`;
 
@@ -525,12 +544,13 @@
                 return;
             }
 
+            balanceMangua -= feeMangua;
             sphereBaseItem.count--;
             fragItem.count -= 5;
             addSphereToBag(targetSphereType);
 
             updateUI();
-            alert(`✨ ¡EVOLUCIÓN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} para forjar 1x Esfera ${targetSphereType}.`);
+            alert(`✨ ¡EVOLUCIÓN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y pagaste ${feeMangua} $MANGUA para forjar 1x Esfera ${targetSphereType}.`);
         }
 
         function addSphereToBag(sphereType) {
@@ -542,6 +562,7 @@
             }
         }
 
+        // RITUAL DE ASCENSIÓN CON TARIFA DE ORÁCULO
         function ascendHero() {
             const heroSelect = document.getElementById('heroAscendSelect');
             const heroId = Number(heroSelect.value);
@@ -563,20 +584,31 @@
                 return;
             }
 
-            const requiredSphereName = `Esfera ${leagueInfo.nextRarity}`;
-            const sphereItem = myBag.find(i => i.name === requiredSphereName && i.count > 0);
+            const nextRarity = leagueInfo.nextRarity;
+            const feeMangua = oracleFees[nextRarity] || 0;
 
-            if(!sphereItem) {
-                alert(`❌ Necesitas 1x "${requiredSphereName}" para ascender de ${hero.rarity} a ${leagueInfo.nextRarity}.`);
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente. La Tarifa de Oráculo para ascender a [${nextRarity}] es de ${feeMangua} $MANGUA ($${(feeMangua*0.005).toFixed(2)} USD).`);
                 return;
             }
 
+            const requiredSphereName = `Esfera ${nextRarity}`;
+            const sphereItem = myBag.find(i => i.name === requiredSphereName && i.count > 0);
+
+            if(!sphereItem) {
+                alert(`❌ Necesitas 1x "${requiredSphereName}" en tu mochila para ascender de ${hero.rarity} a ${nextRarity}.`);
+                return;
+            }
+
+            // Descontar Tarifa y Esfera
+            balanceMangua -= feeMangua;
             sphereItem.count--;
-            hero.rarity = leagueInfo.nextRarity;
+
+            hero.rarity = nextRarity;
             hero.level = 1;
 
             updateUI();
-            alert(`🎉 ¡ASCENSIÓN EXITOSA!\n\nTu héroe "${hero.name}" ascendió a [${hero.rarity}] y reinició a Nivel 1 para combatir en su nueva Liga.`);
+            alert(`🎉 ¡ASCENSIÓN EXITOSA!\n\nTu héroe "${hero.name}" ascendió a [${hero.rarity}]. Se descontaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel se reinició a 1 para competir en su nueva Liga.`);
         }
 
         function attackBoss() {
@@ -592,7 +624,6 @@
             energy -= 100;
             bossAttacksWeekly++;
 
-            // RNG: 45% Poción | 25% Común | 15% P.Común | 9% Raro | 5% Épico | 1% Legendario
             const rng = Math.random() * 100;
             let rewardMsg = '';
 
