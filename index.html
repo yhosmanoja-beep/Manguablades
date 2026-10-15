@@ -68,7 +68,11 @@
         <!-- SIDEBAR NAVIGATION -->
         <aside class="lg:col-span-1 space-y-4">
             <nav class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-2xl space-y-1">
-                <button onclick="switchTab('mint')" id="tab-mint" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
+                <button onclick="switchTab('inventory')" id="tab-inventory" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md">
+                    <i class="fa-solid fa-user-shield w-5"></i>
+                    <span>Inventario & Héroes</span>
+                </button>
+                <button onclick="switchTab('mint')" id="tab-mint" class="w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200">
                     <i class="fa-solid fa-store w-5"></i>
                     <span>Portal de Minteo</span>
                 </button>
@@ -110,8 +114,36 @@
         <!-- CONTENT VIEWS -->
         <section class="lg:col-span-3 space-y-6">
 
+            <!-- TAB 0: INVENTARIO & HÉROES (NUEVO) -->
+            <div id="view-inventory" class="space-y-6">
+                <!-- Mis Personajes -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-users text-bnb-500"></i> Mis Personajes (NFTs)
+                        </h2>
+                        <span class="text-xs text-slate-400" id="heroCountText">Límite: 1 / 4 Personajes</span>
+                    </div>
+                    
+                    <div id="heroesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Renderizado por JS -->
+                    </div>
+                </div>
+
+                <!-- Mochila de Items -->
+                <div>
+                    <h2 class="text-lg font-extrabold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-briefcase text-amber-400"></i> Mochila / Inventario
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="inventoryGrid">
+                        <!-- Renderizado por JS -->
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB 1: PORTAL DE MINTEO -->
-            <div id="view-mint" class="space-y-6">
+            <div id="view-mint" class="space-y-6 hidden">
                 <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-6 rounded-3xl relative overflow-hidden">
                     <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 text-slate-800/40 text-9xl pointer-events-none">
                         <i class="fa-solid fa-store"></i>
@@ -233,6 +265,17 @@
         let energy = 200;
         let activeLeague = 'common';
 
+        // Estado del Inventario y Personajes
+        let myHeroes = [
+            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, equippedWeapon: "Ballesta Genérica (+15 ATK)" }
+        ];
+
+        let myBag = [
+            { id: 101, name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
+            { id: 102, name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
+            { id: 103, name: "Fragmento Épico", type: "Material", rarity: "Épico", count: 1, icon: "fa-puzzle-piece" }
+        ];
+
         const leaguesData = {
             common: { name: 'Liga Común', stages: [
                 { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 13.2, usd: 0.33 },
@@ -241,134 +284,4 @@
             ]},
             uncommon: { name: 'Liga Poco Común', stages: [
                 { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 16.2, usd: 0.405 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 17.4, usd: 0.435 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 18.6, usd: 0.465 }
-            ]},
-            rare: { name: 'Liga Rara', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 20.0, usd: 0.50 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 21.6, usd: 0.54 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 23.2, usd: 0.58 }
-            ]},
-            epic: { name: 'Liga Épica', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 25.0, usd: 0.625 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 27.2, usd: 0.68 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 29.4, usd: 0.735 }
-            ]},
-            legendary: { name: 'Liga Legendaria', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 32.0, usd: 0.80 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 35.0, usd: 0.875 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 38.0, usd: 0.95 }
-            ]},
-            mystic: { name: 'Liga Mística', stages: [
-                { name: 'Nivel 1 (Fácil)', req: 'Nivel 1-10', reward: 42.0, usd: 1.05 },
-                { name: 'Nivel 2 (Medio)', req: 'Nivel 11-20', reward: 46.0, usd: 1.15 },
-                { name: 'Nivel 3 (Difícil)', req: 'Nivel 21-30', reward: 50.0, usd: 1.25 }
-            ]}
-        };
-
-        function updateUI() {
-            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
-            const usdVal = (balanceMangua * 0.005).toFixed(2);
-            document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
-            document.getElementById('energyText').innerText = energy + ' / 200';
-            const energyPct = (energy / 200) * 100;
-            document.getElementById('energyBar').style.width = energyPct + '%';
-        }
-
-        function switchTab(tab) {
-            ['mint', 'adventure', 'altar', 'boss'].forEach(t => {
-                document.getElementById('view-' + t).classList.add('hidden');
-                document.getElementById('tab-' + t).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition text-slate-400 hover:bg-slate-800/60 hover:text-slate-200";
-            });
-            document.getElementById('view-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).className = "w-full text-left px-4 py-3 rounded-xl font-medium text-sm flex items-center space-x-3 transition bg-bnb-500 text-slate-950 font-bold shadow-md";
-            if(tab === 'adventure') renderLeagueStages();
-        }
-
-        function selectLeague(leagueKey) {
-            activeLeague = leagueKey;
-            ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mystic'].forEach(k => {
-                const btn = document.getElementById('league-btn-' + k);
-                if(k === leagueKey) {
-                    btn.className = "bg-slate-800 border border-slate-700 text-xs font-bold p-3 rounded-xl text-center transition text-white shadow";
-                } else {
-                    btn.className = "bg-slate-900/60 border border-slate-800 text-xs font-medium p-3 rounded-xl text-center transition text-slate-400";
-                }
-            });
-            renderLeagueStages();
-        }
-
-        function renderLeagueStages() {
-            const container = document.getElementById('league-stages-container');
-            const league = leaguesData[activeLeague];
-            let html = `<div class="text-sm font-bold text-bnb-500 mb-2">${league.name}</div>`;
-            
-            league.stages.forEach((st) => {
-                html += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-white text-sm">${st.name}</div>
-                            <div class="text-xs text-slate-400">Requisito: ${st.req} • Gana +${st.reward} $MANGUA ($${st.usd} USD)</div>
-                        </div>
-                        <button onclick="playAdventure(${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">
-                            Batallar (-40 Energía)
-                        </button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        function mintAsset(type, cost) {
-            if(balanceMangua < cost) {
-                alert('Saldo insuficiente de \$MANGUA para mintear.');
-                return;
-            }
-            balanceMangua -= cost;
-            updateUI();
-            alert('¡Minteo exitoso! NFT añadido a tu inventario.');
-        }
-
-        function playAdventure(reward) {
-            if(energy < 40) {
-                alert('Energía insuficiente. Compra una Poción o espera regeneración.');
-                return;
-            }
-            energy -= 40;
-            balanceMangua += reward;
-            updateUI();
-            alert(`¡Victoria en Aventura! Has ganado +${reward} $MANGUA.`);
-        }
-
-        function buyEnergyPotion() {
-            if(balanceMangua < 100) {
-                alert('Necesitas 100 \$MANGUA (\$0.50 USD) para comprar la poción.');
-                return;
-            }
-            balanceMangua -= 100;
-            energy = 200;
-            updateUI();
-            alert('¡Poción aplicada con éxito! Energía restaurada a 200/200.');
-        }
-
-        function attackBoss() {
-            if(energy < 100) {
-                alert('El ataque al World Boss requiere 100 de energía (50%).');
-                return;
-            }
-            energy -= 100;
-            updateUI();
-            alert('¡Ataque registrado contra el Titán Korrath! Revisa tu caja semanal para ver tus fragmentos de esferas y pociones.');
-        }
-
-        function connectWallet() {
-            document.getElementById('walletText').innerText = '0x71C...3a98';
-            alert('Billetera BNB Chain conectada correctamente.');
-        }
-
-        // Carga inicial
-        updateUI();
-        renderLeagueStages();
-    </script>
-</body>
-</html>
+                { name: 'Nivel 2 (Medio)', req: 'Nivel 1
