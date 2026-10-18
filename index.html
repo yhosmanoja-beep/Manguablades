@@ -106,7 +106,7 @@
             <!-- ENERGÍA Y CONSUMIBLES -->
             <div class="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl space-y-3">
                 <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400 font-semibold"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía Diaria</span>
+                    <span class="text-slate-400 font-semibold"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía Héroe Activo</span>
                     <span id="energyText" class="font-bold text-amber-400">200 / 200</span>
                 </div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -132,7 +132,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-users text-bnb-500"></i> Mis Personajes (NFTs)
+                            <i class="fa-solid fa-users text-bnb-500"></i> Mis Personajes (NFTs con Energía Individual)
                         </h2>
                         <span class="text-xs text-slate-400" id="heroCountText">Límite: 1 / 4 Personajes</span>
                     </div>
@@ -151,7 +151,7 @@
             <div id="view-mint" class="space-y-6 hidden">
                 <div class="bg-gradient-to-r from-slate-900 to-slate-900/60 border border-slate-800 p-6 rounded-3xl relative overflow-hidden">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-shield-halved text-bnb-500 mr-2"></i> Adquisición de Activos Iniciales</h2>
-                    <p class="text-sm text-slate-400 max-w-xl">Mintea tu personaje base para iniciar tu ROI de 15 días o forja tu arma elemental de ataque directo.</p>
+                    <p class="text-sm text-slate-400 max-w-xl">Mintea tu personaje base con su propia energía independiente o forja tu arma elemental.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -162,7 +162,7 @@
                                 <span class="text-xs text-slate-400">Rareza: Común (Nivel 1)</span>
                             </div>
                             <h3 class="text-lg font-bold text-white mb-2">Mangua Starter Hero</h3>
-                            <p class="text-xs text-slate-400">Otorgado con 200/200 de energía lista para operar en la Liga Común.</p>
+                            <p class="text-xs text-slate-400">Otorgado con 200/200 de energía individual lista para operar.</p>
                         </div>
                         <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between">
                             <div>
@@ -201,7 +201,7 @@
             <div id="view-adventure" class="space-y-6 hidden">
                 <div class="bg-slate-900/70 border border-slate-800 p-6 rounded-3xl">
                     <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-map text-bnb-500 mr-2"></i> Modo Aventura por Ligas</h2>
-                    <p class="text-sm text-slate-400">Tus personajes solo pueden competir en la Liga que corresponde a su Rareza actual.</p>
+                    <p class="text-sm text-slate-400">Elige con qué personaje NFT deseas combatir. Cada uno gasta su propia energía individual.</p>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
@@ -272,14 +272,14 @@
                             <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Raros + <span class="text-bnb-500 font-bold">400 $MANGUA ($2 USD)</span><br>Evolución: 1x Esfera Rara + 5x Frag. Raros + <span class="text-bnb-500 font-bold">300 $MANGUA</span></p>
                             <div class="space-y-1">
                                 <button onclick="craftSphereMain('Raro', 'Épica', 400)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (400 $MANGUA)</button>
-                                <button onclick="craftSphereEvolve('Rara', 'Épica', 300)" class="w-full bg-slate-800 hover:bg-slate-700 text-purple-400 border border-purple-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (300 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Raro', 'Épica', 300)" class="w-full bg-slate-800 hover:bg-slate-700 text-purple-400 border border-purple-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (300 $MANGUA)</button>
                             </div>
                         </div>
 
                         <!-- 4. Esfera Legendaria -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-amber-400">4. Esfera Legendaria</div>
-                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA ($4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 \$MANGUA</span></p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA (\$4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 \$MANGUA</span></p>
                             <div class="space-y-1">
                                 <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 \$MANGUA)</button>
                                 <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 \$MANGUA)</button>
@@ -305,7 +305,7 @@
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <h2 class="text-xl font-extrabold text-white mb-1"><i class="fa-solid fa-dragon text-red-400 mr-2"></i> World Boss: Titán Korrath</h2>
-                            <p class="text-sm text-slate-400">Consume 100 de energía. Máximo 10 ataques semanales. Recompensas por probabilidad.</p>
+                            <p class="text-sm text-slate-400">Consume 100 de energía individual del héroe activo. Máximo 10 ataques semanales.</p>
                         </div>
                         <div class="bg-slate-800 border border-slate-700 px-4 py-2 rounded-2xl text-right">
                             <div class="text-[10px] text-slate-400 uppercase">Ataques Semanales</div>
@@ -327,7 +327,7 @@
 
                     <div class="pt-2 flex justify-end">
                         <button onclick="attackBoss()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-red-600/20">
-                            Atacar al Titán (-100 Energía)
+                            Atacar al Titán (-100 Energía Héroe Activo)
                         </button>
                     </div>
                 </div>
@@ -344,13 +344,12 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         let balanceMangua = 1000;
-        let unclaimedMangua = 0; // Saldo ganado en batallas listo para reclamar
-        let energy = 200;
+        let unclaimedMangua = 0; 
         let activeLeague = 'Común';
         let selectedHeroId = 1;
         let bossAttacksWeekly = 0;
         let potionsBoughtToday = 0;
-        const WITHDRAW_FEE_PERCENT = 10; // 10% de penalización directo a tu Dev Wallet
+        const WITHDRAW_FEE_PERCENT = 10; 
 
         const oracleFees = {
             'Poco Común': 400,
@@ -360,8 +359,9 @@
             'Místico': 8000
         };
 
+        // Cada héroe posee su propia energía individual (máximo 200)
         let myHeroes = [
-            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, equippedWeapon: "Ballesta Genérica" }
+            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, energy: 200, equippedWeapon: "Ballesta Genérica" }
         ];
 
         let myBag = [
@@ -412,9 +412,13 @@
             document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
             document.getElementById('unclaimedManguaText').innerText = unclaimedMangua.toLocaleString() + ' \$MANGUA';
             
-            document.getElementById('energyText').innerText = energy + ' / 200';
-            const energyPct = (energy / 200) * 100;
-            document.getElementById('energyBar').style.width = energyPct + '%';
+            const currentHero = myHeroes.find(h => h.id == selectedHeroId) || myHeroes[0];
+            if(currentHero) {
+                document.getElementById('energyText').innerText = currentHero.energy + ' / 200';
+                const energyPct = (currentHero.energy / 200) * 100;
+                document.getElementById('energyBar').style.width = energyPct + '%';
+            }
+
             document.getElementById('bossAttacksText').innerText = `${bossAttacksWeekly} / 10 Usados`;
             document.getElementById('potionLimitText').innerText = `Compradas hoy: ${potionsBoughtToday} / 2 ($0.50)`;
             
@@ -422,7 +426,6 @@
             updateHeroDropdowns();
         }
 
-        // FUNCIÓN DE RETIRO LIBRE CON 10% DE PENALIZACIÓN PARA LA DEV WALLET
         function claimRewards() {
             if (unclaimedMangua <= 0) {
                 alert('❌ No tienes saldo pendiente por reclamar.');
@@ -432,10 +435,9 @@
             const fee = unclaimedMangua * (WITHDRAW_FEE_PERCENT / 100);
             const userAmount = unclaimedMangua - fee;
 
-            // Se suma el neto a la billetera del usuario (el 10% restante va a tu Dev Wallet automatizada)
             balanceMangua += userAmount;
             const claimedTotal = unclaimedMangua;
-            unclaimedMangua = 0; // Se resetea el saldo pendiente
+            unclaimedMangua = 0; 
 
             updateUI();
             alert(`🎉 ¡RETIRO EXITOSAMENTE PROCESADO!\n\n` +
@@ -446,28 +448,35 @@
 
         function updateHeroDropdowns() {
             const select = document.getElementById('activeHeroSelect');
-            let options = '';
-            myHeroes.forEach(h => {
-                options += `<option value="${h.id}" ${h.id === selectedHeroId ? 'selected' : ''}>${h.name} [${h.rarity} - Nv.${h.level}]</option>`;
-            });
-            select.innerHTML = options;
+            if(select) {
+                let options = '';
+                myHeroes.forEach(h => {
+                    options += `<option value="${h.id}" ${h.id === selectedHeroId ? 'selected' : ''}>${h.name} [${h.rarity} - Nv.${h.level}] (Energía: ${h.energy}/200)</option>`;
+                });
+                select.innerHTML = options;
+            }
 
             const currentHero = myHeroes.find(h => h.id == selectedHeroId);
             if(currentHero) {
-                document.getElementById('selectedHeroStatus').innerText = `Activo: Rareza [${currentHero.rarity}] • Nivel ${currentHero.level}`;
+                const statusEl = document.getElementById('selectedHeroStatus');
+                if(statusEl) {
+                    statusEl.innerText = `Activo: [${currentHero.rarity}] • Nv.${currentHero.level} • Energía: ${currentHero.energy}/200`;
+                }
             }
 
             const ascendSelect = document.getElementById('heroAscendSelect');
-            let ascendOptions = '';
-            myHeroes.forEach(h => {
-                ascendOptions += `<option value="${h.id}">${h.name} [${h.rarity} - Nv.${h.level}/30]</option>`;
-            });
-            ascendSelect.innerHTML = ascendOptions;
+            if(ascendSelect) {
+                let ascendOptions = '';
+                myHeroes.forEach(h => {
+                    ascendOptions += `<option value="${h.id}">${h.name} [${h.rarity} - Nv.${h.level}/30]</option>`;
+                });
+                ascendSelect.innerHTML = ascendOptions;
+            }
         }
 
         function updateSelectedHero(heroId) {
             selectedHeroId = Number(heroId);
-            updateHeroDropdowns();
+            updateUI();
         }
 
         function renderInventory() {
@@ -476,8 +485,9 @@
             
             let heroHtml = '';
             myHeroes.forEach(hero => {
+                const isSelected = hero.id === selectedHeroId;
                 heroHtml += `
-                    <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-3xl space-y-3 relative overflow-hidden">
+                    <div class="bg-slate-900/70 border ${isSelected ? 'border-bnb-500 shadow-lg shadow-bnb-500/10' : 'border-slate-800'} p-5 rounded-3xl space-y-3 relative overflow-hidden">
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">${hero.rarity}</span>
@@ -487,13 +497,18 @@
                         </div>
                         <div class="text-xs text-slate-400 space-y-1">
                             <div><i class="fa-solid fa-khanda text-amber-400 mr-1"></i> Arma: <span class="text-slate-200 font-medium">${hero.equippedWeapon}</span></div>
-                            <div><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía: <span class="text-slate-200 font-medium">${energy}/200</span></div>
+                            <div><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Energía Individual: <span class="text-amber-400 font-bold">${hero.energy}/200</span></div>
                         </div>
-                        <div class="pt-2">
-                            <div class="text-[10px] text-slate-400 mb-1">Experiencia (EXP)</div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                                <div class="bg-bnb-500 h-full" style="width: ${(hero.level/30)*100}%"></div>
+                        <div class="pt-2 flex items-center justify-between gap-2">
+                            <div class="w-full">
+                                <div class="text-[10px] text-slate-400 mb-1">Experiencia (EXP)</div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-bnb-500 h-full" style="width: ${(hero.level/30)*100}%"></div>
+                                </div>
                             </div>
+                            <button onclick="updateSelectedHero(${hero.id})" class="text-xs font-bold px-3 py-1.5 rounded-xl ${isSelected ? 'bg-bnb-500 text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'} transition">
+                                ${isSelected ? 'Activo' : 'Seleccionar'}
+                            </button>
                         </div>
                     </div>
                 `;
@@ -505,7 +520,7 @@
             myBag.forEach(item => {
                 let actionBtn = '';
                 if(item.id === 102 && item.count > 0) {
-                    actionBtn = `<button onclick="usePotionFromBag()" class="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-1 px-2 rounded-lg text-xs transition">Usar Poción</button>`;
+                    actionBtn = `<button onclick="usePotionOnSelectedHero()" class="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-1 px-2 rounded-lg text-xs transition">Usar en Héroe Activo</button>`;
                 }
                 bagHtml += `
                     <div class="bg-slate-900/70 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between text-center space-y-2">
@@ -521,20 +536,25 @@
             bagGrid.innerHTML = bagHtml;
         }
 
-        function usePotionFromBag() {
+        function usePotionOnSelectedHero() {
             const potionItem = myBag.find(i => i.id === 102);
             if(!potionItem || potionItem.count <= 0) {
                 alert('No tienes pociones disponibles en la mochila.');
                 return;
             }
-            if(energy >= 200) {
-                alert('Tu energía ya está al máximo (200/200).');
+            const currentHero = myHeroes.find(h => h.id == selectedHeroId);
+            if(!currentHero) {
+                alert('Selecciona un héroe válido.');
+                return;
+            }
+            if(currentHero.energy >= 200) {
+                alert(`La energía de "${currentHero.name}" ya está al máximo (200/200).`);
                 return;
             }
             potionItem.count--;
-            energy = 200;
+            currentHero.energy = 200;
             updateUI();
-            alert('🧪 ¡Poción consumida! Energía recargada a 200/200.');
+            alert(`🧪 ¡Poción consumida! Energía de "${currentHero.name}" recargada a 200/200.`);
         }
 
         function craftSphereMain(fragRarity, sphereType, feeMangua) {
@@ -640,9 +660,10 @@
 
             hero.rarity = nextRarity;
             hero.level = 1;
+            hero.energy = 200; 
 
             updateUI();
-            alert(`🎉 ¡ASCENSIÓN EXITOSA!\n\nTu héroe "${hero.name}" ascendió a [${hero.rarity}]. Se descontaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel se reinició a 1 para competir en su nueva Liga.`);
+            alert(`🎉 ¡ASCENSIÓN EXITOSA!\n\nTu héroe "${hero.name}" ascendió a [${hero.rarity}]. Se descontaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel se reinició a 1.`);
         }
 
         function attackBoss() {
@@ -650,12 +671,19 @@
                 alert('❌ Límite alcanzado: Ya utilizaste tus 10 ataques semanales al World Boss.');
                 return;
             }
-            if(energy < 100) {
-                alert('El ataque al World Boss requiere 100 de energía.');
+
+            const currentHero = myHeroes.find(h => h.id == selectedHeroId);
+            if(!currentHero) {
+                alert('Selecciona un héroe activo para atacar al World Boss.');
                 return;
             }
 
-            energy -= 100;
+            if(currentHero.energy < 100) {
+                alert(`❌ El héroe activo "${currentHero.name}" tiene ${currentHero.energy}/200 de energía. Se requieren mínimo 100 de energía para atacar al World Boss.`);
+                return;
+            }
+
+            currentHero.energy -= 100;
             bossAttacksWeekly++;
 
             const rng = Math.random() * 100;
@@ -693,7 +721,7 @@
             }
 
             updateUI();
-            alert(`⚔️ Ataque #${bossAttacksWeekly}/10 completado.\n\n${rewardMsg}`);
+            alert(`⚔️ Ataque #${bossAttacksWeekly}/10 completado con "${currentHero.name}".\n\n${rewardMsg}`);
         }
 
         function switchTab(tab) {
@@ -732,7 +760,7 @@
                             <div class="text-xs text-slate-400">Nivel Requerido: ${st.minLevel}+ • Gana +${st.reward} $MANGUA ($${st.usd} USD)</div>
                         </div>
                         <button onclick="playAdventure('${activeLeague}', ${st.minLevel}, ${st.reward})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow">
-                            Batallar (-40 Energía)
+                            Batallar (-40 Energía Héroe)
                         </button>
                     </div>
                 `;
@@ -749,7 +777,7 @@
             }
 
             if(currentHero.rarity !== leagueName) {
-                alert(`❌ ACCESO DENEGADO: Tu héroe "${currentHero.name}" es de rareza [${currentHero.rarity}]. Solo puede combatir en la Liga ${currentHero.rarity}.`);
+                alert(`❌ ACCESO DENEGADO: Tu héroe "${currentHero.name}" es de rareza [${currentHero.rarity}]. Solo puede combatir en su propia Liga.`);
                 return;
             }
 
@@ -758,14 +786,12 @@
                 return;
             }
 
-            if(energy < 40) {
-                alert('Energía insuficiente. Compra una Poción o espera regeneración.');
+            if(currentHero.energy < 40) {
+                alert(`❌ El héroe "${currentHero.name}" no tiene suficiente energía (${currentHero.energy}/200). Usa una poción o selecciona otro personaje.`);
                 return;
             }
 
-            energy -= 40;
-            
-            // Las ganancias de Aventura van directo al saldo pendiente por reclamar (unclaimedMangua)
+            currentHero.energy -= 40;
             unclaimedMangua += reward;
             
             if(currentHero.level < 30) {
@@ -773,7 +799,7 @@
             }
 
             updateUI();
-            alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA (Añadidos a tu saldo por reclamar) y subido al Nivel ${currentHero.level}.`);
+            alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA y subido al Nivel ${currentHero.level}. (Energía restante: ${currentHero.energy}/200)`);
         }
 
         function mintAsset(type, cost) {
@@ -795,6 +821,7 @@
                     rarity: "Común",
                     level: 1,
                     exp: 0,
+                    energy: 200, 
                     equippedWeapon: "Ninguna"
                 });
             } else if(type === 'weapon') {
