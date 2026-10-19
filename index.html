@@ -343,7 +343,7 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET REAL COMPLETA -->
+    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET CORREGIDA -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
@@ -356,14 +356,13 @@
         // ABIs MÍNIMAS PARA LLAMADAS REALES ON-CHAIN
         const ERC20_ABI = [
             "function balanceOf(address account) external view returns (uint256)",
-            "function approve(address spender, uint256 amount) external returns (bool)"
+            "function approve(address spender, uint256 amount) external returns (bool)",
+            "function transfer(address recipient, uint256 amount) external returns (bool)"
         ];
 
         const VAULT_ABI = [
             "function processInitialMint() external",
-            "function processEnergyPotion() external",
-            "function claimRewards(uint256 amount) external",
-            "function payFee(uint256 amount) external"
+            "function processEnergyPotion() external"
         ];
 
         // VARIABLES DE ESTADO WEB3
@@ -389,7 +388,7 @@
         };
 
         let myHeroes = [
-            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, energy: 200, equippedWeapon: "Ballesta Genérica" }
+            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 30, exp: 100, energy: 200, equippedWeapon: "Ballesta Genérica" }
         ];
 
         let myBag = [
@@ -588,43 +587,6 @@
             }
         }
 
-        // --- RETIROS (CLAIM) ON-CHAIN CON 10% DEV FEE ---
-        async function claimRewards() {
-            if (!signer || !userAddress) {
-                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
-                return;
-            }
-
-            if (unclaimedMangua <= 0) {
-                alert('❌ No tienes saldo pendiente por reclamar.');
-                return;
-            }
-
-            const requestedAmount = unclaimedMangua;
-            const fee = requestedAmount * (WITHDRAW_FEE_PERCENT / 100);
-            const userAmount = requestedAmount - fee;
-
-            try {
-                const amountWei = ethers.parseUnits(requestedAmount.toString(), 18);
-                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
-
-                alert('⏳ Confirmando la transacción de RETIRO en MetaMask...');
-                const tx = await vaultContract.claimRewards(amountWei);
-                await tx.wait();
-
-                unclaimedMangua = 0; 
-                await fetchOnChainBalance();
-
-                alert(`🎉 ¡RETIRO EXITOSO EN LA BLOCKCHAIN!\n\n` +
-                      `- Solicitado: ${requestedAmount.toFixed(2)} $MANGUA\n` +
-                      `- Fee Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
-                      `- Recibido neto en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
-            } catch (error) {
-                console.error(error);
-                alert('❌ Error al procesar la transacción de retiro.');
-            }
-        }
-
         // --- FORJA DE ESFERAS ON-CHAIN ---
         async function craftSphereMain(fragRarity, sphereType, feeMangua) {
             if (!signer || !userAddress) {
@@ -648,21 +610,16 @@
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
                 const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
-                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de forja...`);
-                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
-                await approveTx.wait();
-
-                alert(`⏳ Paso 2/2: Confirmando el pago de la tarifa de forja en la Vault...`);
-                const tx = await vaultContract.payFee(tokenAmount);
+                alert(`⏳ Confirmando la transferencia de la tarifa de ${feeMangua} $MANGUA a la Vault en MetaMask...`);
+                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
                 await tx.wait();
 
                 fragItem.count -= 10;
                 addSphereToBag(sphereType);
                 await fetchOnChainBalance();
 
-                alert(`✨ ¡FORJA ON-CHAIN EXITOSA! Usaste 10x ${fragName} y pagaste ${feeMangua} $MANGUA a la Vault para sintesizar 1x Esfera ${sphereType}.`);
+                alert(`✨ ¡FORJA ON-CHAIN EXITOSA! Usaste 10x ${fragName} y transferiste ${feeMangua} $MANGUA a la Vault para sintetizar 1x Esfera ${sphereType}.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de forja en la blockchain.');
@@ -700,14 +657,9 @@
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
                 const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
-                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de evolución...`);
-                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
-                await approveTx.wait();
-
-                alert(`⏳ Paso 2/2: Pago de tarifa de evolución en la Vault...`);
-                const tx = await vaultContract.payFee(tokenAmount);
+                alert(`⏳ Confirmando la transferencia de la tarifa de ${feeMangua} $MANGUA a la Vault en MetaMask...`);
+                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
                 await tx.wait();
 
                 sphereBaseItem.count--;
@@ -715,7 +667,7 @@
                 addSphereToBag(targetSphereType);
                 await fetchOnChainBalance();
 
-                alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y pagaste ${feeMangua} $MANGUA para sintetizar 1x Esfera ${targetSphereType}.`);
+                alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y transferiste ${feeMangua} $MANGUA para sintetizar 1x Esfera ${targetSphereType}.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de evolución en la blockchain.');
@@ -768,14 +720,9 @@
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
                 const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
-                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de Oráculo...`);
-                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
-                await approveTx.wait();
-
-                alert(`⏳ Paso 2/2: Confirmando el pago de la tarifa de Oráculo en la Vault...`);
-                const tx = await vaultContract.payFee(tokenAmount);
+                alert(`⏳ Confirmando la transferencia de la Tarifa de Oráculo de ${feeMangua} $MANGUA en MetaMask...`);
+                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
                 await tx.wait();
 
                 sphereItem.count--;
@@ -789,6 +736,26 @@
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de ascensión en la blockchain.');
             }
+        }
+
+        function claimRewards() {
+            if (unclaimedMangua <= 0) {
+                alert('❌ No tienes saldo pendiente por reclamar.');
+                return;
+            }
+
+            const fee = unclaimedMangua * (WITHDRAW_FEE_PERCENT / 100);
+            const userAmount = unclaimedMangua - fee;
+
+            balanceMangua += userAmount;
+            const claimedTotal = unclaimedMangua;
+            unclaimedMangua = 0; 
+
+            updateUI();
+            alert(`🎉 ¡RETIRO PROCESADO!\n\n` +
+                  `- Solicitado: ${claimedTotal.toFixed(2)} $MANGUA\n` +
+                  `- Fee Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
+                  `- Recibido en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
         }
 
         function addSphereToBag(sphereType) {
