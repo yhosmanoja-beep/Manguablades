@@ -236,7 +236,7 @@
                 <!-- RITUAL DE ASCENSIÓN DE HÉROE -->
                 <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4">
                     <h3 class="font-bold text-white text-base"><i class="fa-solid fa-arrow-up-right-dots text-bnb-500 mr-2"></i> Ritual de Ascensión de Personaje</h3>
-                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera + Tarifa de Oráculo en $MANGUA).</p>
+                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera + Tarifa de Oráculo con split 40/10/50 on-chain).</p>
                     
                     <div class="flex flex-wrap items-center gap-4 pt-2">
                         <select id="heroAscendSelect" class="bg-slate-800 border border-slate-700 text-xs text-white font-bold p-2.5 rounded-xl outline-none"></select>
@@ -248,7 +248,7 @@
 
                 <!-- FORJA DE ESFERAS CON TARIFAS DE MANGUA -->
                 <div class="space-y-4">
-                    <h3 class="font-bold text-white text-base"><i class="fa-solid fa-gem text-amber-400 mr-2"></i> Recetas de Forja de Esferas (Con Tarifa de Forja)</h3>
+                    <h3 class="font-bold text-white text-base"><i class="fa-solid fa-gem text-amber-400 mr-2"></i> Recetas de Forja de Esferas (Split 60/20/20)</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- 1. Esfera Poco Común -->
@@ -343,26 +343,30 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET CORREGIDA -->
+    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET ACTUALIZADA -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
             token: "0xc22724Bf76de57BbEEa9Cf9e917AA3C28Cc1897a",
             oracle: "0x12ded9A2F84bcC96356aFfdca0F4a6869B8B4733",
             nft: "0x340a8E25bCC21F9918D9126f7c167c89D6159A8B",
-            vault: "0x405b370ec2B052D7F928Aa5bC43D1e308Ce3B7F0"
+            vault: "0x21d7491C1ea41Dc7876f972d2dE090F6CD69E719" // Nueva Vault desplegada
         };
 
         // ABIs MÍNIMAS PARA LLAMADAS REALES ON-CHAIN
         const ERC20_ABI = [
             "function balanceOf(address account) external view returns (uint256)",
+            "function allowance(address owner, address spender) external view returns (uint256)",
             "function approve(address spender, uint256 amount) external returns (bool)",
             "function transfer(address recipient, uint256 amount) external returns (bool)"
         ];
 
         const VAULT_ABI = [
             "function processInitialMint() external",
-            "function processEnergyPotion() external"
+            "function processEnergyPotion() external",
+            "function processForgeFee(uint256 amount) external",
+            "function processAscensionFee(uint256 amount) external",
+            "function claimRewards(uint256 requestedAmount) external"
         ];
 
         // VARIABLES DE ESTADO WEB3
@@ -432,6 +436,19 @@
                 { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 50.0, usd: 1.25 }
             ]}
         };
+
+        // HELPER PARA AUTO-APROBACIÓN MÁXIMA (PIDE FIRMA SOLO LA 1ª VEZ)
+        async function ensureAllowance(requiredWei) {
+            const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+            const currentAllowance = await tokenContract.allowance(userAddress, CONTRACT_ADDRESSES.vault);
+
+            if (currentAllowance < requiredWei) {
+                alert('⏳ Primera transacción detectada: Aprobando autorización previa para la Vault en MetaMask...');
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, ethers.MaxUint256);
+                await approveTx.wait();
+                alert('✅ Autorización concedida. ¡A partir de ahora solo firmarás 1 vez por cada acción!');
+            }
+        }
 
         // --- CONEXIÓN A METAMASK Y LECTURA ON-CHAIN ---
         async function connectWallet() {
@@ -503,14 +520,11 @@
 
             try {
                 const tokenAmount = ethers.parseUnits(cost.toString(), 18);
-                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                await ensureAllowance(tokenAmount);
+
                 const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-                alert('⏳ Paso 1/2: Confirma en MetaMask para APROBAR el uso de tu \$MANGUA por la Vault...');
-                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
-                await approveTx.wait();
-
-                alert('⏳ Paso 2/2: Confirma en MetaMask para procesar el MINTEO en la Vault...');
+                alert('⏳ Procesando minteo en la Vault...');
                 
                 if(type === 'character') {
                     if(myHeroes.length >= 4) {
@@ -564,14 +578,11 @@
 
             try {
                 const tokenAmount = ethers.parseUnits(cost.toString(), 18);
-                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                await ensureAllowance(tokenAmount);
+
                 const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-                alert('⏳ Paso 1/2: Confirma en MetaMask la APROBACIÓN de 200 \$MANGUA...');
-                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
-                await approveTx.wait();
-
-                alert('⏳ Paso 2/2: Confirma en MetaMask la COMPRA de la poción en la Vault...');
+                alert('⏳ Procesando compra de la poción en la Vault...');
                 const tx = await vaultContract.processEnergyPotion();
                 await tx.wait();
 
@@ -587,7 +598,7 @@
             }
         }
 
-        // --- FORJA DE ESFERAS ON-CHAIN ---
+        // --- FORJA DE ESFERAS ON-CHAIN (CON processForgeFee - SPLIT 60/20/20) ---
         async function craftSphereMain(fragRarity, sphereType, feeMangua) {
             if (!signer || !userAddress) {
                 alert('❌ Por favor conecta tu billetera con MetaMask primero.');
@@ -609,24 +620,26 @@
 
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
-                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                await ensureAllowance(tokenAmount);
 
-                alert(`⏳ Confirmando la transferencia de la tarifa de ${feeMangua} $MANGUA a la Vault en MetaMask...`);
-                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Procesando tarifa de forja de ${feeMangua} $MANGUA en la Vault (Split 60/20/20)...`);
+                const tx = await vaultContract.processForgeFee(tokenAmount);
                 await tx.wait();
 
                 fragItem.count -= 10;
                 addSphereToBag(sphereType);
                 await fetchOnChainBalance();
 
-                alert(`✨ ¡FORJA ON-CHAIN EXITOSA! Usaste 10x ${fragName} y transferiste ${feeMangua} $MANGUA a la Vault para sintetizar 1x Esfera ${sphereType}.`);
+                alert(`✨ ¡FORJA ON-CHAIN EXITOSA! La tarifa de ${feeMangua} $MANGUA fue distribuida automáticamente en la blockchain.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de forja en la blockchain.');
             }
         }
 
-        // --- EVOLUCIÓN DE ESFERAS ON-CHAIN (RECETA SECUNDARIA) ---
+        // --- EVOLUCIÓN DE ESFERAS ON-CHAIN (RECETA SECUNDARIA CON processForgeFee) ---
         async function craftSphereEvolve(baseSphereRarity, targetSphereType, feeMangua) {
             if (!signer || !userAddress) {
                 alert('❌ Por favor conecta tu billetera con MetaMask primero.');
@@ -656,10 +669,12 @@
 
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
-                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                await ensureAllowance(tokenAmount);
 
-                alert(`⏳ Confirmando la transferencia de la tarifa de ${feeMangua} $MANGUA a la Vault en MetaMask...`);
-                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Procesando tarifa de evolución de ${feeMangua} $MANGUA en la Vault (Split 60/20/20)...`);
+                const tx = await vaultContract.processForgeFee(tokenAmount);
                 await tx.wait();
 
                 sphereBaseItem.count--;
@@ -667,14 +682,14 @@
                 addSphereToBag(targetSphereType);
                 await fetchOnChainBalance();
 
-                alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y transferiste ${feeMangua} $MANGUA para sintetizar 1x Esfera ${targetSphereType}.`);
+                alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Tarifa distribuida automáticamente en la blockchain.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de evolución en la blockchain.');
             }
         }
 
-        // --- RITUAL DE ASCENSIÓN DE HÉROE ON-CHAIN ---
+        // --- RITUAL DE ASCENSIÓN DE HÉROE ON-CHAIN (CON processAscensionFee - SPLIT 40/10/50) ---
         async function ascendHero() {
             if (!signer || !userAddress) {
                 alert('❌ Por favor conecta tu billetera con MetaMask primero.');
@@ -705,7 +720,7 @@
             const feeMangua = oracleFees[nextRarity] || 0;
 
             if(balanceMangua < feeMangua) {
-                alert(`❌ Saldo insuficiente. La Tarifa de Oráculo para ascender a [${nextRarity}] es de ${feeMangua} $MANGUA ($${(feeMangua*0.005).toFixed(2)} USD).`);
+                alert(`❌ Saldo insuficiente. La Tarifa de Oráculo para ascender a [${nextRarity}] es de ${feeMangua} $MANGUA.`);
                 return;
             }
 
@@ -719,10 +734,12 @@
 
             try {
                 const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
-                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                await ensureAllowance(tokenAmount);
 
-                alert(`⏳ Confirmando la transferencia de la Tarifa de Oráculo de ${feeMangua} $MANGUA en MetaMask...`);
-                const tx = await tokenContract.transfer(CONTRACT_ADDRESSES.vault, tokenAmount);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Procesando Tarifa de Oráculo (${feeMangua} $MANGUA) en la Vault (Split 40% Pool / 10% Dev / 50% Quema)...`);
+                const tx = await vaultContract.processAscensionFee(tokenAmount);
                 await tx.wait();
 
                 sphereItem.count--;
@@ -731,31 +748,40 @@
                 hero.energy = 200; 
 
                 await fetchOnChainBalance();
-                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Se procesaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel fue restablecido a 1 con 200/200 de energía.`);
+                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Se procesaron ${feeMangua} $MANGUA con alta deflación en la blockchain.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de ascensión en la blockchain.');
             }
         }
 
-        function claimRewards() {
+        // --- RETIRO DE RECOMPENSAS (CLAIM) ON-CHAIN ---
+        async function claimRewards() {
+            if (!signer || !userAddress) {
+                alert('❌ Conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
             if (unclaimedMangua <= 0) {
                 alert('❌ No tienes saldo pendiente por reclamar.');
                 return;
             }
 
-            const fee = unclaimedMangua * (WITHDRAW_FEE_PERCENT / 100);
-            const userAmount = unclaimedMangua - fee;
+            try {
+                const claimWei = ethers.parseUnits(unclaimedMangua.toString(), 18);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-            balanceMangua += userAmount;
-            const claimedTotal = unclaimedMangua;
-            unclaimedMangua = 0; 
+                alert(`⏳ Retirando ${unclaimedMangua.toFixed(2)} $MANGUA desde la Vault (90% Neto / 10% Fee Dev)...`);
+                const tx = await vaultContract.claimRewards(claimWei);
+                await tx.wait();
 
-            updateUI();
-            alert(`🎉 ¡RETIRO PROCESADO!\n\n` +
-                  `- Solicitado: ${claimedTotal.toFixed(2)} $MANGUA\n` +
-                  `- Fee Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
-                  `- Recibido en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
+                unclaimedMangua = 0;
+                await fetchOnChainBalance();
+                alert('🎉 ¡RETIRO EXITOSO ON-CHAIN! Recibiste tu 90% neto en tu billetera.');
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al procesar el retiro desde la Vault.');
+            }
         }
 
         function addSphereToBag(sphereType) {
