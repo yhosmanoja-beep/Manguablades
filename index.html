@@ -236,7 +236,7 @@
                 <!-- RITUAL DE ASCENSIÓN DE HÉROE -->
                 <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4">
                     <h3 class="font-bold text-white text-base"><i class="fa-solid fa-arrow-up-right-dots text-bnb-500 mr-2"></i> Ritual de Ascensión de Personaje</h3>
-                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera correspondiente + Tarifa de Oráculo con split 40/10/50 on-chain). **Conserva la energía restante.**</p>
+                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera correspondiente + Tarifa de Oráculo con split 40/10/50 on-chain). **Conserva la energía restante y su regeneración.**</p>
                     
                     <div class="flex flex-wrap items-center gap-4 pt-2">
                         <select id="heroAscendSelect" class="bg-slate-800 border border-slate-700 text-xs text-white font-bold p-2.5 rounded-xl outline-none"></select>
@@ -343,7 +343,7 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON CORRECCIÓN DE ENERGÍA EN ASCENSIÓN -->
+    <!-- JAVASCRIPT LOGIC CON REGENERACIÓN AUTOMÁTICA DE ENERGÍA -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
@@ -388,8 +388,9 @@
             'Místico': 8000
         };
 
+        // Cada héroe almacena su energía y la marca de tiempo (timestamp) de su última actualización o gasto de energía
         let myHeroes = [
-            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 30, exp: 100, energy: 200, equippedWeapon: "Ballesta Genérica" }
+            { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 30, exp: 100, energy: 200, lastEnergyUpdate: Date.now(), equippedWeapon: "Ballesta Genérica" }
         ];
 
         let myBag = [
@@ -433,6 +434,39 @@
                 { name: 'Nivel 3 (Difícil)', minLevel: 21, reward: 50.0, usd: 1.25 }
             ]}
         };
+
+        // --- MOTOR DE REGENERACIÓN AUTOMÁTICA DE ENERGÍA ---
+        // 200 puntos en 24 horas = 1 punto cada 432,000 milisegundos (7.2 minutos / 432 segundos)
+        const MS_PER_ENERGY_POINT = 432000; 
+
+        function processEnergyRegeneration() {
+            const now = Date.now();
+            let updated = false;
+
+            myHeroes.forEach(hero => {
+                if (hero.energy < 200) {
+                    const elapsedMs = now - hero.lastEnergyUpdate;
+                    const pointsToAdd = Math.floor(elapsedMs / MS_PER_ENERGY_POINT);
+
+                    if (pointsToAdd > 0) {
+                        hero.energy = Math.min(200, hero.energy + pointsToAdd);
+                        // Ajustamos el timestamp restando el sobrante para mantener precisión milimétrica
+                        hero.lastEnergyUpdate = now - (elapsedMs % MS_PER_ENERGY_POINT);
+                        updated = true;
+                    }
+                } else {
+                    // Si ya está al máximo, mantenemos el timestamp al presente
+                    hero.lastEnergyUpdate = now;
+                }
+            });
+
+            if (updated) {
+                updateUI();
+            }
+        }
+
+        // Ejecutar verificación de energía cada 5 segundos en segundo plano
+        setInterval(processEnergyRegeneration, 5000);
 
         async function ensureAllowance(requiredWei) {
             const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
@@ -482,6 +516,9 @@
         }
 
         function updateUI() {
+            // Procesar regeneración antes de pintar la interfaz
+            processEnergyRegeneration();
+
             document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' $MANGUA';
             const usdVal = (balanceMangua * 0.005).toFixed(2);
             document.getElementById('userUsd').innerText = '$' + usdVal + ' USD';
@@ -536,6 +573,7 @@
                         level: 1,
                         exp: 0,
                         energy: 200, 
+                        lastEnergyUpdate: Date.now(),
                         equippedWeapon: "Ninguna"
                     });
                 } else if(type === 'weapon') {
@@ -680,7 +718,6 @@
             }
         }
 
-        // --- RITUAL DE ASCENSIÓN CORREGIDO (CONSERVA ENERGÍA RESTANTE) ---
         async function ascendHero() {
             if (!signer || !userAddress) {
                 alert('❌ Por favor conecta tu billetera con MetaMask primero.');
@@ -744,10 +781,10 @@
                 sphereItem.count--;
                 hero.rarity = nextRarity;
                 hero.level = 1;
-                // NOTA: hero.energy se mantiene intacto (conserva su energía actual).
+                // hero.energy y hero.lastEnergyUpdate se conservan intactos
 
                 await fetchOnChainBalance();
-                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Nivel restablecido a 1 conservando su energía restante (${hero.energy}/200).`);
+                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Nivel restablecido a 1 conservando su energía restante.`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de ascensión en la blockchain.');
@@ -906,6 +943,7 @@
             }
             potionItem.count--;
             currentHero.energy = 200;
+            currentHero.lastEnergyUpdate = Date.now();
             updateUI();
             alert(`🧪 ¡Poción consumida! Energía de "${currentHero.name}" recargada a 200/200.`);
         }
@@ -928,6 +966,7 @@
             }
 
             currentHero.energy -= 100;
+            currentHero.lastEnergyUpdate = Date.now(); // Actualiza el registro de tiempo tras gastar energía
             bossAttacksWeekly++;
 
             const rng = Math.random() * 100;
@@ -1036,6 +1075,7 @@
             }
 
             currentHero.energy -= 40;
+            currentHero.lastEnergyUpdate = Date.now(); // Actualiza el registro de tiempo al gastar en aventura
             unclaimedMangua += reward;
             
             if(currentHero.level < 30) {
