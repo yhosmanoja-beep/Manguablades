@@ -343,7 +343,7 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON REGENERACIÓN AUTOMÁTICA DE ENERGÍA -->
+    <!-- JAVASCRIPT LOGIC CON LOCALSTORAGE & REGENERACIÓN AUTOMÁTICA -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
@@ -388,12 +388,12 @@
             'Místico': 8000
         };
 
-        // Cada héroe almacena su energía y la marca de tiempo (timestamp) de su última actualización o gasto de energía
-        let myHeroes = [
+        // --- CARGA DE DATOS DESDE LOCALSTORAGE O VALORES POR DEFECTO ---
+        let myHeroes = JSON.parse(localStorage.getItem('mangua_heroes')) || [
             { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 30, exp: 100, energy: 200, lastEnergyUpdate: Date.now(), equippedWeapon: "Ballesta Genérica" }
         ];
 
-        let myBag = [
+        let myBag = JSON.parse(localStorage.getItem('mangua_bag')) || [
             { id: 101, name: "Ballesta Genérica", type: "Arma", rarity: "Común", count: 1, icon: "fa-crosshairs" },
             { id: 102, name: "Poción de Energía Max", type: "Consumible", rarity: "Común", count: 2, icon: "fa-flask" },
             { id: 103, name: "Fragmento Común", type: "Material", rarity: "Común", count: 10, icon: "fa-puzzle-piece" },
@@ -401,6 +401,11 @@
             { id: 105, name: "Fragmento Raro", type: "Material", rarity: "Raro", count: 2, icon: "fa-puzzle-piece" },
             { id: 106, name: "Esfera Rara", type: "Esfera", rarity: "Raro", count: 1, icon: "fa-gem" }
         ];
+
+        function saveGameState() {
+            localStorage.setItem('mangua_heroes', JSON.stringify(myHeroes));
+            localStorage.setItem('mangua_bag', JSON.stringify(myBag));
+        }
 
         const leaguesData = {
             'Común': { name: 'Liga Común', rarityReq: 'Común', nextRarity: 'Poco Común', stages: [
@@ -445,22 +450,21 @@
 
             myHeroes.forEach(hero => {
                 if (hero.energy < 200) {
-                    const elapsedMs = now - hero.lastEnergyUpdate;
+                    const elapsedMs = now - (hero.lastEnergyUpdate || now);
                     const pointsToAdd = Math.floor(elapsedMs / MS_PER_ENERGY_POINT);
 
                     if (pointsToAdd > 0) {
                         hero.energy = Math.min(200, hero.energy + pointsToAdd);
-                        // Ajustamos el timestamp restando el sobrante para mantener precisión milimétrica
                         hero.lastEnergyUpdate = now - (elapsedMs % MS_PER_ENERGY_POINT);
                         updated = true;
                     }
                 } else {
-                    // Si ya está al máximo, mantenemos el timestamp al presente
                     hero.lastEnergyUpdate = now;
                 }
             });
 
             if (updated) {
+                saveGameState();
                 updateUI();
             }
         }
@@ -516,7 +520,6 @@
         }
 
         function updateUI() {
-            // Procesar regeneración antes de pintar la interfaz
             processEnergyRegeneration();
 
             document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' $MANGUA';
@@ -581,6 +584,7 @@
                     if(weaponItem) weaponItem.count++;
                 }
 
+                saveGameState();
                 await fetchOnChainBalance();
                 alert('🎉 ¡TRANSACCIÓN EXITOSA EN TESTNET! Tu nuevo activo ha sido registrado.');
             } catch (error) {
@@ -621,6 +625,7 @@
                 const potionItem = myBag.find(i => i.id === 102);
                 if(potionItem) potionItem.count++;
 
+                saveGameState();
                 await fetchOnChainBalance();
                 alert(`🎉 ¡COMPRA ON-CHAIN EXITOSA (${potionsBoughtToday}/2 hoy)! La poción se añadió a tu mochila.`);
             } catch (error) {
@@ -660,6 +665,7 @@
 
                 fragItem.count -= 10;
                 addSphereToBag(sphereType);
+                saveGameState();
                 await fetchOnChainBalance();
 
                 alert(`✨ ¡FORJA ON-CHAIN EXITOSA! La tarifa de ${feeMangua} $MANGUA fue distribuida automáticamente en la blockchain.`);
@@ -709,6 +715,7 @@
                 sphereBaseItem.count--;
                 fragItem.count -= 5;
                 addSphereToBag(targetSphereType);
+                saveGameState();
                 await fetchOnChainBalance();
 
                 alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Tarifa distribuida automáticamente en la blockchain.`);
@@ -783,6 +790,7 @@
                 hero.level = 1;
                 // hero.energy y hero.lastEnergyUpdate se conservan intactos
 
+                saveGameState();
                 await fetchOnChainBalance();
                 alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Nivel restablecido a 1 conservando su energía restante.`);
             } catch (error) {
@@ -944,6 +952,7 @@
             potionItem.count--;
             currentHero.energy = 200;
             currentHero.lastEnergyUpdate = Date.now();
+            saveGameState();
             updateUI();
             alert(`🧪 ¡Poción consumida! Energía de "${currentHero.name}" recargada a 200/200.`);
         }
@@ -966,7 +975,7 @@
             }
 
             currentHero.energy -= 100;
-            currentHero.lastEnergyUpdate = Date.now(); // Actualiza el registro de tiempo tras gastar energía
+            currentHero.lastEnergyUpdate = Date.now(); 
             bossAttacksWeekly++;
 
             const rng = Math.random() * 100;
@@ -1003,6 +1012,7 @@
                 rewardMsg = '🟡 ¡JACKPOT! Obtuviste 1x Fragmento Legendario (1%)';
             }
 
+            saveGameState();
             updateUI();
             alert(`⚔️ Ataque #${bossAttacksWeekly}/10 completado con "${currentHero.name}".\n\n${rewardMsg}`);
         }
@@ -1075,13 +1085,14 @@
             }
 
             currentHero.energy -= 40;
-            currentHero.lastEnergyUpdate = Date.now(); // Actualiza el registro de tiempo al gastar en aventura
+            currentHero.lastEnergyUpdate = Date.now(); 
             unclaimedMangua += reward;
             
             if(currentHero.level < 30) {
                 currentHero.level += 1;
             }
 
+            saveGameState();
             updateUI();
             alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA y subido al Nivel ${currentHero.level}. (Energía restante: ${currentHero.energy}/200)`);
         }
