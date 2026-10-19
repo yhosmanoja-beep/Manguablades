@@ -25,6 +25,8 @@
     </script>
     <!-- FontAwesome para Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Ethers.js v6 para Web3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/umd/ethers.umd.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-bnb-500 selection:text-slate-950">
 
@@ -37,7 +39,7 @@
                 </div>
                 <div>
                     <h1 class="font-extrabold text-lg tracking-wider text-bnb-500">MANGUABLADES</h1>
-                    <span class="text-xs text-slate-400">Web3 Tactical RPG • BNB Chain</span>
+                    <span class="text-xs text-slate-400">Web3 Tactical RPG • BNB Chain Testnet</span>
                 </div>
             </div>
 
@@ -47,12 +49,12 @@
                 <div class="bg-slate-950/80 border border-slate-800 px-4 py-2 rounded-xl flex items-center space-x-3 text-sm">
                     <div>
                         <div class="text-[10px] text-slate-400 uppercase tracking-wider">Balance $MANGUA</div>
-                        <div id="userMangua" class="font-bold text-bnb-500">1,000 $MANGUA</div>
+                        <div id="userMangua" class="font-bold text-bnb-500">0 $MANGUA</div>
                     </div>
                     <div class="h-6 w-[1px] bg-slate-800"></div>
                     <div>
                         <div class="text-[10px] text-slate-400 uppercase tracking-wider">USD Ref</div>
-                        <div id="userUsd" class="font-bold text-emerald-400">$5.00 USD</div>
+                        <div id="userUsd" class="font-bold text-emerald-400">$0.00 USD</div>
                     </div>
                 </div>
 
@@ -289,10 +291,10 @@
                         <!-- 5. Esfera Mística -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-pink-400">5. Esfera Mística</div>
-                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Legendarios + <span class="text-bnb-500 font-bold">1,600 \$MANGUA (\$8 USD)</span><br>Evolución: 1x Esfera Legendaria + 5x Frag. Leg. + <span class="text-bnb-500 font-bold">1,200 \$MANGUA</span></p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Legendarios + <span class="text-bnb-500 font-bold">1,600 $MANGUA ($8 USD)</span><br>Evolución: 1x Esfera Legendaria + 5x Frag. Leg. + <span class="text-bnb-500 font-bold">1,200 $MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Legendario', 'Mística', 1600)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (1,600 \$MANGUA)</button>
-                                <button onclick="craftSphereEvolve('Legendaria', 'Mística', 1200)" class="w-full bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (1,200 \$MANGUA)</button>
+                                <button onclick="craftSphereMain('Legendario', 'Mística', 1600)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (1,600 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Legendaria', 'Mística', 1200)" class="w-full bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (1,200 $MANGUA)</button>
                             </div>
                         </div>
                     </div>
@@ -341,9 +343,26 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT & WEB3 LOGIC -->
     <script>
-        let balanceMangua = 1000;
+        // --- CONFIGURACIÓN DE CONTRATOS EN BSC TESTNET ---
+        const CONTRACT_ADDRESSES = {
+            token: "0xc22724Bf76de57BbEEa9Cf9e917AA3C28Cc1897a",
+            oracle: "0x12ded9A2F84bcC96356aFfdca0F4a6869B8B4733",
+            nft: "0x340a8E25bCC21F9918D9126f7c167c89D6159A8B",
+            vault: "0x405b370ec2B052D7F928Aa5bC43D1e308Ce3B7F0"
+        };
+
+        // ABIs esenciales para lectura de balance y consultas
+        const ERC20_ABI = [
+            "function balanceOf(address account) external view returns (uint256)",
+            "function decimals() external view returns (uint8)"
+        ];
+
+        let provider = null;
+        let signer = null;
+        let userAddress = null;
+        let balanceMangua = 0;
         let unclaimedMangua = 0; 
         let activeLeague = 'Común';
         let selectedHeroId = 1;
@@ -359,7 +378,6 @@
             'Místico': 8000
         };
 
-        // Cada héroe posee su propia energía individual (máximo 200)
         let myHeroes = [
             { id: 1, name: "Mangua Warrior #001", rarity: "Común", level: 1, exp: 0, energy: 200, equippedWeapon: "Ballesta Genérica" }
         ];
@@ -406,8 +424,45 @@
             ]}
         };
 
+        // --- CONEXIÓN REAL CON METAMASK & BLOCKCHAIN ---
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('❌ Por favor instala MetaMask para interactuar con el juego.');
+                return;
+            }
+
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                // Formatear la dirección para el botón
+                const shortAddr = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
+                document.getElementById('walletText').innerText = shortAddr;
+
+                alert('🎉 ¡Billetera conectada con éxito a BNB Chain Testnet!');
+                await fetchOnChainBalance();
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al conectar la billetera.');
+            }
+        }
+
+        async function fetchOnChainBalance() {
+            if (!provider || !userAddress) return;
+            try {
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, provider);
+                const rawBalance = await tokenContract.balanceOf(userAddress);
+                balanceMangua = Number(ethers.formatUnits(rawBalance, 18));
+                updateUI();
+            } catch (error) {
+                console.error("Error leyendo balance on-chain:", error);
+            }
+        }
+
         function updateUI() {
-            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' \$MANGUA';
+            document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' $MANGUA';
             const usdVal = (balanceMangua * 0.005).toFixed(2);
             document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
             document.getElementById('unclaimedManguaText').innerText = unclaimedMangua.toLocaleString() + ' \$MANGUA';
@@ -842,7 +897,7 @@
                 alert('Necesitas 200 \$MANGUA (\$1.00 USD) para comprar la poción.');
                 return;
             }
-            balanceMangua -= 200; // Actualizado a 200 \$MANGUA (\$1.00 USD)
+            balanceMangua -= 200;
             potionsBoughtToday++;
             
             const potionItem = myBag.find(i => i.id === 102);
@@ -852,12 +907,7 @@
             alert(`¡Poción comprada con éxito (${potionsBoughtToday}/2 hoy)! Añadida a tu mochila.`);
         }
 
-        function connectWallet() {
-            document.getElementById('walletText').innerText = '0x71C...3a98';
-            alert('Billetera BNB Chain conectada correctamente.');
-        }
-
-        // Carga inicial
+        // Carga inicial de interfaz
         updateUI();
         renderLeagueStages();
     </script>
