@@ -115,10 +115,10 @@
                 <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center">
                     <div>
                         <div class="text-xs font-bold text-slate-200">Poción de Energía Max</div>
-                        <div id="potionLimitText" class="text-[10px] text-slate-400">Compradas hoy: 0 / 2 ($0.50)</div>
+                        <div id="potionLimitText" class="text-[10px] text-slate-400">Compradas hoy: 0 / 2 ($1.00)</div>
                     </div>
                     <button onclick="buyEnergyPotion()" class="bg-slate-800 hover:bg-slate-700 text-bnb-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-bnb-500/30 transition">
-                        Comprar
+                        Comprar ($1)
                     </button>
                 </div>
             </div>
@@ -279,10 +279,10 @@
                         <!-- 4. Esfera Legendaria -->
                         <div class="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl space-y-3">
                             <div class="text-xs font-bold text-amber-400">4. Esfera Legendaria</div>
-                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA (\$4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 \$MANGUA</span></p>
+                            <p class="text-[10px] text-slate-400">Ppal: 10x Frag. Épicos + <span class="text-bnb-500 font-bold">800 $MANGUA ($4 USD)</span><br>Evolución: 1x Esfera Épica + 5x Frag. Épicos + <span class="text-bnb-500 font-bold">600 $MANGUA</span></p>
                             <div class="space-y-1">
-                                <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 \$MANGUA)</button>
-                                <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 \$MANGUA)</button>
+                                <button onclick="craftSphereMain('Épico', 'Legendaria', 800)" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-xl text-xs">Ppal (800 $MANGUA)</button>
+                                <button onclick="craftSphereEvolve('Épica', 'Legendaria', 600)" class="w-full bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold py-1.5 rounded-xl text-xs">Evolucionar (600 $MANGUA)</button>
                             </div>
                         </div>
 
@@ -420,7 +420,7 @@
             }
 
             document.getElementById('bossAttacksText').innerText = `${bossAttacksWeekly} / 10 Usados`;
-            document.getElementById('potionLimitText').innerText = `Compradas hoy: ${potionsBoughtToday} / 2 ($0.50)`;
+            document.getElementById('potionLimitText').innerText = `Compradas hoy: ${potionsBoughtToday} / 2 ($1.00)`;
             
             renderInventory();
             updateHeroDropdowns();
@@ -838,11 +838,11 @@
                 alert('❌ Límite diario alcanzado: Solo puedes comprar máximo 2 Pociones de Energía al día.');
                 return;
             }
-            if(balanceMangua < 100) {
-                alert('Necesitas 100 \$MANGUA (\$0.50 USD) para comprar la poción.');
+            if(balanceMangua < 200) {
+                alert('Necesitas 200 \$MANGUA (\$1.00 USD) para comprar la poción.');
                 return;
             }
-            balanceMangua -= 100;
+            balanceMangua -= 200; // Actualizado a 200 \$MANGUA (\$1.00 USD)
             potionsBoughtToday++;
             
             const potionItem = myBag.find(i => i.id === 102);
