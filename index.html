@@ -236,7 +236,7 @@
                 <!-- RITUAL DE ASCENSIÓN DE HÉROE -->
                 <div class="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl space-y-4">
                     <h3 class="font-bold text-white text-base"><i class="fa-solid fa-arrow-up-right-dots text-bnb-500 mr-2"></i> Ritual de Ascensión de Personaje</h3>
-                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera correspondiente + Tarifa de Oráculo con split 40/10/50 on-chain).</p>
+                    <p class="text-xs text-slate-400">Sube la rareza del héroe seleccionado (Consume 1x Esfera correspondiente + Tarifa de Oráculo con split 40/10/50 on-chain). **Conserva la energía restante.**</p>
                     
                     <div class="flex flex-wrap items-center gap-4 pt-2">
                         <select id="heroAscendSelect" class="bg-slate-800 border border-slate-700 text-xs text-white font-bold p-2.5 rounded-xl outline-none"></select>
@@ -343,7 +343,7 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON CORRECCIÓN DE NOMBRES DE ESFERAS Y VAULT -->
+    <!-- JAVASCRIPT LOGIC CON CORRECCIÓN DE ENERGÍA EN ASCENSIÓN -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
@@ -680,7 +680,7 @@
             }
         }
 
-        // --- RITUAL DE ASCENSIÓN CORREGIDO CON NOMBRES FEMENINOS DE ESFERAS ---
+        // --- RITUAL DE ASCENSIÓN CORREGIDO (CONSERVA ENERGÍA RESTANTE) ---
         async function ascendHero() {
             if (!signer || !userAddress) {
                 alert('❌ Por favor conecta tu billetera con MetaMask primero.');
@@ -715,7 +715,6 @@
                 return;
             }
 
-            // Mapeo exacto de nombres con género femenino para las esferas
             const sphereNamesMap = {
                 'Poco Común': 'Esfera Poco Común',
                 'Raro': 'Esfera Rara',
@@ -745,10 +744,10 @@
                 sphereItem.count--;
                 hero.rarity = nextRarity;
                 hero.level = 1;
-                hero.energy = 200; 
+                // NOTA: hero.energy se mantiene intacto (conserva su energía actual).
 
                 await fetchOnChainBalance();
-                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Se procesaron ${feeMangua} $MANGUA con alta deflación en la blockchain.`);
+                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Nivel restablecido a 1 conservando su energía restante (${hero.energy}/200).`);
             } catch (error) {
                 console.error(error);
                 alert('❌ Error al procesar la tarifa de ascensión en la blockchain.');
