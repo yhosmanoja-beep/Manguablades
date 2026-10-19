@@ -343,9 +343,9 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT & WEB3 LOGIC -->
+    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET REAL -->
     <script>
-        // --- CONFIGURACIÓN DE CONTRATOS EN BSC TESTNET ---
+        // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
             token: "0xc22724Bf76de57BbEEa9Cf9e917AA3C28Cc1897a",
             oracle: "0x12ded9A2F84bcC96356aFfdca0F4a6869B8B4733",
@@ -353,15 +353,23 @@
             vault: "0x405b370ec2B052D7F928Aa5bC43D1e308Ce3B7F0"
         };
 
-        // ABIs esenciales para lectura de balance y consultas
+        // ABIs MÍNIMAS PARA LLAMADAS REALES ON-CHAIN
         const ERC20_ABI = [
             "function balanceOf(address account) external view returns (uint256)",
-            "function decimals() external view returns (uint8)"
+            "function approve(address spender, uint256 amount) external returns (bool)"
         ];
 
+        const VAULT_ABI = [
+            "function processInitialMint() external",
+            "function processEnergyPotion() external"
+        ];
+
+        // VARIABLES DE ESTADO WEB3
         let provider = null;
         let signer = null;
         let userAddress = null;
+
+        // VARIABLES DE ESTADO DEL JUEGO
         let balanceMangua = 0;
         let unclaimedMangua = 0; 
         let activeLeague = 'Común';
@@ -424,10 +432,10 @@
             ]}
         };
 
-        // --- CONEXIÓN REAL CON METAMASK & BLOCKCHAIN ---
+        // --- CONEXIÓN A METAMASK Y LECTURA ON-CHAIN ---
         async function connectWallet() {
             if (typeof window.ethereum === 'undefined') {
-                alert('❌ Por favor instala MetaMask para interactuar con el juego.');
+                alert('❌ Por favor instala la extensión de MetaMask para poder jugar.');
                 return;
             }
 
@@ -437,15 +445,14 @@
                 signer = await provider.getSigner();
                 userAddress = await signer.getAddress();
 
-                // Formatear la dirección para el botón
                 const shortAddr = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
                 document.getElementById('walletText').innerText = shortAddr;
 
-                alert('🎉 ¡Billetera conectada con éxito a BNB Chain Testnet!');
                 await fetchOnChainBalance();
+                alert('🎉 ¡Billetera conectada a la BSC Testnet con éxito!');
             } catch (error) {
                 console.error(error);
-                alert('❌ Error al conectar la billetera.');
+                alert('❌ Error al conectar con MetaMask.');
             }
         }
 
@@ -457,15 +464,15 @@
                 balanceMangua = Number(ethers.formatUnits(rawBalance, 18));
                 updateUI();
             } catch (error) {
-                console.error("Error leyendo balance on-chain:", error);
+                console.error("Error al consultar el balance de $MANGUA:", error);
             }
         }
 
         function updateUI() {
             document.getElementById('userMangua').innerText = balanceMangua.toLocaleString() + ' $MANGUA';
             const usdVal = (balanceMangua * 0.005).toFixed(2);
-            document.getElementById('userUsd').innerText = '\$' + usdVal + ' USD';
-            document.getElementById('unclaimedManguaText').innerText = unclaimedMangua.toLocaleString() + ' \$MANGUA';
+            document.getElementById('userUsd').innerText = '$' + usdVal + ' USD';
+            document.getElementById('unclaimedManguaText').innerText = unclaimedMangua.toLocaleString() + ' $MANGUA';
             
             const currentHero = myHeroes.find(h => h.id == selectedHeroId) || myHeroes[0];
             if(currentHero) {
@@ -479,6 +486,104 @@
             
             renderInventory();
             updateHeroDropdowns();
+        }
+
+        // --- MINTING REAL ON-CHAIN (WEB3) ---
+        async function mintAsset(type, cost) {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
+            if(balanceMangua < cost) {
+                alert('❌ Saldo insuficiente de \$MANGUA en tu billetera para esta operación.');
+                return;
+            }
+
+            try {
+                const tokenAmount = ethers.parseUnits(cost.toString(), 18);
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert('⏳ Paso 1/2: Confirma en MetaMask para APROBAR el uso de tu \$MANGUA por la Vault...');
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
+                await approveTx.wait();
+
+                alert('⏳ Paso 2/2: Confirma en MetaMask para procesar el MINTEO en la Vault...');
+                
+                if(type === 'character') {
+                    if(myHeroes.length >= 4) {
+                        alert('❌ Límite máximo de 4 personajes alcanzado.');
+                        return;
+                    }
+                    const tx = await vaultContract.processInitialMint();
+                    await tx.wait();
+
+                    const newId = myHeroes.length + 1;
+                    myHeroes.push({
+                        id: newId,
+                        name: `Mangua Hero #${String(newId).padStart(3, '0')}`,
+                        rarity: "Común",
+                        level: 1,
+                        exp: 0,
+                        energy: 200, 
+                        equippedWeapon: "Ninguna"
+                    });
+                } else if(type === 'weapon') {
+                    const weaponItem = myBag.find(i => i.id === 101);
+                    if(weaponItem) weaponItem.count++;
+                }
+
+                await fetchOnChainBalance();
+                alert('🎉 ¡TRANSACCIÓN EXITOSA EN TESTNET! Tu nuevo activo ha sido registrado.');
+            } catch (error) {
+                console.error(error);
+                alert('❌ La transacción fue cancelada o falló en la blockchain.');
+            }
+        }
+
+        // --- COMPRA DE POCIÓN REAL ON-CHAIN (WEB3) ---
+        async function buyEnergyPotion() {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
+            if(potionsBoughtToday >= 2) {
+                alert('❌ Límite diario alcanzado: Solo puedes comprar máximo 2 Pociones de Energía al día.');
+                return;
+            }
+
+            const cost = 200; // 200 $MANGUA = \$1.00 USD
+
+            if(balanceMangua < cost) {
+                alert('❌ Necesitas mínimo 200 \$MANGUA (\$1.00 USD) en tu billetera.');
+                return;
+            }
+
+            try {
+                const tokenAmount = ethers.parseUnits(cost.toString(), 18);
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert('⏳ Paso 1/2: Confirma en MetaMask la APROBACIÓN de 200 \$MANGUA...');
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
+                await approveTx.wait();
+
+                alert('⏳ Paso 2/2: Confirma en MetaMask la COMPRA de la poción en la Vault...');
+                const tx = await vaultContract.processEnergyPotion();
+                await tx.wait();
+
+                potionsBoughtToday++;
+                const potionItem = myBag.find(i => i.id === 102);
+                if(potionItem) potionItem.count++;
+
+                await fetchOnChainBalance();
+                alert(`🎉 ¡COMPRA ON-CHAIN EXITOSA (${potionsBoughtToday}/2 hoy)! La poción se añadió a tu mochila.`);
+            } catch (error) {
+                console.error(error);
+                alert('❌ La compra fue cancelada o falló en la blockchain.');
+            }
         }
 
         function claimRewards() {
@@ -857,57 +962,7 @@
             alert(`¡Victoria en Aventura con ${currentHero.name}! Has ganado +${reward} $MANGUA y subido al Nivel ${currentHero.level}. (Energía restante: ${currentHero.energy}/200)`);
         }
 
-        function mintAsset(type, cost) {
-            if(balanceMangua < cost) {
-                alert('Saldo insuficiente de \$MANGUA para mintear.');
-                return;
-            }
-            balanceMangua -= cost;
-
-            if(type === 'character') {
-                if(myHeroes.length >= 4) {
-                    alert('Límite máximo de 4 personajes alcanzado.');
-                    return;
-                }
-                const newId = myHeroes.length + 1;
-                myHeroes.push({
-                    id: newId,
-                    name: `Mangua Hero #${String(newId).padStart(3, '0')}`,
-                    rarity: "Común",
-                    level: 1,
-                    exp: 0,
-                    energy: 200, 
-                    equippedWeapon: "Ninguna"
-                });
-            } else if(type === 'weapon') {
-                const weaponItem = myBag.find(i => i.id === 101);
-                if(weaponItem) weaponItem.count++;
-            }
-
-            updateUI();
-            alert('¡Minteo exitoso! Activo añadido a tu inventario.');
-        }
-
-        function buyEnergyPotion() {
-            if(potionsBoughtToday >= 2) {
-                alert('❌ Límite diario alcanzado: Solo puedes comprar máximo 2 Pociones de Energía al día.');
-                return;
-            }
-            if(balanceMangua < 200) {
-                alert('Necesitas 200 \$MANGUA (\$1.00 USD) para comprar la poción.');
-                return;
-            }
-            balanceMangua -= 200;
-            potionsBoughtToday++;
-            
-            const potionItem = myBag.find(i => i.id === 102);
-            if(potionItem) potionItem.count++;
-
-            updateUI();
-            alert(`¡Poción comprada con éxito (${potionsBoughtToday}/2 hoy)! Añadida a tu mochila.`);
-        }
-
-        // Carga inicial de interfaz
+        // Carga inicial de la interfaz
         updateUI();
         renderLeagueStages();
     </script>
