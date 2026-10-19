@@ -25,7 +25,7 @@
     </script>
     <!-- FontAwesome para Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Ethers.js v6 estable desde CDNJS (Corregido para GitHub Pages) -->
+    <!-- Ethers.js v6 estable desde CDNJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-bnb-500 selection:text-slate-950">
@@ -343,7 +343,7 @@
         ManguaBlades Protocol &copy; 2026 • Diseñado para sostenibilidad a largo plazo en BNB Chain.
     </footer>
 
-    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET REAL -->
+    <!-- JAVASCRIPT LOGIC CON INTEGRACIÓN WEB3 TESTNET REAL COMPLETA -->
     <script>
         // --- DIRECCIONES OFICIALES DE CONTRATOS EN BSC TESTNET ---
         const CONTRACT_ADDRESSES = {
@@ -361,7 +361,9 @@
 
         const VAULT_ABI = [
             "function processInitialMint() external",
-            "function processEnergyPotion() external"
+            "function processEnergyPotion() external",
+            "function claimRewards(uint256 amount) external",
+            "function payFee(uint256 amount) external"
         ];
 
         // VARIABLES DE ESTADO WEB3
@@ -586,24 +588,216 @@
             }
         }
 
-        function claimRewards() {
+        // --- RETIROS (CLAIM) ON-CHAIN CON 10% DEV FEE ---
+        async function claimRewards() {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
             if (unclaimedMangua <= 0) {
                 alert('❌ No tienes saldo pendiente por reclamar.');
                 return;
             }
 
-            const fee = unclaimedMangua * (WITHDRAW_FEE_PERCENT / 100);
-            const userAmount = unclaimedMangua - fee;
+            const requestedAmount = unclaimedMangua;
+            const fee = requestedAmount * (WITHDRAW_FEE_PERCENT / 100);
+            const userAmount = requestedAmount - fee;
 
-            balanceMangua += userAmount;
-            const claimedTotal = unclaimedMangua;
-            unclaimedMangua = 0; 
+            try {
+                const amountWei = ethers.parseUnits(requestedAmount.toString(), 18);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
 
-            updateUI();
-            alert(`🎉 ¡RETIRO EXITOSAMENTE PROCESADO!\n\n` +
-                  `- Solicitado: ${claimedTotal.toFixed(2)} $MANGUA\n` +
-                  `- Penalización Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
-                  `- Recibido en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
+                alert('⏳ Confirmando la transacción de RETIRO en MetaMask...');
+                const tx = await vaultContract.claimRewards(amountWei);
+                await tx.wait();
+
+                unclaimedMangua = 0; 
+                await fetchOnChainBalance();
+
+                alert(`🎉 ¡RETIRO EXITOSO EN LA BLOCKCHAIN!\n\n` +
+                      `- Solicitado: ${requestedAmount.toFixed(2)} $MANGUA\n` +
+                      `- Fee Dev (${WITHDRAW_FEE_PERCENT}%): -${fee.toFixed(2)} $MANGUA\n` +
+                      `- Recibido neto en Billetera: +${userAmount.toFixed(2)} $MANGUA`);
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al procesar la transacción de retiro.');
+            }
+        }
+
+        // --- FORJA DE ESFERAS ON-CHAIN ---
+        async function craftSphereMain(fragRarity, sphereType, feeMangua) {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente de $MANGUA. Esta forja requiere una tarifa de ${feeMangua} $MANGUA.`);
+                return;
+            }
+
+            const fragName = `Fragmento ${fragRarity}`;
+            const fragItem = myBag.find(i => i.name === fragName);
+            
+            if(!fragItem || fragItem.count < 10) {
+                alert(`❌ Necesitas 10x ${fragName} para forjar 1x Esfera ${sphereType}. Actual: ${fragItem ? fragItem.count : 0}/10.`);
+                return;
+            }
+
+            try {
+                const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de forja...`);
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
+                await approveTx.wait();
+
+                alert(`⏳ Paso 2/2: Confirmando el pago de la tarifa de forja en la Vault...`);
+                const tx = await vaultContract.payFee(tokenAmount);
+                await tx.wait();
+
+                fragItem.count -= 10;
+                addSphereToBag(sphereType);
+                await fetchOnChainBalance();
+
+                alert(`✨ ¡FORJA ON-CHAIN EXITOSA! Usaste 10x ${fragName} y pagaste ${feeMangua} $MANGUA a la Vault para sintesizar 1x Esfera ${sphereType}.`);
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al procesar la tarifa de forja en la blockchain.');
+            }
+        }
+
+        // --- EVOLUCIÓN DE ESFERAS ON-CHAIN (RECETA SECUNDARIA) ---
+        async function craftSphereEvolve(baseSphereRarity, targetSphereType, feeMangua) {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente de $MANGUA. Esta evolución requiere una tarifa de ${feeMangua} $MANGUA.`);
+                return;
+            }
+
+            const baseSphereName = `Esfera ${baseSphereRarity}`;
+            const requiredFragName = `Fragmento ${baseSphereRarity}`;
+
+            const sphereBaseItem = myBag.find(i => i.name === baseSphereName && i.count > 0);
+            const fragItem = myBag.find(i => i.name === requiredFragName);
+
+            if(!sphereBaseItem) {
+                alert(`❌ Necesitas 1x ${baseSphereName} en tu mochila para esta receta secundaria.`);
+                return;
+            }
+
+            if(!fragItem || fragItem.count < 5) {
+                alert(`❌ Necesitas 5x ${requiredFragName} adicionales para evolucionar la esfera. Actual: ${fragItem ? fragItem.count : 0}/5.`);
+                return;
+            }
+
+            try {
+                const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de evolución...`);
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
+                await approveTx.wait();
+
+                alert(`⏳ Paso 2/2: Pago de tarifa de evolución en la Vault...`);
+                const tx = await vaultContract.payFee(tokenAmount);
+                await tx.wait();
+
+                sphereBaseItem.count--;
+                fragItem.count -= 5;
+                addSphereToBag(targetSphereType);
+                await fetchOnChainBalance();
+
+                alert(`✨ ¡EVOLUCIÓN ON-CHAIN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y pagaste ${feeMangua} $MANGUA para sintetizar 1x Esfera ${targetSphereType}.`);
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al procesar la tarifa de evolución en la blockchain.');
+            }
+        }
+
+        // --- RITUAL DE ASCENSIÓN DE HÉROE ON-CHAIN ---
+        async function ascendHero() {
+            if (!signer || !userAddress) {
+                alert('❌ Por favor conecta tu billetera con MetaMask primero.');
+                return;
+            }
+
+            const heroSelect = document.getElementById('heroAscendSelect');
+            const heroId = Number(heroSelect.value);
+            const hero = myHeroes.find(h => h.id === heroId);
+
+            if(!hero) {
+                alert('Selecciona un héroe válido.');
+                return;
+            }
+
+            if(hero.level < 30) {
+                alert(`❌ El héroe "${hero.name}" es Nivel ${hero.level}. Debe estar en Nivel 30 para ascender.`);
+                return;
+            }
+
+            const leagueInfo = leaguesData[hero.rarity];
+            if(!leagueInfo || !leagueInfo.nextRarity) {
+                alert('Este héroe ya se encuentra en su rango máximo (Místico).');
+                return;
+            }
+
+            const nextRarity = leagueInfo.nextRarity;
+            const feeMangua = oracleFees[nextRarity] || 0;
+
+            if(balanceMangua < feeMangua) {
+                alert(`❌ Saldo insuficiente. La Tarifa de Oráculo para ascender a [${nextRarity}] es de ${feeMangua} $MANGUA ($${(feeMangua*0.005).toFixed(2)} USD).`);
+                return;
+            }
+
+            const requiredSphereName = `Esfera ${nextRarity}`;
+            const sphereItem = myBag.find(i => i.name === requiredSphereName && i.count > 0);
+
+            if(!sphereItem) {
+                alert(`❌ Necesitas 1x "${requiredSphereName}" en tu mochila para ascender de ${hero.rarity} a ${nextRarity}.`);
+                return;
+            }
+
+            try {
+                const tokenAmount = ethers.parseUnits(feeMangua.toString(), 18);
+                const tokenContract = new ethers.Contract(CONTRACT_ADDRESSES.token, ERC20_ABI, signer);
+                const vaultContract = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, signer);
+
+                alert(`⏳ Paso 1/2: Aprobando ${feeMangua} $MANGUA para la tarifa de Oráculo...`);
+                const approveTx = await tokenContract.approve(CONTRACT_ADDRESSES.vault, tokenAmount);
+                await approveTx.wait();
+
+                alert(`⏳ Paso 2/2: Confirmando el pago de la tarifa de Oráculo en la Vault...`);
+                const tx = await vaultContract.payFee(tokenAmount);
+                await tx.wait();
+
+                sphereItem.count--;
+                hero.rarity = nextRarity;
+                hero.level = 1;
+                hero.energy = 200; 
+
+                await fetchOnChainBalance();
+                alert(`🎉 ¡ASCENSIÓN ON-CHAIN EXITOSA!\n\nTu héroe "${hero.name}" ascendió al rango [${hero.rarity}]. Se procesaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel fue restablecido a 1 con 200/200 de energía.`);
+            } catch (error) {
+                console.error(error);
+                alert('❌ Error al procesar la tarifa de ascensión en la blockchain.');
+            }
+        }
+
+        function addSphereToBag(sphereType) {
+            let sphereItem = myBag.find(i => i.name === `Esfera ${sphereType}`);
+            if(!sphereItem) {
+                myBag.push({ id: Date.now(), name: `Esfera ${sphereType}`, type: "Esfera", rarity: sphereType, count: 1, icon: "fa-gem" });
+            } else {
+                sphereItem.count++;
+            }
         }
 
         function updateHeroDropdowns() {
@@ -715,115 +909,6 @@
             currentHero.energy = 200;
             updateUI();
             alert(`🧪 ¡Poción consumida! Energía de "${currentHero.name}" recargada a 200/200.`);
-        }
-
-        function craftSphereMain(fragRarity, sphereType, feeMangua) {
-            if(balanceMangua < feeMangua) {
-                alert(`❌ Saldo insuficiente de $MANGUA. Esta forja requiere una tarifa de ${feeMangua} $MANGUA.`);
-                return;
-            }
-
-            const fragName = `Fragmento ${fragRarity}`;
-            const fragItem = myBag.find(i => i.name === fragName);
-            
-            if(!fragItem || fragItem.count < 10) {
-                alert(`❌ Necesitas 10x ${fragName} para forjar 1x Esfera ${sphereType}. Actual: ${fragItem ? fragItem.count : 0}/10.`);
-                return;
-            }
-
-            balanceMangua -= feeMangua;
-            fragItem.count -= 10;
-            addSphereToBag(sphereType);
-            updateUI();
-            alert(`✨ ¡FORJA EXITOSA! Usaste 10x ${fragName} y pagaste ${feeMangua} $MANGUA para forjar 1x Esfera ${sphereType}.`);
-        }
-
-        function craftSphereEvolve(baseSphereRarity, targetSphereType, feeMangua) {
-            if(balanceMangua < feeMangua) {
-                alert(`❌ Saldo insuficiente de $MANGUA. Esta evolución requiere una tarifa de ${feeMangua} $MANGUA.`);
-                return;
-            }
-
-            const baseSphereName = `Esfera ${baseSphereRarity}`;
-            const requiredFragName = `Fragmento ${baseSphereRarity}`;
-
-            const sphereBaseItem = myBag.find(i => i.name === baseSphereName && i.count > 0);
-            const fragItem = myBag.find(i => i.name === requiredFragName);
-
-            if(!sphereBaseItem) {
-                alert(`❌ Necesitas 1x ${baseSphereName} en tu mochila para esta receta secundaria.`);
-                return;
-            }
-
-            if(!fragItem || fragItem.count < 5) {
-                alert(`❌ Necesitas 5x ${requiredFragName} adicionales para evolucionar la esfera. Actual: ${fragItem ? fragItem.count : 0}/5.`);
-                return;
-            }
-
-            balanceMangua -= feeMangua;
-            sphereBaseItem.count--;
-            fragItem.count -= 5;
-            addSphereToBag(targetSphereType);
-
-            updateUI();
-            alert(`✨ ¡EVOLUCIÓN EXITOSA! Combinaste 1x ${baseSphereName} + 5x ${requiredFragName} y pagaste ${feeMangua} $MANGUA para forjar 1x Esfera ${targetSphereType}.`);
-        }
-
-        function addSphereToBag(sphereType) {
-            let sphereItem = myBag.find(i => i.name === `Esfera ${sphereType}`);
-            if(!sphereItem) {
-                myBag.push({ id: Date.now(), name: `Esfera ${sphereType}`, type: "Esfera", rarity: sphereType, count: 1, icon: "fa-gem" });
-            } else {
-                sphereItem.count++;
-            }
-        }
-
-        function ascendHero() {
-            const heroSelect = document.getElementById('heroAscendSelect');
-            const heroId = Number(heroSelect.value);
-            const hero = myHeroes.find(h => h.id === heroId);
-
-            if(!hero) {
-                alert('Selecciona un héroe válido.');
-                return;
-            }
-
-            if(hero.level < 30) {
-                alert(`❌ El héroe "${hero.name}" es Nivel ${hero.level}. Debe estar en Nivel 30 para ascender.`);
-                return;
-            }
-
-            const leagueInfo = leaguesData[hero.rarity];
-            if(!leagueInfo || !leagueInfo.nextRarity) {
-                alert('Este héroe ya se encuentra en su rango máximo (Místico).');
-                return;
-            }
-
-            const nextRarity = leagueInfo.nextRarity;
-            const feeMangua = oracleFees[nextRarity] || 0;
-
-            if(balanceMangua < feeMangua) {
-                alert(`❌ Saldo insuficiente. La Tarifa de Oráculo para ascender a [${nextRarity}] es de ${feeMangua} $MANGUA ($${(feeMangua*0.005).toFixed(2)} USD).`);
-                return;
-            }
-
-            const requiredSphereName = `Esfera ${nextRarity}`;
-            const sphereItem = myBag.find(i => i.name === requiredSphereName && i.count > 0);
-
-            if(!sphereItem) {
-                alert(`❌ Necesitas 1x "${requiredSphereName}" en tu mochila para ascender de ${hero.rarity} a ${nextRarity}.`);
-                return;
-            }
-
-            balanceMangua -= feeMangua;
-            sphereItem.count--;
-
-            hero.rarity = nextRarity;
-            hero.level = 1;
-            hero.energy = 200; 
-
-            updateUI();
-            alert(`🎉 ¡ASCENSIÓN EXITOSA!\n\nTu héroe "${hero.name}" ascendió a [${hero.rarity}]. Se descontaron ${feeMangua} $MANGUA de Tarifa de Oráculo y su nivel se reinició a 1.`);
         }
 
         function attackBoss() {
